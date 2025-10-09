@@ -1,0 +1,65 @@
+stages:
+  - test
+
+variables:
+  POSTGRES_DB: "ppo_test"
+  POSTGRES_USER: "test"
+  POSTGRES_PASSWORD: "test"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
+  
+services:
+  - name: postgres:15-alpine
+    alias: postgres
+    command: ["postgres", "-c", "log_statement=all"]
+
+.dotnet-setup: &dotnet-setup
+  before_script:
+    - apt-get update && apt-get install -y wget
+    - wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+    - chmod +x ./dotnet-install.sh
+    - ./dotnet-install.sh --channel 9.0 --install-dir /usr/share/dotnet
+    - ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+    - dotnet --version
+
+unit_tests:
+  stage: test
+  <<: *dotnet-setup
+  script:
+    - dotnet restore
+    - dotnet build --configuration Debug --no-restore
+    - dotnet test src/Tests/Project.Service.Tests/Project.Service.Tests.csproj --configuration Debug --no-restore --logger "trx;LogFileName=unit_tests.trx"
+  artifacts:
+    when: always
+    paths:
+      - src/Tests/**/TestResults/*.trx
+    reports:
+      junit: src/Tests/**/TestResults/*.trx
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+integration_tests:
+  stage: test
+  <<: *dotnet-setup
+  script:
+    - dotnet restore
+    - dotnet build --configuration Debug --no-restore
+    - dotnet test src/Tests/Project.Repository.Tests/Project.Repository.Tests.csproj --configuration Debug --no-build --logger "trx;LogFileName=integration_tests.trx"
+  artifacts:
+    when: always
+    paths:
+      - src/Tests/**/TestResults/*.trx
+    reports:
+      junit: src/Tests/**/TestResults/*.trx
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+      
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - $HOME/.nuget/packages
+    - $HOME/.docker/cache
+  policy: pull-push
