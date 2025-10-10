@@ -34,6 +34,10 @@
 /src/Services/Project.Services.ScoreService/obj/
 /src/Tests/
 /Debug/
-/docs/
 /Logs/
 /scripts/
+*.zip
+/docs/images/*.drawio
+/docs/images/*.bkp
+/docs/images/*.svg
+
