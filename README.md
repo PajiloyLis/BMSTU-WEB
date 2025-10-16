@@ -110,3 +110,45 @@ $\pm$ подразумевает оценку компетенций посре�
 ## Верхнеуровневое разбиение на компоненты
 
 ![SVG_Image](./docs/images/components_uml.png)
+
+# Макеты 
+
+## Экран регистрации
+
+![Registration page](./docs/images/Registration.png)
+
+## Экран входа
+
+![Entrance page](./docs/images/Entrance.png)
+
+## Главная страница
+
+![Home page](./docs/images/Home%20(authorized).png)
+
+## Страница позиций
+
+### Авторизованного пользователя
+
+![Positions page authorized](./docs/images/Positions%20(authorized).png)
+
+### Неавторизованного пользователя
+
+![Positions page not authorized](./docs/images/Positions%20(not%20authorized).png)
+
+## Страница должностей
+
+### Авторизованного пользователя
+
+![Posts page authorized](./docs/images/Posts%20(authorized).png)
+
+### Неавторизованного пользователя
+
+![Posts page not authorized](./docs/images/Posts%20(not%20authorized).png)
+
+## Личный кабинет
+
+![Personal cabinet](./docs/images/Personal%20cabinet.png)
+
+## Меню навигации
+
+![Navigation Menu](./docs/images/Menu.png)
