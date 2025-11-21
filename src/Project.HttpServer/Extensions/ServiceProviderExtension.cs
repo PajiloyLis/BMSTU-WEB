@@ -108,7 +108,7 @@ public static class ServiceProviderExtension
         serviceCollection.AddDbContext<ProjectDbContext>((serviceProvider, options) =>
         {
             options.UseNpgsql(serviceProvider.GetRequiredService<NpgsqlDataSource>())
-                .AddInterceptors(new TempViewConnectionInterceptor())
+                // .AddInterceptors(new TempViewConnectionInterceptor())
                 .EnableSensitiveDataLogging() // Показывает значения параметров
                 .LogTo(Console.WriteLine, LogLevel.Information);
         });
@@ -172,42 +172,42 @@ public static class ServiceProviderExtension
     
     public static IServiceCollection AddProjectMongoDbRepositories(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddMongoDbRepositories();
+        // serviceCollection.AddMongoDbRepositories();
         return serviceCollection;
     }
 
-    public static IServiceCollection AddProjectMongoDbContext(this IServiceCollection serviceCollection,
-        IConfiguration configuration)
-    {
-        // Настройка MongoDB из ConnectionStrings
-        var mongoConnectionString = configuration.GetConnectionString("MongoConnection");
-        if (string.IsNullOrEmpty(mongoConnectionString))
-            throw new InvalidOperationException("MongoConnection connection string is not configured");
-        
-        // Парсим строку подключения для извлечения компонентов
-        var connectionParts = mongoConnectionString.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        var server = connectionParts.FirstOrDefault(p => p.StartsWith("Server="))?.Split('=')[1]?.Trim();
-        var port = connectionParts.FirstOrDefault(p => p.StartsWith("Port="))?.Split('=')[1]?.Trim();
-        var databaseName = connectionParts.FirstOrDefault(p => p.StartsWith("Database="))?.Split('=')[1]?.Trim();
-        
-        if (string.IsNullOrEmpty(server) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(databaseName))
-            throw new InvalidOperationException("Invalid MongoConnection format. Expected: 'Server=...;Port=...;Database=...'");
-        
-        // Создаем MongoDbSettings
-        var mongoDbSettings = new MongoDbSettings
-        {
-            ConnectionString = $"mongodb://{server}:{port}",
-            DatabaseName = databaseName
-        };
-        
-        // Регистрируем MongoDbSettings
-        serviceCollection.AddSingleton(Options.Create(mongoDbSettings));
-        
-        // Регистрация MongoDbContext как Singleton
-        serviceCollection.AddSingleton<MongoDbContext>();
-        
-        return serviceCollection;
-    }
+    // public static IServiceCollection AddProjectMongoDbContext(this IServiceCollection serviceCollection,
+    //     IConfiguration configuration)
+    // {
+    //     // Настройка MongoDB из ConnectionStrings
+    //     var mongoConnectionString = configuration.GetConnectionString("MongoConnection");
+    //     if (string.IsNullOrEmpty(mongoConnectionString))
+    //         throw new InvalidOperationException("MongoConnection connection string is not configured");
+    //     
+    //     // Парсим строку подключения для извлечения компонентов
+    //     var connectionParts = mongoConnectionString.Split(';', StringSplitOptions.RemoveEmptyEntries);
+    //     var server = connectionParts.FirstOrDefault(p => p.StartsWith("Server="))?.Split('=')[1]?.Trim();
+    //     var port = connectionParts.FirstOrDefault(p => p.StartsWith("Port="))?.Split('=')[1]?.Trim();
+    //     var databaseName = connectionParts.FirstOrDefault(p => p.StartsWith("Database="))?.Split('=')[1]?.Trim();
+    //     
+    //     if (string.IsNullOrEmpty(server) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(databaseName))
+    //         throw new InvalidOperationException("Invalid MongoConnection format. Expected: 'Server=...;Port=...;Database=...'");
+    //     
+    //     // Создаем MongoDbSettings
+    //     var mongoDbSettings = new MongoDbSettings
+    //     {
+    //         ConnectionString = $"mongodb://{server}:{port}",
+    //         DatabaseName = databaseName
+    //     };
+    //     
+    //     // Регистрируем MongoDbSettings
+    //     serviceCollection.AddSingleton(Options.Create(mongoDbSettings));
+    //     
+    //     // Регистрация MongoDbContext как Singleton
+    //     serviceCollection.AddSingleton<MongoDbContext>();
+    //     
+    //     return serviceCollection;
+    // }
     
     public static IServiceCollection AddProjectRedisCache(this IServiceCollection serviceCollection, 
         IConfiguration configuration)

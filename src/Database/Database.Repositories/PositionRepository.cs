@@ -100,128 +100,127 @@ public class PositionRepository : IPositionRepository
         }
     }
 
-    public async Task<BasePosition> UpdatePositionTitleAsync(UpdatePosition position)
+    public async Task<BasePosition> UpdatePositionTitleAsync(Guid id, string? title)
     {
         try
         {
             var positionDb = await _context.PositionDb
-                .FirstOrDefaultAsync(p => p.Id == position.Id && p.CompanyId == position.CompanyId);
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (positionDb is null)
             {
-                _logger.LogWarning("Position with id {Id} not found for update", position.Id);
-                throw new PositionNotFoundException($"Position with id {position.Id} not found");
+                _logger.LogWarning("Position with id {Id} not found for update", id);
+                throw new PositionNotFoundException($"Position with id {id} not found");
             }
 
             var existingPosition = await _context.PositionDb
-                .Where(p => p.Id != position.Id &&
-                            p.CompanyId == position.CompanyId &&
-                            p.Title == position.Title)
+                .Where(p => p.Id != id &&
+                            p.CompanyId == positionDb.CompanyId &&
+                            p.Title == positionDb.Title)
                 .FirstOrDefaultAsync();
 
             if (existingPosition is not null)
             {
-                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", position.Title,
-                    position.CompanyId);
+                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", positionDb.Title,
+                    positionDb.CompanyId);
                 throw new PositionAlreadyExistsException(
-                    $"Position with title {position.Title} already exists in company {position.CompanyId}");
+                    $"Position with title {positionDb.Title} already exists in company {positionDb.CompanyId}");
             }
 
-            positionDb.Title = position.Title ?? positionDb.Title;
+            positionDb.Title = positionDb.Title ?? positionDb.Title;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Position with id {Id} was updated", position.Id);
+            _logger.LogInformation("Position with id {Id} was updated", positionDb.Id);
             return PositionConverter.Convert(positionDb)!;
         }
         catch (Exception e) when (e is not PositionNotFoundException and not PositionAlreadyExistsException)
         {
-            _logger.LogError(e, "Error occurred while updating position with id {Id}", position.Id);
+            _logger.LogError(e, "Error occurred while updating position with id {Id}", id);
             throw;
         }
     }
 
-    public async Task<BasePosition> UpdatePositionParentWithSubordinatesAsync(UpdatePosition position)
+    public async Task<BasePosition> UpdatePositionParentWithSubordinatesAsync(Guid id, Guid? parentId)
     {
         try
         {
+            
             var positionDb = await _context.PositionDb
-                .FirstOrDefaultAsync(p => p.Id == position.Id && p.CompanyId == position.CompanyId);
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (positionDb is null)
             {
-                _logger.LogWarning("Position with id {Id} not found for update", position.Id);
-                throw new PositionNotFoundException($"Position with id {position.Id} not found");
+                _logger.LogWarning("Position with id {Id} not found for update", id);
+                throw new PositionNotFoundException($"Position with id {id} not found");
             }
 
             var existingPosition = await _context.PositionDb
-                .Where(p => p.Id != position.Id &&
-                            p.CompanyId == position.CompanyId &&
-                            p.Title == position.Title)
+                .Where(p => p.Id != positionDb.Id &&
+                            p.CompanyId == positionDb.CompanyId &&
+                            p.Title == positionDb.Title)
                 .FirstOrDefaultAsync();
 
             if (existingPosition is not null)
             {
-                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", position.Title,
-                    position.CompanyId);
+                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", positionDb.Title,
+                    positionDb.CompanyId);
                 throw new PositionAlreadyExistsException(
-                    $"Position with title {position.Title} already exists in company {position.CompanyId}");
+                    $"Position with title {positionDb.Title} already exists in company {positionDb.CompanyId}");
             }
 
-            position.ParentId = position.ParentId;
-            positionDb.Title = position.Title ?? positionDb.Title;
+            positionDb.ParentId = parentId;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Position with id {Id} was updated", position.Id);
+            _logger.LogInformation("Position with id {Id} was updated", id);
             return PositionConverter.Convert(positionDb)!;
         }
         catch (Exception e) when (e is not PositionNotFoundException and not PositionAlreadyExistsException)
         {
-            _logger.LogError(e, "Error occurred while updating position with id {Id}", position.Id);
+            _logger.LogError(e, "Error occurred while updating position with id {Id}", id);
             throw;
         }
     }
 
-    public async Task<BasePosition> UpdatePositionParentWithoutSuboridnatesAsync(UpdatePosition position)
+    public async Task<BasePosition> UpdatePositionParentWithoutSuboridnatesAsync(Guid id, Guid? parentId)
     {
         try
         {
             var positionDb = await _context.PositionDb
-                .FirstOrDefaultAsync(p => p.Id == position.Id && p.CompanyId == position.CompanyId);
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (positionDb is null)
             {
-                _logger.LogWarning("Position with id {Id} not found for update", position.Id);
-                throw new PositionNotFoundException($"Position with id {position.Id} not found");
+                _logger.LogWarning("Position with id {Id} not found for update", id);
+                throw new PositionNotFoundException($"Position with id {id} not found");
             }
 
             var existingPosition = await _context.PositionDb
-                .Where(p => p.Id != position.Id &&
-                            p.CompanyId == position.CompanyId &&
-                            p.Title == position.Title)
+                .Where(p => p.Id != id &&
+                            p.CompanyId == positionDb.CompanyId &&
+                            p.Title == positionDb.Title)
                 .FirstOrDefaultAsync();
 
             if (existingPosition is not null)
             {
-                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", position.Title,
-                    position.CompanyId);
+                _logger.LogWarning("Position with title {Title} already exists in company {CompanyId}", positionDb.Title,
+                    positionDb.CompanyId);
                 throw new PositionAlreadyExistsException(
-                    $"Position with title {position.Title} already exists in company {position.CompanyId}");
+                    $"Position with title {positionDb.Title} already exists in company {positionDb.CompanyId}");
             }
             
-            var children = _context.PositionDb.Where(e=>e.ParentId == position.Id).ToList();
+            var children = _context.PositionDb.Where(e=>e.ParentId == id).ToList();
 
             children.ForEach(e => e.ParentId = positionDb.ParentId);
 
-            positionDb.ParentId = position.ParentId;
-            positionDb.Title = position.Title ?? positionDb.Title;
+            positionDb.ParentId = parentId;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Position with id {Id} was updated", position.Id);
+            _logger.LogInformation("Position with id {Id} was updated", id);
             return PositionConverter.Convert(positionDb)!;
         }
         catch (Exception e) when (e is not PositionNotFoundException and not PositionAlreadyExistsException)
         {
-            _logger.LogError(e, "Error occurred while updating position with id {Id}", position.Id);
+            _logger.LogError(e, "Error occurred while updating position with id {Id}", id);
             throw;
         }
     }

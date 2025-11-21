@@ -12,7 +12,8 @@ public class CompanyDto
         string inn,
         string kpp,
         string ogrn,
-        string address)
+        string address, 
+        bool isDeleted)
     {
         CompanyId = companyId;
         Title = title;
@@ -23,68 +24,74 @@ public class CompanyDto
         Kpp = kpp;
         Ogrn = ogrn;
         Address = address;
+        IsDeleted = isDeleted;
     }
-    
+
     /// <summary>
-    /// Company's id
+    ///     Company's id
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("companyId")]
     public Guid CompanyId { get; init; }
 
     /// <summary>
-    /// Company's name
+    ///     Company's name
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("title")]
     public string Title { get; set; }
 
     /// <summary>
-    /// Company's registration date
+    ///     Company's registration date
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("registrationDate")]
     public DateOnly RegistrationDate { get; set; }
 
     /// <summary>
-    /// Company's contact phone number
+    ///     Company's contact phone number
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("phoneNumber")]
     public string PhoneNumber { get; set; }
 
     /// <summary>
-    /// Company's contact email
+    ///     Company's contact email
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("email")]
     public string Email { get; set; }
 
     /// <summary>
-    /// Company's inn
+    ///     Company's inn
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("inn")]
     public string Inn { get; set; }
 
     /// <summary>
-    /// Company's kpp
+    ///     Company's kpp
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("kpp")]
     public string Kpp { get; set; }
 
     /// <summary>
-    /// Company's ogrn
+    ///     Company's ogrn
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("ogrn")]
     public string Ogrn { get; set; }
 
     /// <summary>
-    /// Company's registered address
+    ///     Company's registered address
     /// </summary>
     [JsonRequired]
     [JsonPropertyName("address")]
     public string Address { get; set; }
+
+
+    [JsonRequired]
+    [JsonPropertyName("isDeleted")]
+    public bool IsDeleted { get; set; }
 }

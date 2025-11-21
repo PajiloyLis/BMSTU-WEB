@@ -25,18 +25,19 @@ public interface IPostService
     /// Обновляет существующую должность
     /// </summary>
     /// <param name="postId">ID должности</param>
-    /// <param name="companyId">ID компании</param>
     /// <param name="title">Новое название должности</param>
     /// <param name="salary">Новая зарплата</param>
     /// <returns>Обновленная должность</returns>
-    Task<BasePost> UpdatePostAsync(Guid postId, Guid companyId, string? title = null, decimal? salary = null);
+    Task<BasePost> UpdatePostAsync(Guid postId, string? title = null, decimal? salary = null);
 
     /// <summary>
     /// Получает список должностей с пагинацией
     /// </summary>
     /// <param name="companyId">ID компании</param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
     /// <returns>Страница с должностями</returns>
-    Task<IEnumerable<BasePost>> GetPostsByCompanyIdAsync(Guid companyId);
+    Task<IEnumerable<BasePost>> GetPostsByCompanyIdAsync(Guid companyId, int pageNumber, int pageSize);
 
     /// <summary>
     /// Удаляет должность

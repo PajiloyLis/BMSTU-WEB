@@ -11,73 +11,6 @@ namespace Database.Context.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
-            migrationBuilder.Sql(@"
-    create or replace function get_subordinates_by_id(start_id uuid)
-    returns table
-            (
-                id        uuid,
-                parent_id uuid,
-                title     text,
-                level     integer
-            )
-AS
-$$
-begin
-    return query
-        with recursive hierarchy as (select p.id,
-                                            p.parent_id,
-                                            p.title,
-                                            0 as level
-                                     from position as p
-                                     where p.id = start_id
-
-                                     union all
-
-                                     select p.id,
-                                            p.parent_id,
-                                            p.title,
-                                            h.level + 1
-                                     from position p
-                                              join hierarchy as h on p.parent_id = h.id)
-        SELECT *
-        from hierarchy;
-END;
-$$ LANGUAGE plpgsql;
-");
-
-            migrationBuilder.Sql(@"
-    create or replace function get_current_subordinates_id_by_employee_id(head_employee_id uuid)
-    returns table
-            (employee_id uuid,
-            position_id uuid,
-            parent_id uuid,
-            title text,
-            level int)
-AS
-$$
-declare
-    manager_position_id uuid;
-begin
-    -- Получаем текущую позицию сотрудника
-    select position_history.position_id into manager_position_id
-    from employee_base
-    join position_history on employee_base.id = position_history.employee_id
-    where employee_base.id = head_employee_id
-    and position_history.end_date is null;  -- Текущая позиция
-
-    if manager_position_id is null then
-        raise exception 'Employee with id % not found or has no current position', head_employee_id;
-    end if;
-
-    -- Возвращаем информацию о подчиненных
-    return query
-    select ph.employee_id, h.id, h.parent_id, h.title, h.level from (select position_history.employee_id, position_history.position_id from position_history where end_date is null) as ph inner join (select * from get_subordinates_by_id(manager_position_id)) as h on h.id = ph.position_id;
-end;
-$$ LANGUAGE plpgsql;
-");
-            
-            
             migrationBuilder.CreateTable(
                 name: "company",
                 columns: table => new
@@ -90,7 +23,8 @@ $$ LANGUAGE plpgsql;
                     inn = table.Column<string>(type: "varchar(10)", nullable: false),
                     kpp = table.Column<string>(type: "varchar(9)", nullable: false),
                     ogrn = table.Column<string>(type: "varchar(13)", nullable: false),
-                    address = table.Column<string>(type: "text", nullable: false)
+                    address = table.Column<string>(type: "text", nullable: false),
+                    _is_deleted = table.Column<bool>(type: "bool", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,13 +58,30 @@ $$ LANGUAGE plpgsql;
                 });
 
             migrationBuilder.CreateTable(
+                name: "users",
+                columns: table => new
+                {
+                    email = table.Column<string>(type: "text", nullable: false),
+                    password = table.Column<string>(type: "text", nullable: false),
+                    salt = table.Column<string>(type: "text", nullable: false),
+                    role = table.Column<string>(type: "text", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_users", x => x.email);
+                    table.CheckConstraint("EmailCheck", "email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "position",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
                     title = table.Column<string>(type: "text", nullable: false),
-                    company_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    company_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    _is_deleted = table.Column<bool>(type: "bool", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,7 +107,8 @@ $$ LANGUAGE plpgsql;
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     title = table.Column<string>(type: "text", nullable: false),
                     salary = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    company_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    company_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    _is_deleted = table.Column<bool>(type: "bool", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,9 +222,7 @@ $$ LANGUAGE plpgsql;
                     post_id = table.Column<Guid>(type: "uuid", nullable: false),
                     employee_id = table.Column<Guid>(type: "uuid", nullable: false),
                     start_date = table.Column<DateOnly>(type: "date", nullable: false),
-                    end_date = table.Column<DateOnly>(type: "date", nullable: true),
-                    EmployeeDbId = table.Column<Guid>(type: "uuid", nullable: true),
-                    PostDbId = table.Column<Guid>(type: "uuid", nullable: true)
+                    end_date = table.Column<DateOnly>(type: "date", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -280,21 +230,11 @@ $$ LANGUAGE plpgsql;
                     table.CheckConstraint("CK_post_history_end_date", "end_date <= CURRENT_DATE");
                     table.CheckConstraint("CK_post_history_start_date", "start_date < CURRENT_DATE");
                     table.ForeignKey(
-                        name: "FK_post_history_employee_base_EmployeeDbId",
-                        column: x => x.EmployeeDbId,
-                        principalTable: "employee_base",
-                        principalColumn: "id");
-                    table.ForeignKey(
                         name: "FK_post_history_employee_base_employee_id",
                         column: x => x.employee_id,
                         principalTable: "employee_base",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_post_history_post_PostDbId",
-                        column: x => x.PostDbId,
-                        principalTable: "post",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_post_history_post_post_id",
                         column: x => x.post_id,
@@ -388,16 +328,6 @@ $$ LANGUAGE plpgsql;
                 column: "employee_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_post_history_EmployeeDbId",
-                table: "post_history",
-                column: "EmployeeDbId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_post_history_PostDbId",
-                table: "post_history",
-                column: "PostDbId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_score_story_author_id",
                 table: "score_story",
                 column: "author_id");
@@ -411,6 +341,12 @@ $$ LANGUAGE plpgsql;
                 name: "IX_score_story_position_id",
                 table: "score_story",
                 column: "position_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_password",
+                table: "users",
+                column: "password",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -427,6 +363,9 @@ $$ LANGUAGE plpgsql;
 
             migrationBuilder.DropTable(
                 name: "score_story");
+
+            migrationBuilder.DropTable(
+                name: "users");
 
             migrationBuilder.DropTable(
                 name: "post");

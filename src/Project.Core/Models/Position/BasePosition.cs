@@ -2,7 +2,7 @@ namespace Project.Core.Models.Position;
 
 public class BasePosition
 {
-    public BasePosition(Guid id, Guid parentId, string title, Guid companyId)
+    public BasePosition(Guid id, Guid parentId, string title, Guid companyId, bool isDeleted)
     {
         if (!Guid.TryParse(id.ToString(), out _)) throw new ArgumentException("Invalid Id format", nameof(id));
 
@@ -18,10 +18,13 @@ public class BasePosition
         ParentId = parentId;
         Title = title;
         CompanyId = companyId;
+        IsDeleted = isDeleted;
     }
 
     public Guid Id { get; init; }
     public Guid ParentId { get; init; }
     public string Title { get; init; }
     public Guid CompanyId { get; init; }
+    
+    public bool IsDeleted { get; init; }
 }

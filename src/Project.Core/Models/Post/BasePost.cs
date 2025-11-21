@@ -2,7 +2,7 @@ namespace Project.Core.Models.Post;
 
 public class BasePost
 {
-    public BasePost(Guid id, string title, decimal salary, Guid companyId)
+    public BasePost(Guid id, string title, decimal salary, Guid companyId, bool isDeleted)
     {
         if (!Guid.TryParse(id.ToString(), out _))
             throw new ArgumentException("Id cannot be empty", nameof(id));
@@ -20,10 +20,13 @@ public class BasePost
         Title = title;
         Salary = salary;
         CompanyId = companyId;
+        IsDeleted = isDeleted;
     }
 
     public Guid Id { get; set; }
     public string Title { get; set; }
     public decimal Salary { get; set; }
     public Guid CompanyId { get; set; }
+    
+    public bool IsDeleted { get; set; }
 }

@@ -163,7 +163,7 @@ public class PostHistoryRepository : IPostHistoryRepository
 
     public async Task<IEnumerable<BasePostHistory>> GetPostHistoryByEmployeeIdAsync(Guid employeeId,
         DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -180,7 +180,7 @@ public class PostHistoryRepository : IPostHistoryRepository
                 query = query.Where(ph =>
                     (ph.EndDate == null && endDate == DateOnly.FromDateTime(DateTime.Today)) || ph.EndDate <= endDate);
 
-            var items = await query
+            var items = await query.Skip((pageNumber-1)*pageSize).Take(pageSize)
                 .Select(ph => PostHistoryConverter.Convert(ph)!)
                 .ToListAsync();
 
@@ -199,7 +199,7 @@ public class PostHistoryRepository : IPostHistoryRepository
 
     public async Task<IEnumerable<BasePostHistory>> GetSubordinatesPostHistoryAsync(Guid managerId,
         DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -241,7 +241,7 @@ public class PostHistoryRepository : IPostHistoryRepository
                     (ph.EndDate == null && endDate == DateOnly.FromDateTime(DateTime.Today)) || ph.EndDate <= endDate);
 
            
-            var items = await query.Select(ph => PostHistoryConverter.Convert(ph)!).ToListAsync();
+            var items = await query.Skip((pageNumber-1)*pageSize).Take(pageSize).Select(ph => PostHistoryConverter.Convert(ph)!).ToListAsync();
             
             _logger.LogInformation(
                 "Successfully retrieved {Count} subordinates post history records for manager {ManagerId}",

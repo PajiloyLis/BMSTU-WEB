@@ -149,7 +149,7 @@ public class ScoreRepository : IScoreRepository
     }
 
     public async Task<IEnumerable<BaseScore>> GetScoresByEmployeeIdAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate)
+        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -160,7 +160,7 @@ public class ScoreRepository : IScoreRepository
             if (endDate.HasValue)
                 query = query.Where(s => s.CreatedAt <= endDate.Value.ToUniversalTime());
 
-            var scores = await query
+            var scores = await query.Skip((pageNumber-1)*pageSize).Take(pageSize)
                 .Select(s => ScoreConverter.Convert(s)!)
                 .ToListAsync();
 
@@ -177,7 +177,7 @@ public class ScoreRepository : IScoreRepository
     }
 
     public async Task<IEnumerable<BaseScore>> GetScoresByPositionIdAsync(Guid positionId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate)
+        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -204,7 +204,7 @@ public class ScoreRepository : IScoreRepository
     }
 
     public async Task<IEnumerable<BaseScore>> GetScoresByAuthorIdAsync(Guid authorId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate)
+        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -216,6 +216,8 @@ public class ScoreRepository : IScoreRepository
                 query = query.Where(s => s.CreatedAt <= endDate.Value.DateTime);
 
             var scores = await query
+                .Skip((pageNumber-1)*pageSize).Take(pageSize)
+                .Skip((pageNumber-1)*pageSize).Take(pageSize)
                 .Select(s => ScoreConverter.Convert(s)!)
                 .ToListAsync();
 
@@ -231,7 +233,7 @@ public class ScoreRepository : IScoreRepository
     }
 
     public async Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeIdAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate)
+        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
     {
         try
         {

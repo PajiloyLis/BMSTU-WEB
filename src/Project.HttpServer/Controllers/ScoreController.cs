@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Models.Score;
@@ -11,7 +12,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/score")]
+[Route("/api/v1")]
 public class ScoreController : ControllerBase
 {
     private readonly IScoreService _scoreService;
@@ -24,7 +25,8 @@ public class ScoreController : ControllerBase
         _scoreService = scoreService ?? throw new ArgumentNullException(nameof(scoreService));
     }
 
-    [HttpGet("{scoreId:guid}")]
+    [AllowAnonymous]
+    [HttpGet("/scores/{scoreId:guid}")]
     [SwaggerOperation("getScoreById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -50,7 +52,8 @@ public class ScoreController : ControllerBase
         }
     }
 
-    [HttpPost]
+    [Authorize(Roles = "admin,employee")]
+    [HttpPost("/scores")]
     [SwaggerOperation("createScore")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -82,17 +85,18 @@ public class ScoreController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [Authorize(Roles = "admin,employee")]
+    [HttpPatch("/scores/{scoreId}")]
     [SwaggerOperation("updateScore")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdateScore([FromBody] [Required] UpdateScoreDto updateScore)
+    public async Task<IActionResult> UpdateScore([FromRoute][Required] Guid scoreId, [FromBody] [Required] UpdateScoreDto updateScore)
     {
         try
         {
-            var updatedScore = await _scoreService.UpdateScoreAsync(updateScore.Id,
+            var updatedScore = await _scoreService.UpdateScoreAsync(scoreId,
                 updateScore.CreatedAt,
                 updateScore.EfficiencyScore,
                 updateScore.EngagementScore,
@@ -117,7 +121,8 @@ public class ScoreController : ControllerBase
         }
     }
 
-    [HttpDelete("{scoreId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpDelete("/scores/{scoreId:guid}")]
     [SwaggerOperation("deleteScore")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -143,7 +148,8 @@ public class ScoreController : ControllerBase
         }
     }
 
-    [HttpGet("/employeeScores/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/scores")]
     [SwaggerOperation("getScoresByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -153,7 +159,7 @@ public class ScoreController : ControllerBase
     {
         try
         {
-            var scores = await _scoreService.GetScoresByEmployeeIdAsync(employeeId, startDate, endDate);
+            var scores = await _scoreService.GetScoresByEmployeeIdAsync(employeeId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(scores.Select(ScoreConverter.Convert));
         }
@@ -164,7 +170,8 @@ public class ScoreController : ControllerBase
         }
     }
     
-    [HttpGet("{authorId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/scoreAuthor/{authorId:guid}/scores")]
     [SwaggerOperation("getScoresByAuthorId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -174,7 +181,7 @@ public class ScoreController : ControllerBase
     {
         try
         {
-            var scores = await _scoreService.GetScoresByAuthorIdAsync(authorId, startDate, endDate);
+            var scores = await _scoreService.GetScoresByAuthorIdAsync(authorId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(scores.Select(ScoreConverter.Convert));
         }
@@ -185,7 +192,8 @@ public class ScoreController : ControllerBase
         }
     }
     
-    [HttpGet("{positionId:guid}")]
+    [AllowAnonymous]
+    [HttpGet("positions/{positionId:guid}/scores")]
     [SwaggerOperation("getScoresByPositionId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -195,7 +203,7 @@ public class ScoreController : ControllerBase
     {
         try
         {
-            var scores = await _scoreService.GetScoresByPositionIdAsync(positionId, startDate, endDate);
+            var scores = await _scoreService.GetScoresByPositionIdAsync(positionId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(scores.Select(ScoreConverter.Convert));
         }
@@ -206,7 +214,8 @@ public class ScoreController : ControllerBase
         }
     }
     
-    [HttpGet("/subordinatesScores/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{headEmployeeId:guid}/subordinates/scores")]
     [SwaggerOperation("getSubordinatesScoresByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -216,7 +225,7 @@ public class ScoreController : ControllerBase
     {
         try
         {
-            var scores = await _scoreService.GetScoresSubordinatesByEmployeeAsync(employeeId, startDate, endDate);
+            var scores = await _scoreService.GetScoresSubordinatesByEmployeeAsync(employeeId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(scores.Select(ScoreConverter.Convert));
         }

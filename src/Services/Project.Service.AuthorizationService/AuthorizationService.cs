@@ -18,6 +18,7 @@ public class AuthorizationService : IAuthorizationService
 {
     private readonly ILogger<AuthorizationService> _logger;
     private readonly IUserRepository _usersRepository;
+    private readonly IEmployeeRepository _employeesRepository;
     private readonly JwtConfiguration _jwtConfiguration;
     private readonly PasswordHashingConfiguration _hashingConfiguration;
 
@@ -39,11 +40,12 @@ public class AuthorizationService : IAuthorizationService
         {
             var salt = GenerateSalt();
             var hashedPassword = HashPassword(password, salt);
-            var user = await _usersRepository.AddUserAsync(new BaseUser(email, hashedPassword, salt, "admin"));
+            var id = await GetCurrentUserIdAsync(email);
+            var user = await _usersRepository.AddUserAsync(new BaseUser(id, email, hashedPassword, salt, "admin"));
 
             var accessToken = GenerateJwtToken(email, user.Role);
 
-            return new AuthorizationData(email, accessToken);
+            return new AuthorizationData(email, accessToken, user.Id);
         }
         catch (UserAlreadyExistsException ex)
         {
@@ -76,7 +78,7 @@ public class AuthorizationService : IAuthorizationService
             
             var accessToken = GenerateJwtToken(email, user.Role);
             
-            return new AuthorizationData(email, accessToken);
+            return new AuthorizationData(email, accessToken, user.Id);
         }
         catch (Exception ex)
         {

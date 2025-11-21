@@ -55,7 +55,8 @@ public static class CompanyConverter
             company.Inn,
             company.Kpp,
             company.Ogrn,
-            company.Address);
+            company.Address,
+            company.IsDeleted);
     }
     
     [return: NotNullIfNotNull(nameof(company))]
@@ -107,6 +108,7 @@ public static class CompanyConverter
             company.Inn,
             company.Kpp,
             company.Ogrn,
-            company.Address);
+            company.Address,
+            false);
     }
 }

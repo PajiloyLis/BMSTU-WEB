@@ -13,7 +13,8 @@ public class AuthorizationDataConverter
             return null;
 
         return new AuthorizationDataDto(authorizationData.Email,
-            authorizationData.Token
+            authorizationData.Token,
+            authorizationData.Id
         );
     }
 }

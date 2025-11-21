@@ -100,29 +100,29 @@ public class ProjectDbContext : DbContext
     // }
 }
 
-public class MongoDbContext
-{
-    private readonly IMongoDatabase _database;
-
-    public MongoDbContext(IOptions<MongoDbSettings> settings)
-    {
-        var client = new MongoClient(settings.Value.ConnectionString);
-        _database = client.GetDatabase(settings.Value.DatabaseName);
-    }
-
-    public IMongoCollection<CompanyMongoDb> Companies => _database.GetCollection<CompanyMongoDb>("companies");
-    public IMongoCollection<PostMongoDb> Posts => _database.GetCollection<PostMongoDb>("posts");
-    public IMongoCollection<PositionMongoDb> Positions => _database.GetCollection<PositionMongoDb>("positions");
-    public IMongoCollection<EmployeeMongoDb> Employees => _database.GetCollection<EmployeeMongoDb>("employees");
-    public IMongoCollection<EducationMongoDb> Educations => _database.GetCollection<EducationMongoDb>("educations");
-    public IMongoCollection<ScoreMongoDb> Scores => _database.GetCollection<ScoreMongoDb>("scores");
-    public IMongoCollection<PostHistoryMongoDb> PostHistories => _database.GetCollection<PostHistoryMongoDb>("postHistories");
-    public IMongoCollection<PositionHistoryMongoDb> PositionHistories => _database.GetCollection<PositionHistoryMongoDb>("positionHistories");
-    public IMongoCollection<UserMongoDb> Users => _database.GetCollection<UserMongoDb>("users");
-}
-
-public class MongoDbSettings
-{
-    public string ConnectionString { get; set; } = string.Empty;
-    public string DatabaseName { get; set; } = string.Empty;
-}
+// public class MongoDbContext
+// {
+//     private readonly IMongoDatabase _database;
+//
+//     public MongoDbContext(IOptions<MongoDbSettings> settings)
+//     {
+//         var client = new MongoClient(settings.Value.ConnectionString);
+//         _database = client.GetDatabase(settings.Value.DatabaseName);
+//     }
+//
+//     public IMongoCollection<CompanyMongoDb> Companies => _database.GetCollection<CompanyMongoDb>("companies");
+//     public IMongoCollection<PostMongoDb> Posts => _database.GetCollection<PostMongoDb>("posts");
+//     public IMongoCollection<PositionMongoDb> Positions => _database.GetCollection<PositionMongoDb>("positions");
+//     public IMongoCollection<EmployeeMongoDb> Employees => _database.GetCollection<EmployeeMongoDb>("employees");
+//     public IMongoCollection<EducationMongoDb> Educations => _database.GetCollection<EducationMongoDb>("educations");
+//     public IMongoCollection<ScoreMongoDb> Scores => _database.GetCollection<ScoreMongoDb>("scores");
+//     public IMongoCollection<PostHistoryMongoDb> PostHistories => _database.GetCollection<PostHistoryMongoDb>("postHistories");
+//     public IMongoCollection<PositionHistoryMongoDb> PositionHistories => _database.GetCollection<PositionHistoryMongoDb>("positionHistories");
+//     public IMongoCollection<UserMongoDb> Users => _database.GetCollection<UserMongoDb>("users");
+// }
+//
+// public class MongoDbSettings
+// {
+//     public string ConnectionString { get; set; } = string.Empty;
+//     public string DatabaseName { get; set; } = string.Empty;
+// }

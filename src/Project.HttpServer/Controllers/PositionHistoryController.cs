@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Services;
@@ -10,7 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/positionHistory")]
+[Route("/api/v1")]
 public class PositionHistoryController : ControllerBase
 {
     private readonly IPositionHistoryService _positionHistoryService;
@@ -23,7 +24,8 @@ public class PositionHistoryController : ControllerBase
         _positionHistoryService = positionHistoryService ?? throw new ArgumentNullException(nameof(positionHistoryService));
     }
 
-    [HttpGet("{employeeId:guid}/{positionId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("getPositionHistoryByEmployeeAndPositionId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -49,6 +51,7 @@ public class PositionHistoryController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPost]
     [SwaggerOperation("createPositionHistory")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PositionHistoryDto))]
@@ -77,19 +80,20 @@ public class PositionHistoryController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
         }
     }
-
-    [HttpPut]
+    
+    [Authorize(Roles = "admin")]
+    [HttpPatch("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("updatePositionHistory")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdatePositionHistory([FromBody] [Required] UpdatePositionHistoryDto updatePositionHistory)
+    public async Task<IActionResult> UpdatePositionHistory([FromRoute] [Required] Guid employeeId, [FromRoute] [Required] Guid positionId, [FromBody] [Required] UpdatePositionHistoryDto updatePositionHistory)
     {
         try
         {
-            var updatedPositionHistory = await _positionHistoryService.UpdatePositionHistoryAsync(updatePositionHistory.PositionId,
-                updatePositionHistory.EmployeeId,
+            var updatedPositionHistory = await _positionHistoryService.UpdatePositionHistoryAsync(positionId,
+                employeeId,
                 updatePositionHistory.StartDate,
                 updatePositionHistory.EndDate);
 
@@ -112,7 +116,8 @@ public class PositionHistoryController : ControllerBase
         }
     }
 
-    [HttpDelete("{employeeId:guid}/{positionId:guid}")]
+    [Authorize(Roles = "admin")]
+    [HttpDelete("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("deletePositionHistory")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -138,9 +143,10 @@ public class PositionHistoryController : ControllerBase
         }
     }
 
-    [HttpGet("/positionHistory/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/positionHistories")]
     [SwaggerOperation("getPositionHistoriesByEmployeeId")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PositionHistoryDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
     public async Task<IActionResult> GetPositionHistorysByEmployeeId([FromRoute] [Required] Guid employeeId,
@@ -159,9 +165,10 @@ public class PositionHistoryController : ControllerBase
         }
     }
  
-    [HttpGet("/subordinatesPositionHistory/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/subordinates/positionHistories")]
     [SwaggerOperation("getSubordinatesPositionHistoriesByHeadEmployeeId")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PositionHistoryDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
     public async Task<IActionResult> GetSubordinatesPositionHistoriesByHeadEmployeeId([FromRoute] [Required] Guid employeeId,
@@ -169,8 +176,8 @@ public class PositionHistoryController : ControllerBase
     {
         try
         {
-            var positionHistories = await _positionHistoryService.GetCurrentSubordinatesPositionHistoryAsync(employeeId, startDate, endDate);
-
+            var positionHistories = await _positionHistoryService.GetCurrentSubordinatesPositionHistoryAsync(employeeId, startDate, endDate, pageNumber, pageSize);
+        
             return Ok(positionHistories.Select(PositionHistoryConverter.Convert));
         }
         catch (Exception e)
@@ -180,17 +187,18 @@ public class PositionHistoryController : ControllerBase
         }
     }
     
-    [HttpGet("/currentSubordinates/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{headEmployeeId:guid}/currentSubordinates/positionHistories")]
     [SwaggerOperation("getCurrentSubordinatesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyWithEmployeeDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> GetCurrentSubordinatesByHeadEmployeeId([FromRoute] [Required] Guid employeeId,
+    public async Task<IActionResult> GetCurrentSubordinatesByHeadEmployeeId([FromRoute] [Required] Guid headEmployeeId,
         [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            var positionHistories = await _positionHistoryService.GetCurrentSubordinatesAsync(employeeId);
+            var positionHistories = await _positionHistoryService.GetCurrentSubordinatesAsync(headEmployeeId, pageNumber, pageSize);
 
             return Ok(positionHistories.Select(PositionHierarchyWithEmployeeWithEmployeeConverter.Convert));
         }

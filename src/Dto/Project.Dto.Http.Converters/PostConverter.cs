@@ -15,7 +15,8 @@ public static class PostConverter
         return new PostDto(post.Id,
             post.Title,
             post.Salary,
-            post.CompanyId
+            post.CompanyId,
+            post.IsDeleted
         );
     }
 }

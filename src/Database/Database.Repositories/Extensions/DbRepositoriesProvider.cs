@@ -20,17 +20,17 @@ public static class DbRepositoriesProvider
         return services;
     }
     
-    public static IServiceCollection AddMongoDbRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<IEmployeeRepository, EmployeeRepositoryMongo>();
-        services.AddScoped<ICompanyRepository, CompanyRepositoryMongo>();
-        services.AddScoped<IEducationRepository, EducationRepositoryMongo>();
-        services.AddScoped<IPostRepository, PostRepositoryMongo>();
-        services.AddScoped<IPositionRepository, PositionRepositoryMongo>();
-        services.AddScoped<IScoreRepository, ScoreRepositoryMongo>();
-        services.AddScoped<IPostHistoryRepository, PostHistoryRepositoryMongo>();
-        services.AddScoped<IPositionHistoryRepository, PositionHistoryRepositoryMongo>();
-        services.AddScoped<IUserRepository, UserRepositoryMongo>();
-        return services;
-    }
+    // public static IServiceCollection AddMongoDbRepositories(this IServiceCollection services)
+    // {
+    //     services.AddScoped<IEmployeeRepository, EmployeeRepositoryMongo>();
+    //     services.AddScoped<ICompanyRepository, CompanyRepositoryMongo>();
+    //     services.AddScoped<IEducationRepository, EducationRepositoryMongo>();
+    //     services.AddScoped<IPostRepository, PostRepositoryMongo>();
+    //     services.AddScoped<IPositionRepository, PositionRepositoryMongo>();
+    //     services.AddScoped<IScoreRepository, ScoreRepositoryMongo>();
+    //     services.AddScoped<IPostHistoryRepository, PostHistoryRepositoryMongo>();
+    //     services.AddScoped<IPositionHistoryRepository, PositionHistoryRepositoryMongo>();
+    //     services.AddScoped<IUserRepository, UserRepositoryMongo>();
+    //     return services;
+    // }
 }

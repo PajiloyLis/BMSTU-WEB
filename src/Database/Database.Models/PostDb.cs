@@ -17,7 +17,7 @@ public class PostDb
         IsDeleted = false;
     }
     
-    public PostDb(Guid id, string title, decimal salary, Guid companyId)
+    public PostDb(Guid id, string title, decimal salary, Guid companyId, bool isDeleted = false)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty");
@@ -30,7 +30,7 @@ public class PostDb
         Salary = salary;
         CompanyId = companyId;
         PostHistories = new List<PostHistoryDb>();
-        IsDeleted = false;
+        IsDeleted = isDeleted;
     }
 
     /// <summary>
@@ -57,6 +57,7 @@ public class PostDb
     [Column("company_id")][ForeignKey(nameof(CompanyDb))]
     public Guid CompanyId { get; set; }
     
+    [Required]
     public bool IsDeleted { get; set; }
 
     public ICollection<PostHistoryDb> PostHistories { get; set; }

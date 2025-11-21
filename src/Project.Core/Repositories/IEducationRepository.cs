@@ -8,6 +8,6 @@ public interface IEducationRepository
     Task<BaseEducation> AddEducationAsync(CreateEducation education);
     Task<BaseEducation> GetEducationByIdAsync(Guid educationId);
     Task<BaseEducation> UpdateEducationAsync(UpdateEducation education);
-    Task<IEnumerable<BaseEducation>> GetEducationsAsync(Guid employeeId);
+    Task<IEnumerable<BaseEducation>> GetEducationsAsync(Guid employeeId, int pageNumber, int pageSize);
     Task DeleteEducationAsync(Guid educationId);
 }

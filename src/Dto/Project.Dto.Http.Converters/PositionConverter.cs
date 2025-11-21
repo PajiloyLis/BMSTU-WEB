@@ -15,7 +15,8 @@ public static class PositionConverter
         return new PositionDto(position.Id,
             position.ParentId,
             position.Title,
-            position.CompanyId
+            position.CompanyId,
+            position.IsDeleted
         );
     }
 }

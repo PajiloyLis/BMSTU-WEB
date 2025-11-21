@@ -13,17 +13,11 @@ public class PositionService : IPositionService
 {
     private readonly ILogger<PositionService> _logger;
     private readonly IPositionRepository _repository;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
-    private readonly IDatabaseAsync _cache;
-    public static bool CacheDirty = false;
 
-    public PositionService(IPositionRepository repository, ILogger<PositionService> logger, IConnectionMultiplexer connectionMultiplexer)
+    public PositionService(IPositionRepository repository, ILogger<PositionService> logger)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer =
-            connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
-        _cache = _connectionMultiplexer.GetDatabase();
     }
 
     public async Task<BasePosition> AddPositionAsync(Guid? parentId, string title, Guid companyId)
@@ -71,13 +65,12 @@ public class PositionService : IPositionService
         }
     }
 
-    public async Task<BasePosition> UpdatePositionTitleAsync(Guid id, Guid companyId, Guid? parentId = null,
+    public async Task<BasePosition> UpdatePositionTitleAsync(Guid id,
         string? title = null)
     {
         try
         {
-            var model = new UpdatePosition(id, companyId, parentId, title);
-            var result = await _repository.UpdatePositionTitleAsync(model);
+            var result = await _repository.UpdatePositionTitleAsync(id, title);
             _logger.LogInformation("Position updated: {Id}", id);
             return result;
         }
@@ -88,28 +81,28 @@ public class PositionService : IPositionService
         }
     }
 
-    public async Task<BasePosition> UpdatePositionParentWithSubordinatesAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null)
-    {
-        try
-        {
-            if (parentId is null)
-            {
-                _logger.LogWarning("Parent id must be not null");
-                throw new ArgumentNullException(nameof(parentId), "Parent id must be not null");
-            }
-            var model = new UpdatePosition(id, companyId, parentId, title);
-            var result = await _repository.UpdatePositionParentWithSubordinatesAsync(model);
-            _logger.LogInformation("Position updated: {Id}", id);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error updating position {Id}", id);
-            throw;
-        }
-    }
+    // public async Task<BasePosition> UpdatePositionParentWithSubordinatesAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null)
+    // {
+    //     try
+    //     {
+    //         if (parentId is null)
+    //         {
+    //             _logger.LogWarning("Parent id must be not null");
+    //             throw new ArgumentNullException(nameof(parentId), "Parent id must be not null");
+    //         }
+    //         var model = new UpdatePosition(id, companyId, parentId, title);
+    //         var result = await _repository.UpdatePositionParentWithSubordinatesAsync(model, TODO);
+    //         _logger.LogInformation("Position updated: {Id}", id);
+    //         return result;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error updating position {Id}", id);
+    //         throw;
+    //     }
+    // }
 
-    public async Task<BasePosition> UpdatePositionParentWithoutSuboridnatesAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null)
+    public async Task<BasePosition> UpdatePositionParent(Guid id, Guid? parentId, PositionUpdateMode updateMode)
     {
         try
         {
@@ -118,8 +111,18 @@ public class PositionService : IPositionService
                 _logger.LogWarning("Parent id must be not null");
                 throw new ArgumentNullException(nameof(parentId), "Parent id must be not null");
             }
-            var model = new UpdatePosition(id, companyId, parentId, title);
-            var result = await _repository.UpdatePositionParentWithoutSuboridnatesAsync(model);
+            
+            BasePosition result;
+            
+            switch (updateMode)
+            {
+                case PositionUpdateMode.UpdateWithoutSubordinates:
+                    result = await _repository.UpdatePositionParentWithoutSuboridnatesAsync(id, parentId);
+                    break;
+                default:
+                    result = await _repository.UpdatePositionParentWithSubordinatesAsync(id, parentId);
+                    break;
+            }
             _logger.LogInformation("Position updated: {Id}", id);
             return result;
         }
@@ -157,10 +160,5 @@ public class PositionService : IPositionService
             _logger.LogError(ex, "Error getting subordinates for parentId {ParentId}", parentId);
             throw;
         }
-    }
-    
-    private async Task DeleteCache()
-    {
-        await _cache.ExecuteAsync("FLUSHDB");
     }
 }

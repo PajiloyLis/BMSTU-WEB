@@ -10,7 +10,8 @@ public class UserConverter
     {
         if (user is null) return null;
 
-        return new BaseUser(user.Email,
+        return new BaseUser(user.Id,
+            user.Email,
             user.Password,
             user.Salt,
             user.Role
@@ -27,7 +28,8 @@ public class UserConverter
         return new UserDb(user.Email,
             user.Password,
             user.Salt,
-            user.Role
+            user.Role,
+            user.Id
         );
     }
 
@@ -49,7 +51,8 @@ public class UserConverter
     {
         if (user is null) return null;
 
-        return new BaseUser(user.Email,
+        return new BaseUser(user.Id,
+            user.Email,
             user.Password,
             user.Salt,
             user.Role

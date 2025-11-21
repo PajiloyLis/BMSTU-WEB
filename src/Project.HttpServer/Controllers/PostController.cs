@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Services;
@@ -10,7 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/post")]
+[Route("/api/v1")]
 public class PostController :ControllerBase
 {
     private readonly IPostService _postService;
@@ -22,8 +23,9 @@ public class PostController :ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _postService = postService ?? throw new ArgumentNullException(nameof(postService));
     }
-
-    [HttpGet("{postId:guid}")]
+    
+    [AllowAnonymous]
+    [HttpGet("/posts/{postId:guid}")]
     [SwaggerOperation("getPostById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -49,7 +51,8 @@ public class PostController :ControllerBase
         }
     }
 
-    [HttpPost]
+    [Authorize(Roles = "admin")]
+    [HttpPost("/posts")]
     [SwaggerOperation("createPost")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -82,19 +85,18 @@ public class PostController :ControllerBase
         }
     }
 
-    [HttpPut]
+    [Authorize(Roles = "admin")]
+    [HttpPatch("/posts/{postId:guid}")]
     [SwaggerOperation("updatePost")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdatePost([FromBody] [Required] UpdatePostDto updatePost)
+    public async Task<IActionResult> UpdatePost([FromRoute] [Required] Guid postId, [FromBody] [Required] UpdatePostDto updatePost)
     {
         try
         {
-            var updatedPost = await _postService.UpdatePostAsync(updatePost.Id,
-                updatePost.CompanyId,
-                updatePost.Title,
+            var updatedPost = await _postService.UpdatePostAsync(postId, updatePost.Title,
                 updatePost.Salary);
 
             return Ok(PostConverter.Convert(updatedPost));
@@ -121,7 +123,8 @@ public class PostController :ControllerBase
         }
     }
 
-    [HttpDelete("{postId:guid}")]
+    [Authorize(Roles = "admin")]
+    [HttpDelete("/posts/{postId:guid}")]
     [SwaggerOperation("deletePost")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -147,9 +150,10 @@ public class PostController :ControllerBase
         }
     }
 
-    [HttpGet("/postsPerCompany/{companyId:guid}")]
+    [AllowAnonymous]
+    [HttpGet("/companies/{companyId:guid}/posts")]
     [SwaggerOperation("getPostsByCompanyId")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostDto))]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PostDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
     public async Task<IActionResult> GetPostsByCompanyId([FromRoute] [Required] Guid companyId,
@@ -157,7 +161,7 @@ public class PostController :ControllerBase
     {
         try
         {
-            var posts = await _postService.GetPostsByCompanyIdAsync(companyId);
+            var posts = await _postService.GetPostsByCompanyIdAsync(companyId, pageNumber, pageSize);
 
             return Ok(posts.Select(PostConverter.Convert));
         }

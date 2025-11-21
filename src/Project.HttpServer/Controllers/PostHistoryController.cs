@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices.JavaScript;
 using Database.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Models.PostHistory;
@@ -13,7 +14,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/postHistory")]
+[Route("/api/v1")]
 public class PostHistoryController : ControllerBase
 {
     private readonly IPostHistoryService _postHistoryService;
@@ -25,8 +26,9 @@ public class PostHistoryController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _postHistoryService = postHistoryService ?? throw new ArgumentNullException(nameof(postHistoryService));
     }
-
-    [HttpGet("{employeeId:guid}/{postId:guid}")]
+    
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/postHistories/{postId:guid}")]
     [SwaggerOperation("getPostHistoryByEmployeeAndPostId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -51,8 +53,9 @@ public class PostHistoryController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
         }
     }
-
-    [HttpPost]
+    
+    [Authorize(Roles = "admin")]
+    [HttpPost("postHistories")]
     [SwaggerOperation("createPostHistory")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -81,18 +84,19 @@ public class PostHistoryController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [Authorize(Roles = "admin")]
+    [HttpPatch("employees/{employeeId:guid}/postHistories/{postId:guid}")]
     [SwaggerOperation("updatePostHistory")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdatePostHistory([FromBody] [Required] UpdatePostHistoryDto updatePostHistory)
+    public async Task<IActionResult> UpdatePostHistory([FromRoute] [Required] Guid postId, [FromRoute] [Required] Guid employeeId, [FromBody] [Required] UpdatePostHistoryDto updatePostHistory)
     {
         try
         {
-            var updatedPostHistory = await _postHistoryService.UpdatePostHistoryAsync(updatePostHistory.PostId,
-                updatePostHistory.EmployeeId,
+            var updatedPostHistory = await _postHistoryService.UpdatePostHistoryAsync(postId,
+                employeeId,
                 updatePostHistory.StartDate,
                 updatePostHistory.EndDate);
 
@@ -115,7 +119,8 @@ public class PostHistoryController : ControllerBase
         }
     }
 
-    [HttpDelete("{employeeId:guid}/{postId:guid}")]
+    [Authorize(Roles = "admin")]
+    [HttpDelete("/employees/{employeeId:guid}/postHistories/{postId:guid}")]
     [SwaggerOperation("deletePostHistory")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -141,7 +146,8 @@ public class PostHistoryController : ControllerBase
         }
     }
 
-    [HttpGet("/postHistory/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/postHistories")]
     [SwaggerOperation("getPostHistoriesByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -151,7 +157,7 @@ public class PostHistoryController : ControllerBase
     {
         try
         {
-            var postHistories = await _postHistoryService.GetPostHistoryByEmployeeIdAsync(employeeId, startDate, endDate);
+            var postHistories = await _postHistoryService.GetPostHistoryByEmployeeIdAsync(employeeId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(postHistories.Select(PostHistoryConverter.Convert));
         }
@@ -162,7 +168,8 @@ public class PostHistoryController : ControllerBase
         }
     }
  
-    [HttpGet("/subordinatesPostHistory/{employeeId:guid}")]
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/subordinates/postHistories")]
     [SwaggerOperation("getSubordinatesPostHistoriesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -172,7 +179,7 @@ public class PostHistoryController : ControllerBase
     {
         try
         {
-            var postHistories = await _postHistoryService.GetSubordinatesPostHistoryAsync(employeeId, startDate, endDate);
+            var postHistories = await _postHistoryService.GetSubordinatesPostHistoryAsync(employeeId, startDate, endDate, pageNumber, pageSize);
 
             return Ok(postHistories.Select(PostHistoryConverter.Convert));
         }

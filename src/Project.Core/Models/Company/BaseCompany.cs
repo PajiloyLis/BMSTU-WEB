@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Project.Core.Models.Company;
 
 /// <summary>
-/// Base company model
+///     Base company model
 /// </summary>
 public class BaseCompany
 {
@@ -15,7 +15,8 @@ public class BaseCompany
         string inn,
         string kpp,
         string ogrn,
-        string address
+        string address,
+        bool isDeleted
     )
     {
         if (!Guid.TryParse(companyId.ToString(), out _))
@@ -42,50 +43,53 @@ public class BaseCompany
             throw new ArgumentException("OGRN is invalid", nameof(ogrn));
         Ogrn = ogrn;
         Address = address;
+        IsDeleted = isDeleted;
     }
 
     /// <summary>
-    /// Company's id
+    ///     Company's id
     /// </summary>
     public Guid CompanyId { get; init; }
 
     /// <summary>
-    /// Company's name
+    ///     Company's name
     /// </summary>
     public string Title { get; set; }
 
     /// <summary>
-    /// Company's registration date
+    ///     Company's registration date
     /// </summary>
     public DateOnly RegistrationDate { get; set; }
 
     /// <summary>
-    /// Company's contact phone number
+    ///     Company's contact phone number
     /// </summary>
     public string PhoneNumber { get; set; }
 
     /// <summary>
-    /// Company's contact email
+    ///     Company's contact email
     /// </summary>
     public string Email { get; set; }
 
     /// <summary>
-    /// Company's inn
+    ///     Company's inn
     /// </summary>
     public string Inn { get; set; }
 
     /// <summary>
-    /// Company's kpp
+    ///     Company's kpp
     /// </summary>
     public string Kpp { get; set; }
 
     /// <summary>
-    /// Company's ogrn
+    ///     Company's ogrn
     /// </summary>
-    public string Ogrn { get; set; }
+    public string Ogrn { get; set; }    
 
     /// <summary>
-    /// Company's registered address
+    ///     Company's registered address
     /// </summary>
     public string Address { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

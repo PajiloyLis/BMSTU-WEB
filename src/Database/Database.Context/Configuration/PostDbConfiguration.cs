@@ -14,7 +14,8 @@ public class PostDbConfiguration : IEntityTypeConfiguration<PostDb>
         builder.Property(p => p.Id)
             .HasColumnName("id")
             .HasColumnType("uuid")
-            .HasDefaultValueSql("gen_random_uuid()").ValueGeneratedNever().IsRequired();
+            .ValueGeneratedNever()
+            .IsRequired();
 
         builder.Property(p => p.Title)
             .HasColumnName("title")
@@ -23,7 +24,7 @@ public class PostDbConfiguration : IEntityTypeConfiguration<PostDb>
 
         builder.Property(p => p.Salary)
             .HasColumnName("salary")
-            .HasColumnType("numeric(10,2)")
+            .HasColumnType("numeric(18,2)")
             .IsRequired();
 
         builder.Property(p => p.CompanyId)

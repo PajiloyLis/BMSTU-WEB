@@ -12,17 +12,12 @@ namespace Project.Services.EmployeeService;
 public class EmployeeService : IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly ILogger<EmployeeService> _logger;
-    private readonly IDatabaseAsync _cache;
-    private static bool _cacheDirty = false;
 
     public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger, IConnectionMultiplexer cache)
     {
         _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer = cache ?? throw new ArgumentNullException(nameof(cache));
-        _cache = cache.GetDatabase() ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public async Task<BaseEmployee> AddEmployeeAsync(string fullName, string phoneNumber, string email, DateOnly birthday,

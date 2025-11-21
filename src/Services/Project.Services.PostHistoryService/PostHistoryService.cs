@@ -10,9 +10,6 @@ namespace Project.Services.PostHistoryService;
 
 public class PostHistoryService : IPostHistoryService
 {
-    public static bool CacheDirty;
-    private readonly IDatabaseAsync _cache;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly ILogger<PostHistoryService> _logger;
     private readonly IPostHistoryRepository _repository;
 
@@ -22,8 +19,6 @@ public class PostHistoryService : IPostHistoryService
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer = cache ?? throw new ArgumentNullException(nameof(cache));
-        _cache = cache.GetDatabase() ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public async Task<BasePostHistory> AddPostHistoryAsync(
@@ -115,14 +110,14 @@ public class PostHistoryService : IPostHistoryService
 
     public async Task<IEnumerable<BasePostHistory>> GetPostHistoryByEmployeeIdAsync(Guid employeeId,
         DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, int pageNumber, int pageSize)
     {
         try
         {
             return await _repository.GetPostHistoryByEmployeeIdAsync(
                 employeeId,
                 startDate,
-                endDate);
+                endDate, pageNumber, pageSize);
         }
         catch (Exception ex)
         {
@@ -133,24 +128,19 @@ public class PostHistoryService : IPostHistoryService
 
     public async Task<IEnumerable<BasePostHistory>> GetSubordinatesPostHistoryAsync(Guid managerId,
         DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, int pageNumber, int pageSize)
     {
         try
         {
             return await _repository.GetSubordinatesPostHistoryAsync(
                 managerId,
                 startDate,
-                endDate);
+                endDate, pageNumber, pageSize);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting subordinates post history for manager {ManagerId}", managerId);
             throw;
         }
-    }
-
-    private async Task DeleteCache()
-    {
-        await _cache.ExecuteAsync("FLUSHDB");
     }
 }

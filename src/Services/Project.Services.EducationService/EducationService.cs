@@ -4,25 +4,18 @@ using Project.Core.Models;
 using Project.Core.Models.Education;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.EducationService;
 
 public class EducationService : IEducationService
 {
-    public static bool CacheDirty;
-    private readonly IDatabaseAsync _cache;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly IEducationRepository _educationRepository;
     private readonly ILogger<EducationService> _logger;
 
-    public EducationService(IEducationRepository educationRepository, ILogger<EducationService> logger,
-        IConnectionMultiplexer cache)
+    public EducationService(IEducationRepository educationRepository, ILogger<EducationService> logger)
     {
         _educationRepository = educationRepository ?? throw new ArgumentNullException(nameof(educationRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer = cache ?? throw new ArgumentNullException(nameof(cache));
-        _cache = cache.GetDatabase() ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public async Task<BaseEducation> AddEducationAsync(Guid employeeId, string institution, string level,
@@ -75,11 +68,12 @@ public class EducationService : IEducationService
         }
     }
 
-    public async Task<IEnumerable<BaseEducation>> GetEducationsByEmployeeIdAsync(Guid employeeId)
+    public async Task<IEnumerable<BaseEducation>> GetEducationsByEmployeeIdAsync(Guid employeeId, int pageNumber,
+        int pageSize)
     {
         try
         {
-            var educations = await _educationRepository.GetEducationsAsync(employeeId);
+            var educations = await _educationRepository.GetEducationsAsync(employeeId, pageNumber, pageSize);
             return educations;
         }
         catch (Exception e)
@@ -100,10 +94,5 @@ public class EducationService : IEducationService
             _logger.LogError(e, $"Error deleting education with id {educationId}");
             throw;
         }
-    }
-
-    private async Task DeleteCache()
-    {
-        await _cache.ExecuteAsync("FLUSHDB");
     }
 }

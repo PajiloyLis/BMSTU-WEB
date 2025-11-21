@@ -12,16 +12,16 @@ public interface IScoreService
     Task<IEnumerable<BaseScore>> GetScoresAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     Task<IEnumerable<BaseScore>> GetScoresByEmployeeIdAsync(Guid employeeId, DateTimeOffset? startDate,
-        DateTimeOffset? endDate);
+        DateTimeOffset? endDate, int pageNumber, int pageSize);
 
     Task<IEnumerable<BaseScore>> GetScoresByAuthorIdAsync(Guid authorId, DateTimeOffset? startDate,
-        DateTimeOffset? endDate);
+        DateTimeOffset? endDate, int pageNumber, int pageSize);
 
     Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate);
+        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize);
 
     Task<IEnumerable<BaseScore>> GetScoresByPositionIdAsync(Guid positionId, DateTimeOffset? startDate,
-        DateTimeOffset? endDate);
+        DateTimeOffset? endDate, int pageNumber, int pageSize);
 
     Task DeleteScoreAsync(Guid id);
 }

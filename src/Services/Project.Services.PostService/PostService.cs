@@ -10,9 +10,6 @@ namespace Project.Services.PostService;
 
 public class PostService : IPostService
 {
-    public static bool CacheDirty;
-    private readonly IDatabaseAsync _cache;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly ILogger<PostService> _logger;
     private readonly IPostRepository _postRepository;
 
@@ -21,9 +18,6 @@ public class PostService : IPostService
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer =
-            connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
-        _cache = _connectionMultiplexer.GetDatabase();
     }
 
     public async Task<BasePost> AddPostAsync(string title, decimal salary, Guid companyId)
@@ -58,12 +52,12 @@ public class PostService : IPostService
         }
     }
 
-    public async Task<BasePost> UpdatePostAsync(Guid postId, Guid companyId, string? title = null,
+    public async Task<BasePost> UpdatePostAsync(Guid postId, string? title = null,
         decimal? salary = null)
     {
         try
         {
-            var post = new UpdatePost(postId, companyId, title, salary);
+            var post = new UpdatePost(postId, title, salary);
             var result = await _postRepository.UpdatePostAsync(post);
             _logger.LogInformation("Post with id {Id} was updated", postId);
             return result;
@@ -75,11 +69,11 @@ public class PostService : IPostService
         }
     }
 
-    public async Task<IEnumerable<BasePost>> GetPostsByCompanyIdAsync(Guid companyId)
+    public async Task<IEnumerable<BasePost>> GetPostsByCompanyIdAsync(Guid companyId, int pageNumber, int pageSize)
     {
         try
         {
-            var result = await _postRepository.GetPostsAsync(companyId);
+            var result = await _postRepository.GetPostsAsync(companyId, pageNumber, pageSize);
 
             _logger.LogInformation("Posts for company {CompanyId} were retrieved", companyId);
             return result;
@@ -103,10 +97,5 @@ public class PostService : IPostService
             _logger.LogError(e, "Error occurred while deleting post with id {Id}", postId);
             throw;
         }
-    }
-
-    private async Task DeleteCache()
-    {
-        await _cache.ExecuteAsync("FLUSHDB");
     }
 }

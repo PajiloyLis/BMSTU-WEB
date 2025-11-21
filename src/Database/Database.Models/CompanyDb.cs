@@ -16,7 +16,8 @@ public class CompanyDb
         string inn,
         string kpp,
         string ogrn,
-        string address)
+        string address,
+        bool  isDeleted=false)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty");
@@ -53,7 +54,8 @@ public class CompanyDb
         Address = address;
         Posts = new List<PostDb>();
         Positions = new List<PositionDb>();
-        IsDeleted = false;
+        IsDeleted = isDeleted;
+        
     }
 
     public CompanyDb(Guid id,
@@ -64,7 +66,8 @@ public class CompanyDb
         string inn,
         string kpp,
         string ogrn,
-        string address)
+        string address,
+        bool isDeleted =  false)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty");
@@ -101,7 +104,7 @@ public class CompanyDb
         Address = address;
         Posts = new List<PostDb>();
         Positions = new List<PositionDb>();
-        IsDeleted = false;
+        IsDeleted = isDeleted;
     }
 
     /// <summary>

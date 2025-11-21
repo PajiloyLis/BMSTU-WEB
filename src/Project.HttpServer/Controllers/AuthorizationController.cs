@@ -13,7 +13,7 @@ using IAuthorizationService = Project.Core.Services.IAuthorizationService;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("/api/v1/auth")]
 public class AuthorizationController : ControllerBase
 {
     private readonly ILogger<AuthorizationController> _logger;
@@ -27,9 +27,7 @@ public class AuthorizationController : ControllerBase
         _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
     }
 
-    /// <summary>
-    /// Logs the user in by validating their credentials and generating access and refresh tokens.
-    /// </summary>
+    [AllowAnonymous]
     [HttpPost("login")]
     [SwaggerOperation("login")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(AuthorizationDataDto))]
@@ -60,9 +58,6 @@ public class AuthorizationController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Registers a new user and returns authentication data including access and refresh tokens.
-    /// </summary>
     [AllowAnonymous]
     [HttpPost("register")]
     [SwaggerOperation("register")]

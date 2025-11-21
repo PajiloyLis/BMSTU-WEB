@@ -5,12 +5,13 @@ namespace Database.Models;
 
 public class UserDb
 {
-    public UserDb(string email, string password, string salt, string role)
+    public UserDb(string email, string password, string salt, string role, Guid id)
     {
         Email = email;
         Password = password;
         Salt = salt;
         Role = role;
+        Id = id;
     }
     public string Password { get; set; }
 
@@ -19,6 +20,8 @@ public class UserDb
     public string Salt { get; set; }
     
     public string Role { get; set; }
+    
+    public Guid Id { get; set; }
 }
 
 public class UserMongoDb

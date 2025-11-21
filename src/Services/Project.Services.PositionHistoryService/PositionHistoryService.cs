@@ -10,9 +10,6 @@ namespace Project.Services.PositionHistoryService;
 
 public class PositionHistoryService : IPositionHistoryService
 {
-    public static bool CacheDirty;
-    private readonly IDatabaseAsync _cache;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly ILogger<PositionHistoryService> _logger;
     private readonly IPositionHistoryRepository _repository;
 
@@ -22,8 +19,6 @@ public class PositionHistoryService : IPositionHistoryService
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _connectionMultiplexer = cache ?? throw new ArgumentNullException(nameof(cache));
-        _cache = cache.GetDatabase() ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public async Task<BasePositionHistory> AddPositionHistoryAsync(
@@ -184,7 +179,8 @@ public class PositionHistoryService : IPositionHistoryService
         }
     }
 
-    public async Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId)
+    public async Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId,
+        int pageNumber, int pageSize)
     {
         try
         {
@@ -193,7 +189,7 @@ public class PositionHistoryService : IPositionHistoryService
                 managerId);
 
             var result = await _repository.GetCurrentSubordinatesAsync(
-                managerId);
+                managerId, pageNumber, pageSize);
 
             _logger.LogInformation(
                 "Successfully retrieved current subordinates position history records for manager {ManagerId}",
@@ -212,7 +208,7 @@ public class PositionHistoryService : IPositionHistoryService
 
     public async Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryAsync(Guid managerId,
         DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, int pageNumber, int pageSize)
     {
         try
         {
@@ -223,7 +219,7 @@ public class PositionHistoryService : IPositionHistoryService
             var result = await _repository.GetCurrentSubordinatesPositionHistoryAsync(
                 managerId,
                 startDate,
-                endDate);
+                endDate, pageNumber, pageSize);
 
             _logger.LogInformation(
                 "Successfully retrieved current subordinates position history records for manager {ManagerId}",
@@ -240,8 +236,4 @@ public class PositionHistoryService : IPositionHistoryService
         }
     }
 
-    private async Task DeleteCache()
-    {
-        await _cache.ExecuteAsync("FLUSHDB");
-    }
 }

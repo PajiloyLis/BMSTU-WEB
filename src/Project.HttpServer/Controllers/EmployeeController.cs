@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Database.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Services;
@@ -11,7 +12,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/employees")]
+[Route("/api/v1/employees")]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -24,6 +25,7 @@ public class EmployeeController : ControllerBase
         _employeeService = emploteeService ?? throw new ArgumentNullException(nameof(emploteeService));
     }
 
+    [Authorize(Roles = "employee,admin")]
     [HttpGet("{employeeId:guid}")]
     [SwaggerOperation("getEmployeeById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EmployeeDto))]
@@ -50,6 +52,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
+    [Authorize(Roles="admin")]
     [HttpPost]
     [SwaggerOperation("createEmployee")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(EmployeeDto))]
@@ -86,17 +89,18 @@ public class EmployeeController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [Authorize(Roles="admin")]
+    [HttpPatch("{employeeId:guid}")]
     [SwaggerOperation("updateEmployee")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EmployeeDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdateEmployee([FromBody] [Required] UpdateEmployeeDto updateEmployee)
+    public async Task<IActionResult> UpdateEmployee([FromRoute] [Required] Guid employeeId, [FromBody] [Required] UpdateEmployeeDto updateEmployee)
     {
         try
         {
-            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(updateEmployee.Id,
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(employeeId,
                 updateEmployee.FullName,
                 updateEmployee.PhoneNumber,
                 updateEmployee.Email,
@@ -128,6 +132,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
+    [Authorize(Roles="admin")]
     [HttpDelete("{employeeId:guid}")]
     [SwaggerOperation("deleteEmployee")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]

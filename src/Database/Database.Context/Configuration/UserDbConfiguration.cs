@@ -11,7 +11,7 @@ public class UserDbConfiguration : IEntityTypeConfiguration<UserDb>
         builder.ToTable("users");
 
         builder.HasKey(keyExpression => keyExpression.Email);
-        builder.Property(keyExpression => keyExpression.Email).HasColumnName("email").HasColumnType("nvarchar").IsRequired();
+        builder.Property(keyExpression => keyExpression.Email).HasColumnName("email").HasColumnType("text").IsRequired();
         builder.ToTable(t =>
             t.HasCheckConstraint("EmailCheck", "email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'"));
 
@@ -21,5 +21,7 @@ public class UserDbConfiguration : IEntityTypeConfiguration<UserDb>
         builder.Property(u => u.Salt).HasColumnName("salt").HasColumnType("text").IsRequired();
         
         builder.Property(u => u.Role).HasColumnName("role").HasColumnType("text").IsRequired();
+        
+        builder.Property(u=>u.Id).HasColumnName("id").IsRequired();
     }
 }

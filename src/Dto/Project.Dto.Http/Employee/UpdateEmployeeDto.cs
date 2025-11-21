@@ -7,15 +7,13 @@ namespace Project.Dto.Http.Employee;
 /// </summary>
 public class UpdateEmployeeDto
 {
-    public UpdateEmployeeDto(Guid id,
-        string? fullName,
+    public UpdateEmployeeDto(string? fullName,
         string? phoneNumber,
         string? email,
         DateOnly? birthday,
         string? photoPath,
         string? duties)
     {
-        Id = id;
         FullName = fullName;
         PhoneNumber = phoneNumber;
         Email = email;
@@ -23,13 +21,6 @@ public class UpdateEmployeeDto
         PhotoPath = photoPath;
         Duties = duties;
     }
-
-    /// <summary>
-    /// Employee's id
-    /// </summary>
-    [JsonRequired]
-    [JsonPropertyName("id")]
-    public Guid Id { get; init; }
 
     /// <summary>
     /// Employee's full name

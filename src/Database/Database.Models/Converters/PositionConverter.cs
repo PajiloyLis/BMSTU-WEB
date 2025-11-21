@@ -44,7 +44,8 @@ public static class PositionConverter
             position.Id,
             position.ParentId ?? Guid.Empty,
             position.Title,
-            position.CompanyId
+            position.CompanyId,
+            position.IsDeleted
         );
     }
 
@@ -86,7 +87,8 @@ public static class PositionConverter
             position.Id,
             position.ParentId ?? Guid.Empty,
             position.Title,
-            position.CompanyId
+            position.CompanyId,
+            false
         );
     }
 }

@@ -1,11 +1,8 @@
-using System.Text.Json;
 using Database.Context;
 using Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Project.Core.Exceptions;
-using Project.Core.Models;
 using Project.Core.Models.Education;
 using Project.Core.Repositories;
 
@@ -27,7 +24,7 @@ public class EducationRepository : IEducationRepository
         try
         {
             var educationDb = EducationConverter.Convert(education);
-            
+
             var existingEducation = await _context.EducationDb
                 .FirstOrDefaultAsync(e => e.EmployeeId == educationDb.EmployeeId &&
                                           e.Institution == educationDb.Institution &&
@@ -41,7 +38,7 @@ public class EducationRepository : IEducationRepository
                 throw new EducationAlreadyExistsException(
                     $"Education already exists for employee {education.EmployeeId}");
             }
-            
+
             await _context.EducationDb.AddAsync(educationDb);
             await _context.SaveChangesAsync();
 
@@ -63,7 +60,7 @@ public class EducationRepository : IEducationRepository
         {
             var educationDb = await _context.EducationDb
                 .FirstOrDefaultAsync(e => e.Id == educationId);
-            
+
             if (educationDb is null)
             {
                 _logger.LogWarning("Education with id {Id} not found", educationId);
@@ -114,7 +111,7 @@ public class EducationRepository : IEducationRepository
                 educationDb.Level = education.Level.ToStringVal();
             educationDb.StartDate = education.StartDate ?? educationDb.StartDate;
             educationDb.EndDate = education.EndDate ?? educationDb.EndDate;
-            
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Education with id {Id} was updated", education.Id);
@@ -127,11 +124,12 @@ public class EducationRepository : IEducationRepository
         }
     }
 
-    public async Task<IEnumerable<BaseEducation>> GetEducationsAsync(Guid employeeId)
+    public async Task<IEnumerable<BaseEducation>> GetEducationsAsync(Guid employeeId, int pageNumber, int pageSize)
     {
         try
         {
-            var educations = await _context.EducationDb.Where(e => e.EmployeeId == employeeId).ToListAsync();
+            var educations = await _context.EducationDb.Where(e => e.EmployeeId == employeeId)
+                .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
             return educations.Select(e => EducationConverter.Convert(e)).ToList();
         }
@@ -146,7 +144,6 @@ public class EducationRepository : IEducationRepository
     {
         try
         {
-            
             var educationDb = await _context.EducationDb
                 .FirstOrDefaultAsync(e => e.Id == educationId);
 

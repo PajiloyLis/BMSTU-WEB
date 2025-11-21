@@ -117,22 +117,25 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            var employee = await _context.UserDb.FirstOrDefaultAsync(e => e.Email == email);
-            if (employee is null)
+            var existingUser = await _context.UserDb.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser is null)
             {
-                _logger.LogWarning($"User with email {email} not found");
-                throw new UserNotFoundException($"User with email {email} not found");
+                var user = await _context.EmployeeDb.FirstOrDefaultAsync(e => e.Email == email);
+
+                var companyUser = await _context.CompanyDb.FirstOrDefaultAsync(c => c.Email == email);
+
+                if (user is null && companyUser is null)
+                {
+                    _logger.LogWarning($"User with email {email} not found");
+                    throw new UserNotFoundException($"User with email {email} not found");
+                }
+
+                return user is not null ? user.Id : new Guid();
             }
-            
-            var user = await _context.EmployeeDb.FirstOrDefaultAsync(e => e.Email == email);
-            
-            if (user is null)
+            else
             {
-                _logger.LogWarning($"User with email {email} not found");
-                throw new UserNotFoundException($"User with email {email} not found");
+                return existingUser.Id;
             }
-            
-            return user.Id;
         }
         catch (Exception e)
         {

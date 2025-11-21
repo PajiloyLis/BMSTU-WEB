@@ -40,7 +40,8 @@ public static class PostConverter
         return new BasePost(post.Id,
             post.Title,
             post.Salary,
-            post.CompanyId);
+            post.CompanyId,
+            post.IsDeleted);
     }
 
     [return: NotNullIfNotNull(nameof(post))]
@@ -77,6 +78,7 @@ public static class PostConverter
         return new BasePost(post.Id,
             post.Title,
             post.Salary,
-            post.CompanyId);
+            post.CompanyId,
+            false);
     }
 }

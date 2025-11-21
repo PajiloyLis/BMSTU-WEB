@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Context.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250527234121_Initial")]
+    [Migration("20251120121303_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -47,6 +47,10 @@ namespace Database.Context.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(10)")
                         .HasColumnName("inn");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bool")
+                        .HasColumnName("_is_deleted");
 
                     b.Property<string>("Kpp")
                         .IsRequired()
@@ -225,6 +229,10 @@ namespace Database.Context.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("company_id");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bool")
+                        .HasColumnName("_is_deleted");
+
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_id");
@@ -306,6 +314,10 @@ namespace Database.Context.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("company_id");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bool")
+                        .HasColumnName("_is_deleted");
+
                     b.Property<decimal>("Salary")
                         .HasColumnType("numeric(10,2)")
                         .HasColumnName("salary");
@@ -335,15 +347,9 @@ namespace Database.Context.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("employee_id");
 
-                    b.Property<Guid?>("EmployeeDbId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date")
                         .HasColumnName("end_date");
-
-                    b.Property<Guid?>("PostDbId")
-                        .HasColumnType("uuid");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date")
@@ -351,11 +357,7 @@ namespace Database.Context.Migrations
 
                     b.HasKey("PostId", "EmployeeId");
 
-                    b.HasIndex("EmployeeDbId");
-
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("PostDbId");
 
                     b.ToTable("post_history", null, t =>
                         {
@@ -418,6 +420,42 @@ namespace Database.Context.Migrations
                             t.HasCheckConstraint("CK_ScoreStory_EfficiencyScore", "efficiency_score > 0 AND efficiency_score < 6");
 
                             t.HasCheckConstraint("CK_ScoreStory_EngagementScore", "engagement_score > 0 AND engagement_score < 6");
+                        });
+                });
+
+            modelBuilder.Entity("Database.Models.UserDb", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("salt");
+
+                    b.HasKey("Email");
+
+                    b.HasIndex("Password")
+                        .IsUnique();
+
+                    b.ToTable("users", null, t =>
+                        {
+                            t.HasCheckConstraint("EmailCheck", "email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'");
                         });
                 });
 
@@ -487,20 +525,12 @@ namespace Database.Context.Migrations
                 {
                     b.HasOne("Database.Models.EmployeeDb", null)
                         .WithMany("PostHistories")
-                        .HasForeignKey("EmployeeDbId");
-
-                    b.HasOne("Database.Models.EmployeeDb", null)
-                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Database.Models.PostDb", null)
                         .WithMany("PostHistories")
-                        .HasForeignKey("PostDbId");
-
-                    b.HasOne("Database.Models.PostDb", null)
-                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();

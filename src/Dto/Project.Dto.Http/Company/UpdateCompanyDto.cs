@@ -4,8 +4,7 @@ namespace Project.Dto.Http.Company;
 
 public class UpdateCompanyDto
 {
-    public UpdateCompanyDto(Guid companyId,
-        string? title,
+    public UpdateCompanyDto(string? title,
         DateOnly? registrationDate,
         string? phoneNumber,
         string? email,
@@ -14,7 +13,6 @@ public class UpdateCompanyDto
         string? ogrn,
         string? address)
     {
-        CompanyId = companyId;
         Title = title;
         RegistrationDate = registrationDate;
         PhoneNumber = phoneNumber;
@@ -24,13 +22,6 @@ public class UpdateCompanyDto
         Ogrn = ogrn;
         Address = address;
     }
-    
-    /// <summary>
-    /// Company's id
-    /// </summary>
-    [JsonRequired]
-    [JsonPropertyName("companyId")]
-    public Guid CompanyId { get; init; }
 
     /// <summary>
     /// Company's name

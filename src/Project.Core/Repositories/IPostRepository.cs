@@ -30,8 +30,10 @@ public interface IPostRepository
     /// Получает список должностей с пагинацией
     /// </summary>
     /// <param name="companyId">ID компании</param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
     /// <returns>Страница с должностями</returns>
-    Task<IEnumerable<BasePost>> GetPostsAsync(Guid companyId);
+    Task<IEnumerable<BasePost>> GetPostsAsync(Guid companyId, int pageNumber, int pageSize);
 
     /// <summary>
     /// Удаляет должность

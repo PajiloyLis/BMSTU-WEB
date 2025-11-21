@@ -12,8 +12,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/education")]
-public class EducationController :ControllerBase
+[Route("/api/v1")]
+public class EducationController : ControllerBase
 {
     private readonly IEducationService _educationService;
     private readonly ILogger<EducationController> _logger;
@@ -25,7 +25,8 @@ public class EducationController :ControllerBase
         _educationService = educationService ?? throw new ArgumentNullException(nameof(educationService));
     }
 
-    [HttpGet("/education/{educationId:guid}")]
+    [Authorize(Roles = "employee, admin")]
+    [HttpGet("/{educationId:guid}")]
     [SwaggerOperation("getEducationById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -51,7 +52,8 @@ public class EducationController :ControllerBase
         }
     }
 
-    [HttpPost]
+    [Authorize(Roles = "admin")]
+    [HttpPost("/educations")]
     [SwaggerOperation("createEducation")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -87,17 +89,18 @@ public class EducationController :ControllerBase
         }
     }
 
-    [HttpPut]
+    [Authorize(Roles = "admin")]
+    [HttpPatch("/educations/{educationId:guid}")]
     [SwaggerOperation("updateEducation")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdateEducation([FromBody] [Required] UpdateEducationDto updateEducation)
+    public async Task<IActionResult> UpdateEducation([FromRoute] [Required] Guid educationId, [FromBody] [Required] UpdateEducationDto updateEducation)
     {
         try
         {
-            var updatedEducation = await _educationService.UpdateEducationAsync(updateEducation.Id,
+            var updatedEducation = await _educationService.UpdateEducationAsync(educationId,
                 updateEducation.EmployeeId,
                 updateEducation.Institution,
                 updateEducation.Level,
@@ -129,7 +132,8 @@ public class EducationController :ControllerBase
         }
     }
 
-    [HttpDelete("{educationId:guid}")]
+    [Authorize(Roles="admin")]
+    [HttpDelete("/educations/{educationId:guid}")]
     [SwaggerOperation("deleteEducation")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -155,7 +159,8 @@ public class EducationController :ControllerBase
         }
     }
 
-    [HttpGet("/employeeEducations/{employeeId:guid}")]
+    [Authorize(Roles="admin,employee")]
+    [HttpGet("/employees/{employeeId:guid}/educations")]
     [SwaggerOperation("getEducationsByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -165,7 +170,7 @@ public class EducationController :ControllerBase
     {
         try
         {
-            var educations = await _educationService.GetEducationsByEmployeeIdAsync(employeeId);
+            var educations = await _educationService.GetEducationsByEmployeeIdAsync(employeeId, pageNumber, pageSize);
 
             return Ok(educations.Select(EducationConverter.Convert));
         }

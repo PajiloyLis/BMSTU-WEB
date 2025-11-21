@@ -83,7 +83,7 @@ public class PostRepository : IPostRepository
         try
         {
             var postDb = await _context.PostDb
-                .FirstOrDefaultAsync(p => p.Id == post.Id && p.CompanyId == post.CompanyId);
+                .FirstOrDefaultAsync(p => p.Id == post.Id);
 
             if (postDb is null)
             {
@@ -93,16 +93,14 @@ public class PostRepository : IPostRepository
 
             var existingPost = await _context.PostDb
                 .Where(p => p.Id != post.Id &&
-                            p.CompanyId == post.CompanyId &&
                             p.Title == post.Title)
                 .FirstOrDefaultAsync();
 
             if (existingPost is not null)
             {
-                _logger.LogWarning("Post with title {Title} already exists in company {CompanyId}", post.Title,
-                    post.CompanyId);
+                _logger.LogWarning("Post with title {Title} already exists in company {CompanyId}", post.Title, existingPost.CompanyId);
                 throw new PostAlreadyExistsException(
-                    $"Post with title {post.Title} already exists in company {post.CompanyId}");
+                    $"Post with title {post.Title} already exists in company {existingPost.CompanyId}");
             }
 
             postDb.Title = post.Title ?? postDb.Title;
@@ -119,7 +117,7 @@ public class PostRepository : IPostRepository
         }
     }
 
-    public async Task<IEnumerable<BasePost>> GetPostsAsync(Guid companyId)
+    public async Task<IEnumerable<BasePost>> GetPostsAsync(Guid companyId, int pageNumber, int pageSize)
     {
         try
         {
@@ -127,7 +125,7 @@ public class PostRepository : IPostRepository
                 .Where(p => p.CompanyId == companyId)
                 .ToListAsync();
             _logger.LogInformation("Posts for company {CompanyId} were retrieved", companyId);
-            return posts.Select(e => PostConverter.Convert(e)).ToList();
+            return posts.Skip((pageNumber-1)*pageSize).Take(pageSize).Select(e => PostConverter.Convert(e)).ToList();
         }
         catch (Exception e)
         {

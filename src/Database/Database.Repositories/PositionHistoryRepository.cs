@@ -1,12 +1,9 @@
 using Database.Context;
-using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Project.Core.Exceptions;
-using Project.Core.Models;
 using Project.Core.Models.PositionHistory;
 using Project.Core.Repositories;
-using Project.Database.Models;
 using Project.Database.Models.Converters;
 
 namespace Project.Database.Repositories;
@@ -38,7 +35,7 @@ public class PositionHistoryRepository : IPositionHistoryRepository
             var previousOpenPosition = await _context.PositionHistoryDb.Where(e =>
                 e.EmployeeId == createPositionHistory.EmployeeId && e.PositionId == createPositionHistory.PositionId &&
                 e.EndDate == null).ToListAsync();
-            previousOpenPosition.ForEach(e => e.EndDate=DateOnly.FromDateTime(DateTime.Today));
+            previousOpenPosition.ForEach(e => e.EndDate = DateOnly.FromDateTime(DateTime.Today));
             await _context.PositionHistoryDb.AddAsync(positionHistoryDb);
             await _context.SaveChangesAsync();
 
@@ -216,21 +213,63 @@ public class PositionHistoryRepository : IPositionHistoryRepository
         }
     }
 
-    public async Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId)
+    public async Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId,
+        int pageNumber, int pageSize)
     {
         try
         {
             _logger.LogInformation(
                 "Getting current subordinates position history for manager {ManagerId}",
                 managerId);
-            
+
             var positionHistories = await GetAllCurrentSubordinates(managerId);
 
+            positionHistories = positionHistories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             _logger.LogInformation(
                 "Successfully retrieved {Count} current subordinates position history records for manager {ManagerId}",
                 positionHistories.Count, managerId);
 
             return positionHistories;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting current subordinates position history for manager {ManagerId}",
+                managerId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryAsync(Guid managerId,
+        DateOnly? startDate, DateOnly? endDate, int pageNumber, int pageSize)
+    {
+        try
+        {
+            _logger.LogInformation(
+                "Getting current subordinates position history for manager {ManagerId}", managerId);
+
+            var allSubordinates = await GetAllCurrentSubordinates(managerId);
+            var employees = allSubordinates.Select(ph => ph.EmployeeId).ToList();
+
+            var query = _context.PositionHistoryDb.Where(ph => employees.Contains(ph.EmployeeId));
+
+            if (startDate.HasValue)
+                query = query.Where(ph => ph.EndDate == null || ph.EndDate >= startDate);
+            if (endDate.HasValue)
+                query = query.Where(ph =>
+                    (ph.EndDate == null && endDate == DateOnly.FromDateTime(DateTime.Today)) || ph.EndDate <= endDate);
+
+            var items = await query
+                .Select(x => PositionHistoryConverter.Convert(x)!)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            _logger.LogInformation(
+                "Successfully retrieved {Count} current subordinates position history records for manager {ManagerId}",
+                items.Count, managerId);
+
+            return items;
         }
         catch (Exception ex)
         {
@@ -262,61 +301,26 @@ public class PositionHistoryRepository : IPositionHistoryRepository
         }
     }
 
-    public async Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryAsync(Guid managerId,
-        DateOnly? startDate, DateOnly? endDate)
-    {
-        try
-        {
-            _logger.LogInformation(
-                "Getting current subordinates position history for manager {ManagerId}", managerId);
-
-            var allSubordinates = await GetAllCurrentSubordinates(managerId);
-            var employees = allSubordinates.Select(ph => ph.EmployeeId).ToList();
-
-            var query = _context.PositionHistoryDb.Where(ph => employees.Contains(ph.EmployeeId));
-
-            if (startDate.HasValue)
-                query = query.Where(ph => ph.EndDate == null || ph.EndDate >= startDate);
-            if (endDate.HasValue)
-                query = query.Where(ph =>
-                    (ph.EndDate == null && endDate == DateOnly.FromDateTime(DateTime.Today)) || ph.EndDate <= endDate);
-
-            var items = await query
-                .Select(x => PositionHistoryConverter.Convert(x)!)
-                .ToListAsync();
-
-            _logger.LogInformation(
-                "Successfully retrieved {Count} current subordinates position history records for manager {ManagerId}",
-                items.Count, managerId);
-
-            return items;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex,
-                "Error getting current subordinates position history for manager {ManagerId}",
-                managerId);
-            throw;
-        }
-    }
-
     private async Task<List<PositionHierarchyWithEmployee>> GetAllCurrentSubordinates(Guid managerId)
     {
         try
         {
-            List<PositionHierarchyWithEmployee> subordinates = new List<PositionHierarchyWithEmployee>();
-            var head = await _context.PositionHistoryDb.Where(e => e.EmployeeId == managerId && e.EndDate==null).FirstOrDefaultAsync();
+            var subordinates = new List<PositionHierarchyWithEmployee>();
+            var head = await _context.PositionHistoryDb.Where(e => e.EmployeeId == managerId && e.EndDate == null)
+                .FirstOrDefaultAsync();
             if (head is null)
                 throw new PositionHistoryNotFoundException($"Current position for employee {managerId} not found");
             var headPosition = await _context.PositionDb.Where(e => e.Id == head.PositionId).FirstOrDefaultAsync();
-            subordinates.Add(new PositionHierarchyWithEmployee(head.EmployeeId, head.PositionId, headPosition.ParentId, headPosition.Title, 0));
-            int i = 0;
+            subordinates.Add(new PositionHierarchyWithEmployee(head.EmployeeId, head.PositionId, headPosition.ParentId,
+                headPosition.Title, 0));
+            var i = 0;
             while (i != subordinates.Count)
             {
                 var subordinatesPositions =
                     await _context.PositionDb.Where(e => e.ParentId == subordinates[i].PositionId).ToListAsync();
-                var children = await _context.PositionHistoryDb.Where(e => subordinatesPositions.Select(e => e.Id).ToList().Contains(e.PositionId) && e.EndDate == null)
-                        .ToListAsync();
+                var children = await _context.PositionHistoryDb.Where(e =>
+                        subordinatesPositions.Select(e => e.Id).ToList().Contains(e.PositionId) && e.EndDate == null)
+                    .ToListAsync();
                 var resultChildren = children.Select(e =>
                 {
                     var position = subordinatesPositions.Where(p => p.Id == e.PositionId).FirstOrDefault();

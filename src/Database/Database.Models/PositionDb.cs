@@ -12,7 +12,7 @@ public class PositionDb
     {
     }
 
-    public PositionDb(Guid id, Guid? parentId, string title, Guid companyId)
+    public PositionDb(Guid id, Guid? parentId, string title, Guid companyId, bool  isDeleted=false)
     {
         if (!Guid.TryParse(id.ToString(), out _))
             throw new ArgumentException("Invalid Id format", nameof(id));
@@ -27,7 +27,7 @@ public class PositionDb
         ParentId = parentId;
         Title = title;
         CompanyId = companyId;
-        IsDeleted = false;
+        IsDeleted = isDeleted;
     }
 
     [Key] public Guid Id { get; set; }

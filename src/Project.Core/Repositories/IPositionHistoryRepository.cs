@@ -51,9 +51,12 @@ public interface IPositionHistoryRepository
     /// Gets paginated position history records for current subordinates of a specific manager
     /// </summary>
     /// <param name="managerId">Manager's employee ID</param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
     /// <returns>Paginated list of current position history records for subordinates</returns>
-    Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId);
+    Task<IEnumerable<PositionHierarchyWithEmployee>> GetCurrentSubordinatesAsync(Guid managerId, int pageNumber,
+        int pageSize);
 
     Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryAsync(Guid managerId,
-        DateOnly? startDate, DateOnly? endDate);
+        DateOnly? startDate, DateOnly? endDate, int pageNumber, int pageSize);
 }

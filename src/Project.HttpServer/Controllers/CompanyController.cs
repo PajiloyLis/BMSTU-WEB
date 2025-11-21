@@ -11,7 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Project.HttpServer.Controllers;
 
 [ApiController]
-[Route("api/companies")]
+[Route("/api/v1/companies")]
 public class CompanyController : ControllerBase
 {
     private readonly ICompanyService _companyService;
@@ -89,18 +89,18 @@ public class CompanyController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [HttpPatch("{companyId:guid}")]
     [Authorize(Roles = "admin")]
     [SwaggerOperation("updateCompany")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(CompanyDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> UpdateCompany([FromBody] [Required] UpdateCompanyDto updateCompany)
+    public async Task<IActionResult> UpdateCompany([FromRoute] [Required] Guid companyId, [FromBody] [Required] UpdateCompanyDto updateCompany)
     {
         try
         {
-            var updatedCompany = await _companyService.UpdateCompanyAsync(updateCompany.CompanyId,
+            var updatedCompany = await _companyService.UpdateCompanyAsync(companyId,
                 updateCompany.Title,
                 updateCompany.RegistrationDate,
                 updateCompany.PhoneNumber,
@@ -160,13 +160,14 @@ public class CompanyController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
         }
     }
+    
     [AllowAnonymous]
     [HttpGet]
     [SwaggerOperation("getCompanies")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<CompanyDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> GetCompanies([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetCompanies()
     {
         try
         {

@@ -9,9 +9,8 @@ public interface IPositionService
     Task<BasePosition> AddPositionAsync(Guid? parentId, string title, Guid companyId);
     Task<BasePosition> GetPositionByIdAsync(Guid id);
     Task<BasePosition> GetHeadPositionByCompanyIdAsync(Guid id);
-    Task<BasePosition> UpdatePositionTitleAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null);
-    Task<BasePosition> UpdatePositionParentWithSubordinatesAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null);
-    Task<BasePosition> UpdatePositionParentWithoutSuboridnatesAsync(Guid id, Guid companyId, Guid? parentId = null, string? title = null);
+    Task<BasePosition> UpdatePositionTitleAsync(Guid id, string? title);
+    Task<BasePosition> UpdatePositionParent(Guid id, Guid? parentId, PositionUpdateMode updateMode);
     Task DeletePositionAsync(Guid id);
     Task<IEnumerable<PositionHierarchy>> GetSubordinatesAsync(Guid parentId);
 }

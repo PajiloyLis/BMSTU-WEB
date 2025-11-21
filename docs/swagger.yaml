@@ -3,7 +3,7 @@ info:
   title: PPO Project.HttpServer
   version: v1
 paths:
-  /api/auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Authorization
@@ -68,7 +68,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/auth/register:
+  /api/v1/auth/register:
     post:
       tags:
         - Authorization
@@ -120,63 +120,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/auth/currentUser:
-    get:
-      tags:
-        - Authorization
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
-                format: uuid
-            application/json:
-              schema:
-                type: string
-                format: uuid
-            text/json:
-              schema:
-                type: string
-                format: uuid
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '404':
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-  '/api/companies/{companyId}':
+  '/api/v1/companies/{companyId}':
     get:
       tags:
         - Company
@@ -271,6 +215,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -295,7 +251,102 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/companies:
+    patch:
+      tags:
+        - Company
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/companies:
     post:
       tags:
         - Company
@@ -336,60 +387,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - Company
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCompanyDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCompanyDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdateCompanyDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/CompanyDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CompanyDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/CompanyDto'
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -427,19 +426,6 @@ paths:
     get:
       tags:
         - Company
-      parameters:
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
       responses:
         '200':
           description: OK
@@ -471,6 +457,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '500':
           description: Internal Server Error
           content:
@@ -483,7 +481,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/education/{educationId}':
+  '/api/v1/educations/{educationId}':
     get:
       tags:
         - Education
@@ -519,6 +517,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '404':
           description: Not Found
           content:
@@ -543,74 +553,16 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/education:
-    post:
+    patch:
       tags:
         - Education
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateEducationDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/CreateEducationDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/CreateEducationDto'
-        required: true
-      responses:
-        '201':
-          description: Created
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/EducationDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EducationDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/EducationDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - Education
+      parameters:
+        - name: educationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         content:
           application/json:
@@ -648,6 +600,30 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -672,7 +648,6 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/education/{educationId}':
     delete:
       tags:
         - Education
@@ -708,6 +683,30 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -732,7 +731,84 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/employeeEducations/{employeeId}':
+  /api/v1/educations:
+    post:
+      tags:
+        - Education
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEducationDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CreateEducationDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateEducationDto'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/EducationDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EducationDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/EducationDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  '/api/v1/employees/{employeeId}/educations':
     get:
       tags:
         - Education
@@ -780,6 +856,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '500':
           description: Internal Server Error
           content:
@@ -792,7 +880,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/employees/{employeeId}':
+  '/api/v1/employees/{employeeId}':
     get:
       tags:
         - Employee
@@ -818,6 +906,18 @@ paths:
                 $ref: '#/components/schemas/EmployeeDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -887,6 +987,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -911,7 +1023,102 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/employees:
+    patch:
+      tags:
+        - Employee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/EmployeeDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/employees:
     post:
       tags:
         - Employee
@@ -952,6 +1159,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -974,73 +1193,253 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
             text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  '/api/v1/employees/{employeeId}/photo':
+    post:
+      tags:
+        - Employee Photos
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - photo
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: Employee photo file
+            examples:
+              validPhoto:
+                summary: Valid photo upload
+                value:
+                  photo: "photo.jpg"
+      responses:
+        '201':
+          description: Created
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                required:
+                  - photo
+                properties:
+                  photo:
+                    type: string
+                    format: binary
+                    description: Employee photo file
+              examples:
+                validPhoto:
+                  summary: Valid photo upload
+                  value:
+                    photo: "photo.jpg"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
     put:
       tags:
-        - Employee
+        - Employee Photos
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateEmployeeDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdateEmployeeDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdateEmployeeDto'
         required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - photo
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: Employee photo file
+            examples:
+              validPhoto:
+                summary: Valid photo upload
+                value:
+                  photo: "photo.jpg"
       responses:
         '200':
           description: OK
           content:
-            text/plain:
+            multipart/form-data:
               schema:
-                $ref: '#/components/schemas/EmployeeDto'
+                type: object
+                required:
+                  - photo
+                properties:
+                  photo:
+                    type: string
+                    format: binary
+                    description: Employee photo file
+              examples:
+                validPhoto:
+                  summary: Valid photo upload
+                  value:
+                    photo: "photo.jpg"
+        '400':
+          description: Bad request
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmployeeDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeDto'
+                $ref: '#/components/schemas/ErrorDto'
         '401':
           description: Unauthorized
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
+        '404':
+          description: Not Found
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
         '500':
-          description: Internal Server Error
+          description: Internal server error
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+    delete:
+      tags:
+        - Employee Photos
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: boolean
+            application/json:
+              schema:
+                type: boolean
             text/json:
               schema:
+                type: boolean
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/position/{positionId}':
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      tags:
+        - Employee Photos
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                required:
+                  - photo
+                properties:
+                  photo:
+                    type: string
+                    format: binary
+                    description: Employee photo file
+              examples:
+                validPhoto:
+                  summary: Valid photo upload
+                  value:
+                    photo: "photo.jpg"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  
+  '/api/v1/positions/{positionId}':
     get:
       tags:
         - Position
@@ -1064,18 +1463,6 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/PositionDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
         '404':
           description: Not Found
           content:
@@ -1135,6 +1522,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -1159,7 +1558,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/position:
+  /api/v1/positions:
     post:
       tags:
         - Position
@@ -1200,6 +1599,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -1224,21 +1635,43 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/position/updatePositionTitle:
-    put:
+  /api/v1/positions/{positionId}/title:
+    patch:
       tags:
         - Position
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                title:
+                  type: string
+                  nullable: true
+              additionalProperties: false
           text/json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                title:
+                  type: string
+                  nullable: true
+              additionalProperties: false
           application/*+json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                title:
+                  type: string
+                  nullable: true
+              additionalProperties: false
         required: true
       responses:
         '200':
@@ -1265,6 +1698,30 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -1289,8 +1746,176 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/subordinates/{positionId}':
+  '/api/v1/positions/{headPositionId}/subordinates':
     get:
+      tags:
+        - Position
+      parameters:
+        - name: headPositionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyDto'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyDto'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  # /api/v1/positions/{positionId}/positionParentWithSubordinates:
+  #   patch:
+  #     tags:
+  #       - Position
+  #     parameters:
+  #       - name: positionId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #           format: uuid
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               parentId:
+  #                 type: string
+  #                 nullable: true
+  #                 format: uuid
+  #             additionalProperties: false
+  #         text/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               parentId:
+  #                 type: string
+  #                 format: uuid
+  #                 nullable: true
+  #             additionalProperties: false
+  #         application/*+json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               parentId:
+  #                 type: string
+  #                 nullable: true
+  #                 format: uuid
+  #             additionalProperties: false
+  #       required: true
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/PositionDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/PositionDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/PositionDto'
+  #       '401':
+  #         description: Unauthorized
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #       '404':
+  #         description: Not Found
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #       '403':
+  #         description: Forbidden
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #       '400':
+  #         description: Bad Request
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #       '500':
+  #         description: Internal Server Error
+  #         content:
+  #           text/plain:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  #           text/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ErrorDto'
+  /api/v1/positions/{positionId}/parent:
+    patch:
       tags:
         - Position
       parameters:
@@ -1300,70 +1925,43 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
+        - name: updateMode
           in: query
+          required: true
           schema:
             type: integer
-            format: int32
+            enum: [1, 2]
+            nullable: false
             default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PositionHierarchyDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PositionHierarchyDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/PositionHierarchyDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-  /api/position/updatePositionParentWithSubordinates:
-    put:
-      tags:
-        - Position
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                parentId:
+                  type: string
+                  nullable: true
+                  format: uuid
+              additionalProperties: false
           text/json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                parentId:
+                  type: string
+                  nullable: true
+                  format: uuid
+              additionalProperties: false
           application/*+json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
+              type: object
+              properties:
+                parentId:
+                  type: string
+                  nullable: true
+                  format: uuid
+              additionalProperties: false
         required: true
       responses:
         '200':
@@ -1380,6 +1978,30 @@ paths:
                 $ref: '#/components/schemas/PositionDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -1414,72 +2036,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/position/updatePositionParentWithoutSubordinates:
-    put:
-      tags:
-        - Position
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PositionDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PositionDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/PositionDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-  '/api/position/companyHeadPosition/{companyId}':
+  '/api/v1/companies/{companyId}/companyHeadPosition':
     get:
       tags:
         - Position
@@ -1503,18 +2060,6 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/PositionDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
         '404':
           description: Not Found
           content:
@@ -1539,7 +2084,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/positionHistory/{employeeId}/{positionId}':
+  '/api/v1/employees/{employeeId}/positionHistories/{positionId}':
     get:
       tags:
         - PositionHistory
@@ -1571,6 +2116,18 @@ paths:
                 $ref: '#/components/schemas/PositionHistoryDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -1646,6 +2203,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -1670,7 +2239,108 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/positionHistory:
+    patch:
+      tags:
+        - PositionHistory
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionHistoryDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionHistoryDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionHistoryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PositionHistoryDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PositionHistoryDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PositionHistoryDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/positionHistories:
     post:
       tags:
         - PositionHistory
@@ -1711,60 +2381,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - PositionHistory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionHistoryDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionHistoryDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdatePositionHistoryDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -1799,7 +2417,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/positionHistory/{employeeId}':
+  
+  '/api/v1/employees/{employeeId}/positionHistories':
     get:
       tags:
         - PositionHistory
@@ -1810,43 +2429,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [10, 20, 40]
+            default: 10
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -1869,7 +2526,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/subordinatesPositionHistory/{employeeId}':
+  '/api/v1/employees/{employeeId}/subordinates/positionHistories':
     get:
       tags:
         - PositionHistory
@@ -1880,43 +2537,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [10, 20, 40]
+            default: 10
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PositionHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHistoryDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -1939,44 +2634,62 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/currentSubordinates/{employeeId}':
+  '/api/v1/employees/{headEmployeeId}/currentSubordinates/positionHistories':
     get:
       tags:
         - PositionHistory
       parameters:
-        - name: employeeId
+        - name: headEmployeeId
           in: path
           required: true
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionHierarchyWithEmployeeDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -1999,7 +2712,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/post/{postId}':
+  '/api/v1/posts/{postId}':
     get:
       tags:
         - Post
@@ -2023,18 +2736,6 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/PostDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
         '404':
           description: Not Found
           content:
@@ -2094,6 +2795,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -2118,7 +2831,102 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/post:
+    patch:
+      tags:
+        - Post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PostDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PostDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/posts:
     post:
       tags:
         - Post
@@ -2159,60 +2967,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - Post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PostDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PostDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/PostDto'
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -2247,7 +3003,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/postsPerCompany/{companyId}':
+  '/api/v1/companies/{companyId}/posts':
     get:
       tags:
         - Post
@@ -2258,43 +3014,26 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PostDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PostDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PostDto'
-        '401':
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
+        
         '500':
           description: Internal Server Error
           content:
@@ -2307,7 +3046,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/postHistory/{employeeId}/{postId}':
+  '/api/v1/employees/{employeeId}/postHistories/{postId}':
     get:
       tags:
         - PostHistory
@@ -2339,6 +3078,18 @@ paths:
                 $ref: '#/components/schemas/PostHistoryDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -2414,6 +3165,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '400':
           description: Bad Request
           content:
@@ -2438,7 +3201,108 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/postHistory:
+    patch:
+      tags:
+        - PostHistory
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostHistoryDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostHistoryDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostHistoryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PostHistoryDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostHistoryDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PostHistoryDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/postHistories:
     post:
       tags:
         - PostHistory
@@ -2479,60 +3343,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - PostHistory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostHistoryDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostHistoryDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdatePostHistoryDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PostHistoryDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PostHistoryDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/PostHistoryDto'
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -2567,7 +3379,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/postHistory/{employeeId}':
+  
+  '/api/v1/employees/{employeeId}/postHistories':
     get:
       tags:
         - PostHistory
@@ -2578,43 +3391,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [10, 20, 40]
+            default: 10
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -2637,54 +3488,90 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/subordinatesPostHistory/{employeeId}':
+  '/api/v1/employees/{headEmployeeId}/subordinates/postHistories':
     get:
       tags:
         - PostHistory
       parameters:
-        - name: employeeId
+        - name: headEmployeeId
           in: path
           required: true
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
             format: date
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
             format: date
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [10, 20, 40]
+            default: 10
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/PostHistoryDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -2707,7 +3594,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/score/{scoreId}':
+  '/api/v1/scores/{scoreId}':
     get:
       tags:
         - Score
@@ -2743,6 +3630,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '404':
           description: Not Found
           content:
@@ -2814,6 +3713,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '500':
           description: Internal Server Error
           content:
@@ -2826,7 +3737,102 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  /api/score:
+    patch:
+      tags:
+        - Score
+      parameters:
+        - name: scoreId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScoreDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScoreDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateScoreDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScoreDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScoreDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /api/v1/scores:
     post:
       tags:
         - Score
@@ -2867,60 +3873,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-        '400':
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '500':
-          description: Internal Server Error
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      tags:
-        - Score
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScoreDto'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/UpdateScoreDto'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdateScoreDto'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ScoreDto'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScoreDto'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ScoreDto'
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
           content:
             text/plain:
               schema:
@@ -2955,7 +3909,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/employeeScores/{employeeId}':
+  '/api/v1/employees/{employeeId}/scores':
     get:
       tags:
         - Score
@@ -2966,43 +3920,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [12, 24, 36]
+            default: 12
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -3025,7 +4017,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/score/{authorId}':
+  '/api/v1/employees/scoreAuthor/{authorId}/scores':
     get:
       tags:
         - Score
@@ -3036,43 +4028,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [12, 24, 36]
+            default: 12
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -3095,7 +4125,7 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/api/score/{positionId}':
+  '/api/v1/positions/{positionId}/scores':
     get:
       tags:
         - Score
@@ -3106,43 +4136,81 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [12, 24, 36]
+            default: 12
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -3165,54 +4233,80 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-  '/subordinatesScores/{employeeId}':
+  '/api/v1/employees/{headEmployeeId}/subordinates/scores':
     get:
       tags:
         - Score
       parameters:
-        - name: employeeId
+        - name: headEmployeeId
           in: path
           required: true
           schema:
             type: string
             format: uuid
-        - name: pageNumber
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 1
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            format: int32
-            default: 10
         - name: startDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
         - name: endDate
           in: query
+          required: false
           schema:
             type: string
-            format: date-time
+            format: date
+            nullable: true
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            nullable: false
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [12, 24, 36]
+            default: 12
+            nullable: false
       responses:
         '200':
           description: OK
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             application/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
             text/json:
               schema:
-                $ref: '#/components/schemas/ScoreDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScoreDto'
         '401':
           description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '404':
+          description: Not Found
           content:
             text/plain:
               schema:
@@ -3238,14 +4332,22 @@ paths:
 components:
   schemas:
     AuthorizationDataDto:
+      required:
+        - token
+        - email
+        - userId
       type: object
       properties:
         token:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
+        userId:
+          type: string
+          nullable: false
+          format: uuid
       additionalProperties: false
     CompanyDto:
       required:
@@ -3258,35 +4360,41 @@ components:
         - phoneNumber
         - registrationDate
         - title
+        - isDeleted
       type: object
       properties:
         companyId:
           type: string
           format: uuid
+          nullable: false
         title:
           type: string
-          nullable: true
+          nullable: false
         registrationDate:
           type: string
           format: date
+          nullable: false
         phoneNumber:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
         inn:
           type: string
-          nullable: true
+          nullable: false
         kpp:
           type: string
-          nullable: true
+          nullable: false
         ogrn:
           type: string
-          nullable: true
+          nullable: false
         address:
           type: string
-          nullable: true
+          nullable: false
+        isDeleted:
+          type: boolean
+          nullable: false
       additionalProperties: false
     CreateCompanyDto:
       required:
@@ -3302,47 +4410,65 @@ components:
       properties:
         title:
           type: string
-          nullable: true
+          nullable: false
         registrationDate:
           type: string
           format: date
+          nullable: false
         phoneNumber:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
         inn:
           type: string
-          nullable: true
+          nullable: false
         kpp:
           type: string
-          nullable: true
+          nullable: false
         ogrn:
           type: string
-          nullable: true
+          nullable: false
         address:
           type: string
-          nullable: true
+          nullable: false
       additionalProperties: false
     CreateEducationDto:
+      required:
+        - employeeId
+        - institution
+        - level
+        - studyField
+        - startDate
+        - endDate
       type: object
       properties:
         employeeId:
           type: string
           format: uuid
+          nullable: false
         institution:
           type: string
-          nullable: true
+          nullable: false
         level:
           type: string
-          nullable: true
+          enum:
+            - 'Высшее (бакалавриат)'
+            - 'Высшее (магистратура)'
+            - 'Высшее (специалитет)'
+            - 'Среднее профессиональное (ПКР)'
+            - 'Среднее профессиональное (ПССЗ)'
+            - 'Программы переподготовки'
+            - 'Курсы повышения квалификации'
+          nullable: false
         studyField:
           type: string
-          nullable: true
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
@@ -3360,24 +4486,30 @@ components:
       properties:
         fullName:
           type: string
-          nullable: true
+          nullable: false
         phoneNumber:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
         birthday:
           type: string
           format: date
+          nullable: false
         photoPath:
           type: string
           nullable: true
         duties:
           type: string
+          format: json
           nullable: true
       additionalProperties: false
     CreatePositionDto:
+      required:
+        - title
+        - companyId
+        - parentId
       type: object
       properties:
         parentId:
@@ -3386,104 +4518,161 @@ components:
           nullable: true
         title:
           type: string
-          nullable: true
+          nullable: false
         companyId:
           type: string
           format: uuid
+          nullable: false
       additionalProperties: false
     CreatePositionHistoryDto:
+      required:
+        - positionId
+        - employeeId
+        - startDate
+        - endDate
       type: object
       properties:
         positionId:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
           nullable: true
       additionalProperties: false
     CreatePostDto:
+      required:
+        - title
+        - salary
+        - companyId
       type: object
       properties:
         title:
           type: string
-          nullable: true
+          nullable: false
         salary:
           type: number
           format: double
+          nullable: false
         companyId:
           type: string
           format: uuid
+          nullable: false
       additionalProperties: false
     CreatePostHistoryDto:
+      required:
+        - postId
+        - employeeId
+        - startDate
+        - endDate
       type: object
       properties:
         postId:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
           nullable: true
       additionalProperties: false
     CreateScoreDto:
+      required:
+        - employeeId
+        - authorId
+        - positionId
+        - createdAt
+        - efficiencyScore
+        - engagementScore
+        - competencyScore
       type: object
       properties:
         employeeId:
           type: string
           format: uuid
+          nullable: false
         authorId:
           type: string
           format: uuid
+          nullable: false
         positionId:
           type: string
           format: uuid
+          nullable: false
         createdAt:
           type: string
           format: date-time
+          nullable: false
         efficiencyScore:
           type: integer
           format: int32
+          nullable: false
         engagementScore:
           type: integer
           format: int32
+          nullable: false
         competencyScore:
           type: integer
           format: int32
+          nullable: false
       additionalProperties: false
     EducationDto:
+      required:
+        - id
+        - employeeId
+        - institution
+        - level
+        - studyField
+        - startDate
+        - endDate
       type: object
       properties:
         id:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         institution:
           type: string
-          nullable: true
+          nullable: false
         level:
           type: string
-          nullable: true
+          enum:
+            - 'Высшее (бакалавриат)'
+            - 'Высшее (магистратура)'
+            - 'Высшее (специалитет)'
+            - 'Среднее профессиональное (ПКР)'
+            - 'Среднее профессиональное (ПССЗ)'
+            - 'Программы переподготовки'
+            - 'Курсы повышения квалификации'
+          nullable: false
         studyField:
           type: string
-          nullable: true
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
@@ -3492,29 +4681,31 @@ components:
     EmployeeDto:
       required:
         - birthday
-        - duties
         - email
         - employeeId
         - fullName
         - phoneNumber
         - photoPath
+        - duties
       type: object
       properties:
         employeeId:
           type: string
           format: uuid
+          nullable: false
         fullName:
           type: string
-          nullable: true
+          nullable: false
         phoneNumber:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
         birthday:
           type: string
           format: date
+          nullable: false
         photoPath:
           type: string
           nullable: true
@@ -3530,168 +4721,246 @@ components:
       properties:
         errorType:
           type: string
-          nullable: true
+          nullable: false
         message:
           type: string
           nullable: true
       additionalProperties: false
     LoginDto:
+      required:
+        - password
+        - email
       type: object
       properties:
         password:
           type: string
-          nullable: true
+          nullable: false
         email:
           type: string
-          nullable: true
+          nullable: false
       additionalProperties: false
     PositionDto:
+      required:
+        - id
+        - title
+        - companyId
+        - parentId
+        - isDeleted
       type: object
       properties:
         id:
           type: string
           format: uuid
+          nullable: false
         parentId:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
-          nullable: true
+          nullable: false
         companyId:
           type: string
           format: uuid
+          nullable: false
+        isDeleted:
+          type: boolean
+          nullable: false
       additionalProperties: false
     PositionHierarchyDto:
+      required:
+        - positionId
+        - title
+        - level
+        - parentId
       type: object
       properties:
         positionId:
           type: string
           format: uuid
+          nullable: false
         parentId:
           type: string
           format: uuid
           nullable: true
         title:
           type: string
-          nullable: true
+          nullable: false
         level:
           type: integer
           format: int32
+          nullable: false
       additionalProperties: false
     PositionHierarchyWithEmployeeDto:
+      required:
+        - positionId
+        - employeeId
+        - title
+        - level
+        - parentId
       type: object
       properties:
         positionId:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         parentId:
           type: string
           format: uuid
           nullable: true
         title:
           type: string
-          nullable: true
+          nullable: false
         level:
           type: integer
           format: int32
+          nullable: false
       additionalProperties: false
     PositionHistoryDto:
+      required:
+        - positionId
+        - employeeId
+        - startDate
+        - endDate
       type: object
       properties:
         positionId:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
           nullable: true
       additionalProperties: false
     PostDto:
+      required:
+        - id
+        - title
+        - salary
+        - companyId
+        - isDeleted
       type: object
       properties:
         id:
           type: string
           format: uuid
+          nullable: false
         title:
           type: string
-          nullable: true
+          nullable: false
         salary:
           type: number
           format: double
+          nullable: false
         companyId:
           type: string
           format: uuid
+          nullable: false
+        isDeleted:
+          type: boolean
+          nullable: false
       additionalProperties: false
     PostHistoryDto:
+      required:
+        - postId
+        - employeeId
+        - startDate
+        - endDate
       type: object
       properties:
         postId:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         startDate:
           type: string
           format: date
+          nullable: false
         endDate:
           type: string
           format: date
           nullable: true
       additionalProperties: false
     ScoreDto:
+      required:
+        - id
+        - employeeId
+        - authorId
+        - positionId
+        - createdAt
+        - efficiencyScore
+        - engagementScore
+        - competencyScore
       type: object
       properties:
         id:
           type: string
           format: uuid
+          nullable: false
         employeeId:
           type: string
           format: uuid
+          nullable: false
         authorId:
           type: string
           format: uuid
+          nullable: false
         positionId:
           type: string
           format: uuid
+          nullable: false
         createdAt:
           type: string
           format: date-time
+          nullable: false
         efficiencyScore:
           type: integer
           format: int32
+          minimum: 1
+          maximum: 5
+          nullable: false
         engagementScore:
           type: integer
           format: int32
+          minimum: 1
+          maximum: 5
+          nullable: false
         competencyScore:
           type: integer
           format: int32
+          minimum: 1
+          maximum: 5
+          nullable: false
       additionalProperties: false
     UpdateCompanyDto:
       required:
-        - address
-        - companyId
+        - title
+        - registrationDate
+        - phoneNumber
         - email
         - inn
-        - kpp
         - ogrn
-        - phoneNumber
-        - registrationDate
-        - title
+        - kpp
+        - address
       type: object
       properties:
-        companyId:
-          type: string
-          format: uuid
         title:
           type: string
           nullable: true
@@ -3719,14 +4988,14 @@ components:
           nullable: true
       additionalProperties: false
     UpdateEducationDto:
+      required:
+        - institution
+        - level
+        - studyField
+        - startDate
+        - endDate
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        employeeId:
-          type: string
-          format: uuid
         institution:
           type: string
           nullable: true
@@ -3747,18 +5016,14 @@ components:
       additionalProperties: false
     UpdateEmployeeDto:
       required:
-        - birthday
-        - duties
-        - email
         - fullName
-        - id
         - phoneNumber
+        - email
+        - birthday
         - photoPath
+        - duties
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         fullName:
           type: string
           nullable: true
@@ -3780,14 +5045,11 @@ components:
           nullable: true
       additionalProperties: false
     UpdatePositionDto:
+      required:
+        - parentId
+        - title
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        companyId:
-          type: string
-          format: uuid
         parentId:
           type: string
           format: uuid
@@ -3797,14 +5059,11 @@ components:
           nullable: true
       additionalProperties: false
     UpdatePositionHistoryDto:
+      required:
+        - startDate
+        - endDate
       type: object
       properties:
-        positionId:
-          type: string
-          format: uuid
-        employeeId:
-          type: string
-          format: uuid
         startDate:
           type: string
           format: date
@@ -3815,11 +5074,11 @@ components:
           nullable: true
       additionalProperties: false
     UpdatePostDto:
+      required:
+        - salary
+        - title
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         title:
           type: string
           nullable: true
@@ -3827,19 +5086,13 @@ components:
           type: number
           format: double
           nullable: true
-        companyId:
-          type: string
-          format: uuid
       additionalProperties: false
     UpdatePostHistoryDto:
+      required:
+        - startDate
+        - endDate
       type: object
       properties:
-        postId:
-          type: string
-          format: uuid
-        employeeId:
-          type: string
-          format: uuid
         startDate:
           type: string
           format: date
@@ -3850,11 +5103,13 @@ components:
           nullable: true
       additionalProperties: false
     UpdateScoreDto:
+      required:
+        - createdAt
+        - efficiencyScore
+        - engagementScore
+        - competencyScore
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         createdAt:
           type: string
           format: date-time
