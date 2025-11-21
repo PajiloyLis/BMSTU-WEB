@@ -147,7 +147,7 @@ $\pm$ подразумевает оценку компетенций посре�
 
 ## Личный кабинет
 
-![Personal cabinet](./docs/images/Personal%20cabinet.png)
+![Personal cabinet](./docs/images/Personal%20cabinet.p  ng)
 
 ## Меню навигации
 
