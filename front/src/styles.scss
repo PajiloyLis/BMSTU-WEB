@@ -13,3 +13,19 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background-color: #f5f6f8;
 }
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+  border-left: 4px solid #d32f2f;
+}
+
+.loading-message {
+  color: #1976d2;
+  padding: 12px 16px;
+  text-align: center;
+  margin: 16px 0;
+}

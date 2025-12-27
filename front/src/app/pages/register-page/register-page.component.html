@@ -1,0 +1,60 @@
+<div class="register-page">
+  <div class="register-card">
+    <div class="register-card__header">
+      <h1 class="register-card__welcome">Добро пожаловать!</h1>
+    </div>
+
+    <div class="register-card__body">
+      <h2 class="register-card__title">Регистрация</h2>
+
+      <form class="register-form" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        
+        <div class="register-form__field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            placeholder="Введите email"
+            [(ngModel)]="email"
+            name="email"
+            required
+          />
+        </div>
+
+        <div class="register-form__field">
+          <label for="password">Пароль</label>
+          <input
+            id="password"
+            type="password"
+            pPassword
+            [feedback]="false"
+            placeholder="Введите пароль"
+            [(ngModel)]="password"
+            name="password"
+            required
+          />
+        </div>
+
+        <div class="register-form__actions">
+          <button
+            pButton
+            type="submit"
+            label="Регистрация"
+            class="register-form__button register-form__button--primary"
+            [disabled]="isLoading"
+          ></button>
+
+          <button
+            pButton
+            type="button"
+            label="Вход"
+            class="register-form__button register-form__button--secondary"
+            routerLink="/login"
+          ></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -236,4 +236,31 @@ public class PositionHistoryService : IPositionHistoryService
         }
     }
 
+    public async Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesByPositionAsync(Guid managerPositionId, DateOnly? startDate, DateOnly? endDate)
+    {
+        try
+        {
+            _logger.LogInformation(
+                "Getting current subordinates position history for manager {ManagerId}",
+                managerPositionId);
+
+            var result = await _repository.GetCurrentSubordinatesPositionHistoryByPositionAsync(
+                managerPositionId,
+                startDate,
+                endDate);
+
+            _logger.LogInformation(
+                "Successfully retrieved current subordinates position history records for manager {ManagerId}",
+                managerPositionId);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting current subordinates position history for manager {ManagerId}",
+                managerPositionId);
+            throw;
+        }
+    }
 }

@@ -1,6 +1,6 @@
 namespace Project.Core.Models.PositionHistory;
 
-public class PositionHierarchyWithEmployee
+public class PositionHierarchyWithEmployee : IHierarchy
 {
     public PositionHierarchyWithEmployee(
         Guid employeeId,
@@ -33,4 +33,6 @@ public class PositionHierarchyWithEmployee
     public Guid? ParentId { get; set; }
     public string Title { get; set; }
     public int Level { get; set; }
+
+    public Guid OwnId { get => PositionId; set =>  PositionId = value; }
 }

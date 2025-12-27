@@ -2,7 +2,7 @@ namespace Project.Dto.Http.Position;
 
 public class PositionDto
 {
-    public PositionDto(Guid id, Guid parentId, string title, Guid companyId, bool isDeleted)
+    public PositionDto(Guid id, Guid? parentId, string title, Guid companyId, bool isDeleted)
     {
         Id = id;
         ParentId = parentId;
@@ -12,7 +12,7 @@ public class PositionDto
     }
 
     public Guid Id { get; init; }
-    public Guid ParentId { get; init; }
+    public Guid? ParentId { get; init; }
     public string Title { get; init; }
     public Guid CompanyId { get; init; }
     

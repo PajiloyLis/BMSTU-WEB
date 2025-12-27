@@ -42,3 +42,4 @@
 /docs/images/*.svg
 
 /data/
+/src/Project.HttpServer/uploads/

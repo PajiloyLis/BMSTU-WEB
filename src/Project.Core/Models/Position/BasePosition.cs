@@ -1,8 +1,8 @@
 namespace Project.Core.Models.Position;
 
-public class BasePosition
+public class BasePosition : IHierarchy
 {
-    public BasePosition(Guid id, Guid parentId, string title, Guid companyId, bool isDeleted)
+    public BasePosition(Guid id, Guid? parentId, string title, Guid companyId, bool isDeleted)
     {
         if (!Guid.TryParse(id.ToString(), out _)) throw new ArgumentException("Invalid Id format", nameof(id));
 
@@ -21,10 +21,17 @@ public class BasePosition
         IsDeleted = isDeleted;
     }
 
-    public Guid Id { get; init; }
-    public Guid ParentId { get; init; }
+    public Guid Id { get; set; }
+    public Guid? ParentId { get; set; }
     public string Title { get; init; }
     public Guid CompanyId { get; init; }
     
     public bool IsDeleted { get; init; }
+    Guid? IHierarchy.ParentId
+    {
+        get => ParentId;
+        set => ParentId = value;
+    }
+
+    public Guid OwnId { get=>Id; set=>Id = value; }
 }

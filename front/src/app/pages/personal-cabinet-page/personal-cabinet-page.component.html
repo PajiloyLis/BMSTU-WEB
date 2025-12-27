@@ -1,0 +1,92 @@
+<div class="cabinet-page">
+  <div class="cabinet-container">
+    <header class="cabinet-topbar">
+      <div class="cabinet-topbar__menu">
+        <span class="burger-icon"></span>
+      </div>
+
+      <div class="cabinet-topbar__actions">
+        <div class="user-chip" *ngIf="isSelf" (click)="goToPersonalCabinet()">
+          <span class="user-name">{{ fullName }}</span>
+          <span class="user-avatar"></span>
+        </div>
+        <div class="auth-actions" *ngIf="!isSelf">
+          <button pButton label="Регистрация" class="p-button-outlined p-button-sm pill-btn" (click)="goToRegister()"></button>
+          <button pButton label="Вход" class="p-button-outlined p-button-sm pill-btn" (click)="goToLogin()"></button>
+          <img src="assets/icon.png" alt="Неавторизованный пользователь" class="user-avatar user-avatar--unauth" />
+        </div>
+      </div>
+    </header>
+
+    <main class="cabinet-content">
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div *ngIf="isLoading" class="loading-message">Загрузка...</div>
+      
+      <section class="cabinet-header" *ngIf="employee">
+        <div class="cabinet-avatar">
+          <img [src]="employee.photoPath || 'assets/icon.png'" alt="Аватар" />
+        </div>
+        <h1 class="cabinet-name">{{ fullName }}</h1>
+      </section>
+
+      <section class="cabinet-grid">
+        <div class="cabinet-card cabinet-card--history">
+          <h2 class="cabinet-card__title">История</h2>
+          <div class="cabinet-card__body">
+            <p *ngFor="let item of history">{{ item.text }}</p>
+          </div>
+        </div>
+
+        <div class="cabinet-card cabinet-card--scores">
+          <h2 class="cabinet-card__title">Оценки</h2>
+          <div class="cabinet-card__body scores-list">
+            <div class="score-item" *ngFor="let s of scores">
+              <div class="score-item__period">{{ s.period }}</div>
+              <div class="score-item__row">
+                <span>Эффективность</span>
+                <span class="score">{{ s.efficiency }}</span>
+              </div>
+              <div class="score-item__row">
+                <span>Вовлеченность</span>
+                <span class="score">{{ s.engagement }}</span>
+              </div>
+              <div class="score-item__row">
+                <span>Компетентность</span>
+                <span class="score">{{ s.competency }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cabinet-card cabinet-card--personal">
+          <h2 class="cabinet-card__title">Личные данные</h2>
+          <div class="cabinet-card__body">
+            <div class="field-row">
+              <span>Телефон:</span>
+              <span>{{ phone }}</span>
+            </div>
+            <div class="field-row">
+              <span>Email:</span>
+              <span>{{ email }}</span>
+            </div>
+            <div class="field-row">
+              <span>Дата рождения:</span>
+              <span>{{ birthday }}</span>
+            </div>
+            <div class="field-row" *ngIf="isSelf">
+              <span>Оклад:</span>
+              <span>{{ salary }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cabinet-card cabinet-card--education">
+          <h2 class="cabinet-card__title">Образование</h2>
+          <div class="cabinet-card__body">
+            <p *ngFor="let e of education">{{ e.text }}</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

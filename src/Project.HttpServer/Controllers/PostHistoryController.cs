@@ -28,7 +28,7 @@ public class PostHistoryController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/postHistories/{postId:guid}")]
+    [HttpGet("employees/{employeeId:guid}/postHistories/{postId:guid}")]
     [SwaggerOperation("getPostHistoryByEmployeeAndPostId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -120,7 +120,7 @@ public class PostHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpDelete("/employees/{employeeId:guid}/postHistories/{postId:guid}")]
+    [HttpDelete("employees/{employeeId:guid}/postHistories/{postId:guid}")]
     [SwaggerOperation("deletePostHistory")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -147,7 +147,7 @@ public class PostHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/postHistories")]
+    [HttpGet("employees/{employeeId:guid}/postHistories")]
     [SwaggerOperation("getPostHistoriesByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -169,7 +169,7 @@ public class PostHistoryController : ControllerBase
     }
  
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/subordinates/postHistories")]
+    [HttpGet("employees/{employeeId:guid}/subordinates/postHistories")]
     [SwaggerOperation("getSubordinatesPostHistoriesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

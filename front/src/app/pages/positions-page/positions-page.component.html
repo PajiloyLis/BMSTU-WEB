@@ -1,0 +1,144 @@
+<div class="positions-page">
+  <div class="positions-container">
+    <header class="positions-topbar">
+      <div class="positions-topbar__menu">
+        <span class="burger-icon"></span>
+      </div>
+
+      <div class="positions-topbar__actions">
+        <div *ngIf="!isAuthorized" class="auth-actions">
+          <button pButton label="Регистрация" class="p-button-outlined p-button-sm pill-btn" (click)="goToRegister()"></button>
+          <button pButton label="Вход" class="p-button-outlined p-button-sm pill-btn" (click)="goToLogin()"></button>
+          <img src="assets/icon.png" alt="Неавторизованный пользователь" class="user-avatar user-avatar--unauth" />
+        </div>
+        <div *ngIf="isAuthorized" class="user-chip" (click)="goToPersonalCabinet()">
+          <span class="user-name">{{ userEmail }}</span>
+          <span class="user-avatar"></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="positions-content">
+      <div class="company-title">{{ company?.title || 'Загрузка...' }}</div>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div *ngIf="isLoading" class="loading-message">Загрузка...</div>
+
+      <section class="tree-wrapper" *ngIf="tree && !isLoading">
+        <div class="tree-surface" 
+             (mousedown)="onMouseDown($event)"
+             (mousemove)="onMouseMove($event)"
+             (mouseup)="onMouseUp($event)"
+             (mouseleave)="onMouseLeave()"
+             (wheel)="onWheel($event)">
+          <div class="tree-controls">
+            <button class="tree-control-btn" (click)="resetView()" title="Сбросить вид">
+              <span>⟲</span>
+            </button>
+            <div class="tree-zoom-info">{{ (scale * 100).toFixed(0) }}%</div>
+          </div>
+          <div class="tree-content" [style.transform]="getTransformStyle()">
+            <div class="tree-root">
+            <div class="tree-node tree-node--root">
+              <div class="tree-node__title">{{ tree.title }}</div>
+              <div class="tree-node__body" *ngIf="isAuthorized">
+                <div *ngIf="tree?.employeeName; else noEmployee">
+                  <div class="employee-name">{{ tree.employeeName }}</div>
+                  <div class="scores-row" *ngIf="tree.employeeName">
+                    <div class="score-item">
+                      <span class="score-label">Эффективность</span>
+                      <span class="score-circle" 
+                            [class.score-circle--has-value]="tree.efficiency !== undefined"
+                            [class.score-circle--no-value]="tree.efficiency === undefined"
+                            [attr.data-score]="tree.efficiency">
+                        {{ tree.efficiency !== undefined ? tree.efficiency : '○' }}
+                      </span>
+                    </div>
+                    <div class="score-item">
+                      <span class="score-label">Вовлеченность</span>
+                      <span class="score-circle"
+                            [class.score-circle--has-value]="tree.engagement !== undefined"
+                            [class.score-circle--no-value]="tree.engagement === undefined"
+                            [attr.data-score]="tree.engagement">
+                        {{ tree.engagement !== undefined ? tree.engagement : '○' }}
+                      </span>
+                    </div>
+                    <div class="score-item">
+                      <span class="score-label">Компетентность</span>
+                      <span class="score-circle"
+                            [class.score-circle--has-value]="tree.competency !== undefined"
+                            [class.score-circle--no-value]="tree.competency === undefined"
+                            [attr.data-score]="tree.competency">
+                        {{ tree.competency !== undefined ? tree.competency : '○' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <ng-template #noEmployee>Не назначен</ng-template>
+              </div>
+            </div>
+
+            <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: tree.children, isRoot: true }"></ng-container>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Рекурсивный шаблон для узлов дерева -->
+      <ng-template #treeNodeTemplate let-children let-isRoot="isRoot">
+        <div class="tree-children" *ngIf="children && children.length > 0">
+          <div class="tree-level">
+            <div class="tree-connector-horizontal"></div>
+            <div class="tree-level-nodes">
+              <ng-container *ngFor="let child of children">
+                <div class="tree-branch">
+                  <div class="tree-connector-vertical"></div>
+                  <div class="tree-node" [class.tree-node--small]="!isRoot">
+                    <div class="tree-node__title">{{ child.title }}</div>
+                    <div class="tree-node__body" *ngIf="isAuthorized">
+                      <div *ngIf="child?.employeeName; else noEmployeeTemplate">
+                        <div class="employee-name">{{ child.employeeName }}</div>
+                        <div class="scores-row" *ngIf="child.employeeName">
+                          <div class="score-item">
+                            <span class="score-label">Эффективность</span>
+                            <span class="score-circle"
+                                  [class.score-circle--has-value]="child.efficiency !== undefined"
+                                  [class.score-circle--no-value]="child.efficiency === undefined"
+                                  [attr.data-score]="child.efficiency">
+                              {{ child.efficiency !== undefined ? child.efficiency : '○' }}
+                            </span>
+                          </div>
+                          <div class="score-item">
+                            <span class="score-label">Вовлеченность</span>
+                            <span class="score-circle"
+                                  [class.score-circle--has-value]="child.engagement !== undefined"
+                                  [class.score-circle--no-value]="child.engagement === undefined"
+                                  [attr.data-score]="child.engagement">
+                              {{ child.engagement !== undefined ? child.engagement : '○' }}
+                            </span>
+                          </div>
+                          <div class="score-item">
+                            <span class="score-label">Компетентность</span>
+                            <span class="score-circle"
+                                  [class.score-circle--has-value]="child.competency !== undefined"
+                                  [class.score-circle--no-value]="child.competency === undefined"
+                                  [attr.data-score]="child.competency">
+                              {{ child.competency !== undefined ? child.competency : '○' }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-template #noEmployeeTemplate>Не назначен</ng-template>
+                    </div>
+                  </div>
+                  
+                  <!-- Рекурсивный вызов для дочерних узлов -->
+                  <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: child.children, isRoot: false }"></ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </main>
+  </div>
+</div>

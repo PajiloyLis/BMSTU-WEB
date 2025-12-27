@@ -59,4 +59,7 @@ public interface IPositionHistoryRepository
 
     Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryAsync(Guid managerId,
         DateOnly? startDate, DateOnly? endDate, int pageNumber, int pageSize);
+    
+    Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesPositionHistoryByPositionAsync(Guid managerId,
+        DateOnly? startDate, DateOnly? endDate);
 }

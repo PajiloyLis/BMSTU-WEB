@@ -1,0 +1,52 @@
+<div class="posts-page">
+  <div class="posts-container">
+    <header class="posts-topbar">
+      <div class="posts-topbar__menu">
+        <span class="burger-icon"></span>
+      </div>
+
+      <div class="posts-topbar__actions">
+        <div *ngIf="!isAuthorized" class="auth-actions">
+          <button pButton label="Регистрация" class="p-button-outlined p-button-sm pill-btn" (click)="goToRegister()"></button>
+          <button pButton label="Вход" class="p-button-outlined p-button-sm pill-btn" (click)="goToLogin()"></button>
+          <img src="assets/icon.png" alt="Неавторизованный пользователь" class="user-avatar user-avatar--unauth" />
+        </div>
+        <div *ngIf="isAuthorized" class="user-chip" (click)="goToPersonalCabinet()">
+          <span class="user-name">{{ userEmail }}</span>
+          <span class="user-avatar"></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="posts-content">
+      <div class="company-title">{{ company?.title || 'Загрузка...' }}</div>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div *ngIf="isLoading" class="loading-message">Загрузка...</div>
+
+      <section class="posts-list-wrapper">
+        <div class="posts-header">
+          <div></div>
+          <button
+            *ngIf="isAuthorized"
+            type="button"
+            class="filter-button"
+          >
+            <i class="pi pi-filter"></i>
+            <span>Фильтровать</span>
+          </button>
+        </div>
+
+        <div class="posts-list">
+          <div class="post-row" *ngFor="let postRow of posts">
+            <div class="post-row__title">
+              {{ postRow.post.title }}
+            </div>
+            <div class="post-row__employee" *ngIf="isAuthorized">
+              {{ postRow.employeeName || 'Не назначен' }}
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

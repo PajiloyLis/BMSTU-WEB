@@ -84,39 +84,39 @@ public class AuthorizationController : ControllerBase
         }
     }
     
-    [Authorize(Roles = "employee")]
-    [HttpGet("currentUser")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(Guid))]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(ErrorDto))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> GetCurrentUserId()
-    {
-        try
-        {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            if (email is null)
-            {
-                throw new SecurityTokenException("Invalid token");
-            }
-
-            var authData = await _authorizationService.GetCurrentUserIdAsync(email);
-            return Ok(authData);
-        }
-        catch (SecurityTokenException e)
-        {
-            _logger.LogWarning(e, "Token invalid");
-            return BadRequest(new ErrorDto(e.GetType().Name, e.Message));
-        }
-        catch (UserNotFoundException ex)
-        {
-            _logger.LogWarning(ex, $"User with not found");
-            return NotFound(new ErrorDto(ex.GetType().Name, ex.Message));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred during login");
-            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(ex.GetType().Name, ex.Message));
-        }
-    }
+    // [Authorize(Roles = "employee")]
+    // [HttpGet("currentUser")]
+    // [SwaggerResponse(StatusCodes.Status200OK, type: typeof(Guid))]
+    // [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ErrorDto))]
+    // [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(ErrorDto))]
+    // [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
+    // public async Task<IActionResult> GetCurrentUserId()
+    // {
+    //     try
+    //     {
+    //         var email = User.FindFirst(ClaimTypes.Email)?.Value;
+    //         if (email is null)
+    //         {
+    //             throw new SecurityTokenException("Invalid token");
+    //         }
+    //
+    //         var authData = await _authorizationService.GetCurrentUserIdAsync(email);
+    //         return Ok(authData);
+    //     }
+    //     catch (SecurityTokenException e)
+    //     {
+    //         _logger.LogWarning(e, "Token invalid");
+    //         return BadRequest(new ErrorDto(e.GetType().Name, e.Message));
+    //     }
+    //     catch (UserNotFoundException ex)
+    //     {
+    //         _logger.LogWarning(ex, $"User with not found");
+    //         return NotFound(new ErrorDto(ex.GetType().Name, ex.Message));
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error occurred during login");
+    //         return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(ex.GetType().Name, ex.Message));
+    //     }
+    // }
 }

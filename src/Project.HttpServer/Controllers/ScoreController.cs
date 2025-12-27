@@ -26,7 +26,7 @@ public class ScoreController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("/scores/{scoreId:guid}")]
+    [HttpGet("scores/{scoreId:guid}")]
     [SwaggerOperation("getScoreById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -53,7 +53,7 @@ public class ScoreController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpPost("/scores")]
+    [HttpPost("scores")]
     [SwaggerOperation("createScore")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -86,7 +86,7 @@ public class ScoreController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpPatch("/scores/{scoreId}")]
+    [HttpPatch("scores/{scoreId}")]
     [SwaggerOperation("updateScore")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -122,7 +122,7 @@ public class ScoreController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpDelete("/scores/{scoreId:guid}")]
+    [HttpDelete("scores/{scoreId:guid}")]
     [SwaggerOperation("deleteScore")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -149,7 +149,7 @@ public class ScoreController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/scores")]
+    [HttpGet("employees/{employeeId:guid}/scores")]
     [SwaggerOperation("getScoresByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -171,7 +171,7 @@ public class ScoreController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/scoreAuthor/{authorId:guid}/scores")]
+    [HttpGet("employees/scoreAuthor/{authorId:guid}/scores")]
     [SwaggerOperation("getScoresByAuthorId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -215,7 +215,7 @@ public class ScoreController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{headEmployeeId:guid}/subordinates/scores")]
+    [HttpGet("employees/{headEmployeeId:guid}/subordinates/scores")]
     [SwaggerOperation("getSubordinatesScoresByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

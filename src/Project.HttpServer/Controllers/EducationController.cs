@@ -26,7 +26,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles = "employee, admin")]
-    [HttpGet("/{educationId:guid}")]
+    [HttpGet("{educationId:guid}")]
     [SwaggerOperation("getEducationById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -53,7 +53,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPost("/educations")]
+    [HttpPost("educations")]
     [SwaggerOperation("createEducation")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -90,7 +90,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPatch("/educations/{educationId:guid}")]
+    [HttpPatch("educations/{educationId:guid}")]
     [SwaggerOperation("updateEducation")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -133,7 +133,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles="admin")]
-    [HttpDelete("/educations/{educationId:guid}")]
+    [HttpDelete("educations/{educationId:guid}")]
     [SwaggerOperation("deleteEducation")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -160,7 +160,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles="admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/educations")]
+    [HttpGet("employees/{employeeId:guid}/educations")]
     [SwaggerOperation("getEducationsByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

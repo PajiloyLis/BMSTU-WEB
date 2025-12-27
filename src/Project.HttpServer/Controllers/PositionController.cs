@@ -28,7 +28,7 @@ public class PositionController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("/positions/{positionId:guid}")]
+    [HttpGet("positions/{positionId:guid}")]
     [SwaggerOperation("getPositionById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -55,7 +55,7 @@ public class PositionController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPost("/positions")]
+    [HttpPost("positions")]
     [SwaggerOperation("createPosition")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PositionDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -89,7 +89,7 @@ public class PositionController : ControllerBase
     }
 
     [Authorize(Roles="admin")]
-    [HttpPatch("/positions/{positiondId:guid}/title")]
+    [HttpPatch("positions/{positiondId:guid}/title")]
     [SwaggerOperation("updatePositionTitle")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -126,7 +126,7 @@ public class PositionController : ControllerBase
     }
 
     [Authorize(Roles="admin")]
-    [HttpDelete("/positions/{positionId:guid}")]
+    [HttpDelete("positions/{positionId:guid}")]
     [SwaggerOperation("deletePosition")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -153,7 +153,7 @@ public class PositionController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("/positions/{headPositionId:guid}/subordinates")]
+    [HttpGet("positions/{positionId:guid}/subordinates")]
     [SwaggerOperation("getSubordinatesPositionsByHeadPositionId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -214,7 +214,7 @@ public class PositionController : ControllerBase
     // }
     
     [Authorize(Roles = "admin")]
-    [HttpPatch("/positions/{positionId}/parent")]
+    [HttpPatch("positions/{positionId}/parent")]
     [SwaggerOperation("updatePositionParent")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

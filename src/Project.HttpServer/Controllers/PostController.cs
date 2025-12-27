@@ -25,7 +25,7 @@ public class PostController :ControllerBase
     }
     
     [AllowAnonymous]
-    [HttpGet("/posts/{postId:guid}")]
+    [HttpGet("posts/{postId:guid}")]
     [SwaggerOperation("getPostById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -52,7 +52,7 @@ public class PostController :ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPost("/posts")]
+    [HttpPost("posts")]
     [SwaggerOperation("createPost")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -86,7 +86,7 @@ public class PostController :ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPatch("/posts/{postId:guid}")]
+    [HttpPatch("posts/{postId:guid}")]
     [SwaggerOperation("updatePost")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PostDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -124,7 +124,7 @@ public class PostController :ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpDelete("/posts/{postId:guid}")]
+    [HttpDelete("posts/{postId:guid}")]
     [SwaggerOperation("deletePost")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -151,7 +151,7 @@ public class PostController :ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("/companies/{companyId:guid}/posts")]
+    [HttpGet("companies/{companyId:guid}/posts")]
     [SwaggerOperation("getPostsByCompanyId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PostDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

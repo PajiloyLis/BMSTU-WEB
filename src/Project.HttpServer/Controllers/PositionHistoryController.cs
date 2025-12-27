@@ -25,7 +25,7 @@ public class PositionHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
+    [HttpGet("employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("getPositionHistoryByEmployeeAndPositionId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -52,7 +52,7 @@ public class PositionHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpPost]
+    [HttpPost("positionHistories")]
     [SwaggerOperation("createPositionHistory")]
     [SwaggerResponse(StatusCodes.Status201Created, type: typeof(PositionHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -82,7 +82,7 @@ public class PositionHistoryController : ControllerBase
     }
     
     [Authorize(Roles = "admin")]
-    [HttpPatch("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
+    [HttpPatch("employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("updatePositionHistory")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHistoryDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -117,7 +117,7 @@ public class PositionHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin")]
-    [HttpDelete("/employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
+    [HttpDelete("employees/{employeeId:guid}/positionHistories/{positionId:guid}")]
     [SwaggerOperation("deletePositionHistory")]
     [SwaggerResponse(StatusCodes.Status204NoContent, type: typeof(bool))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -144,7 +144,7 @@ public class PositionHistoryController : ControllerBase
     }
 
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/positionHistories")]
+    [HttpGet("employees/{employeeId:guid}/positionHistories")]
     [SwaggerOperation("getPositionHistoriesByEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PositionHistoryDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -166,7 +166,7 @@ public class PositionHistoryController : ControllerBase
     }
  
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{employeeId:guid}/subordinates/positionHistories")]
+    [HttpGet("employees/{employeeId:guid}/subordinates/positionHistories")]
     [SwaggerOperation("getSubordinatesPositionHistoriesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<PositionHistoryDto>))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -188,7 +188,7 @@ public class PositionHistoryController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("/employees/{headEmployeeId:guid}/currentSubordinates/positionHistories")]
+    [HttpGet("employees/{headEmployeeId:guid}/currentSubordinates/positionHistories")]
     [SwaggerOperation("getCurrentSubordinatesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyWithEmployeeDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -201,6 +201,28 @@ public class PositionHistoryController : ControllerBase
             var positionHistories = await _positionHistoryService.GetCurrentSubordinatesAsync(headEmployeeId, pageNumber, pageSize);
 
             return Ok(positionHistories.Select(PositionHierarchyWithEmployeeWithEmployeeConverter.Convert));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
+        }
+    }
+    
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("employees/{headPositionId:guid}/currentSubordinates/positionHistories")]
+    [SwaggerOperation("getCurrentSubordinatesByHeadPositionId")]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyWithEmployeeDto))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
+    public async Task<IActionResult> GetCurrentSubordinateEmployeesByHeadPositionId([FromRoute] [Required] Guid headPositionId,
+        [FromQuery] DateOnly? startDate = null, [FromQuery] DateOnly? endDate = null)
+    {
+        try
+        {
+            var positionHistories = await _positionHistoryService.GetCurrentSubordinatesByPositionAsync(headPositionId, startDate, endDate);
+
+            return Ok(positionHistories.Select(PositionHistoryConverter.Convert));
         }
         catch (Exception e)
         {

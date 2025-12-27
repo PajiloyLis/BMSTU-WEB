@@ -24,6 +24,12 @@ public class Startup
             .AddProjectDbContext(Configuration)
             // .AddProjectMongoDbContext(Configuration)
             .AddProjectServices(Configuration);
+
+        // Конфигурация для загрузки файлов
+        services.Configure<IISServerOptions>(options =>
+        {
+            options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -32,6 +38,19 @@ public class Startup
 
         app.UseSwagger();
         app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "Project.HttpServer v1"); });
+
+        // Добавляем поддержку статических файлов для фотографий
+        var uploadsPath = Path.Combine(env.ContentRootPath, "uploads");
+        if (!Directory.Exists(uploadsPath))
+        {
+            Directory.CreateDirectory(uploadsPath);
+        }
+        
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+            RequestPath = "/uploads"
+        });
 
         app.UseRouting();
         app.UseCors("AllowAllHeaders");

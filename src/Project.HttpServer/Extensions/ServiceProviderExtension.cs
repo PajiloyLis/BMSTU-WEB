@@ -74,6 +74,8 @@ public static class ServiceProviderExtension
                     Array.Empty<string>()
                 }
             });
+            
+            // Поддержка загрузки файлов
         });
 
         return serviceCollection;

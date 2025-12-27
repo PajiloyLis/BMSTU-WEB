@@ -1,0 +1,68 @@
+<div class="home-page">
+  <div class="home-container">
+    <header class="home-topbar">
+      <div class="home-topbar__menu">
+        <span class="burger-icon"></span>
+      </div>
+
+      <div class="home-topbar__actions">
+        <div *ngIf="!isAuthorized" class="auth-actions">
+          <button pButton label="Регистрация" class="p-button-outlined p-button-sm pill-btn" (click)="goToRegister()"></button>
+          <button pButton label="Вход" class="p-button-outlined p-button-sm pill-btn" (click)="goToLogin()"></button>
+          <img src="assets/icon.png" alt="Неавторизованный пользователь" class="user-avatar user-avatar--unauth" />
+        </div>
+        <div *ngIf="isAuthorized" class="user-chip" (click)="goToPersonalCabinet()">
+          <span class="user-name">{{ userEmail }}</span>
+          <span class="user-avatar"></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="home-content">
+      <div class="group-title">Группа компаний “Кек”</div>
+
+      <section class="companies">
+        <div class="companies-list">
+          <div
+            class="company-item"
+            *ngFor="let company of companies; let i = index"
+            [class.company-item--active]="expandedIndex === i"
+          >
+            <div class="company-row" [class.company-row--active]="expandedIndex === i" (click)="toggleCompany(i)">
+              {{ company.title }}
+            </div>
+
+            <div class="company-details" *ngIf="expandedIndex === i">
+
+              <div class="company-details__cards">
+                <div class="info-card">
+                  <div class="info-card__title">Юридическая информация</div>
+                  <div class="info-card__rows">
+                    <div class="row"><span>Дата регистрации:</span><span>{{ formatDate(company.registrationDate) }}</span></div>
+                    <div class="row"><span>ИНН:</span><span>{{ company.inn }}</span></div>
+                    <div class="row"><span>ОГРН:</span><span>{{ company.ogrn }}</span></div>
+                    <div class="row"><span>КПП:</span><span>{{ company.kpp }}</span></div>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="info-card__title">Контактная информация</div>
+                  <div class="info-card__rows">
+                    <div class="row"><span>Телефон:</span><span>{{ company.phoneNumber }}</span></div>
+                    <div class="row"><span>Email:</span><span>{{ company.email }}</span></div>
+                    <div class="row"><span>Адрес:</span><span>{{ company.address }}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-actions">
+                <button pButton type="button" label="Позиции компании" class="info-action-btn" (click)="goToPositions(company.companyId)"></button>
+                <button pButton type="button" label="Должности компании" class="info-action-btn" (click)="goToPosts(company.companyId)"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

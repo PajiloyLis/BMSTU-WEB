@@ -1,0 +1,60 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-card__header">
+      <h1 class="login-card__welcome">Добро пожаловать!</h1>
+    </div>
+
+    <div class="login-card__body">
+      <h2 class="login-card__title">Вход в систему</h2>
+
+      <form class="login-form" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        
+        <div class="login-form__field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            placeholder="Введите email"
+            [(ngModel)]="email"
+            name="email"
+            required
+          />
+        </div>
+
+        <div class="login-form__field">
+          <label for="password">Пароль</label>
+          <input
+            id="password"
+            type="password"
+            pPassword
+            [feedback]="false"
+            placeholder="Введите пароль"
+            [(ngModel)]="password"
+            name="password"
+            required
+          />
+        </div>
+
+        <div class="login-form__actions">
+          <button
+            pButton
+            type="submit"
+            label="Вход"
+            class="login-form__button login-form__button--primary"
+            [disabled]="isLoading"
+          ></button>
+
+          <button
+            pButton
+            type="button"
+            label="Регистрация"
+            class="login-form__button login-form__button--secondary"
+            routerLink="/register"
+          ></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
