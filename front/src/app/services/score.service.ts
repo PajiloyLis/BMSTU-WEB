@@ -114,6 +114,12 @@ export class ScoreService {
     );
   }
 
+  getSubordinatesLastScores(headEmployeeId: string): Observable<Score[]> {
+    return this.httpService.get<ScoreDto[]>(`employees/${headEmployeeId}/subordinates/lasrScores`).pipe(
+      map(dtos => dtos.map(dto => this.converters.scoreDtoToModel(dto)))
+    );
+  }
+
   create(score: CreateScore): Observable<Score> {
     const dto = this.converters.createScoreToDto(score);
     return this.httpService.post<ScoreDto>('scores', dto).pipe(

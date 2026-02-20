@@ -35,3 +35,11 @@ export interface UpdateEmployeeDto {
   duties?: string; // JSON string
 }
 
+/**
+ * DTO for current employee on a position (from /currentEmployees endpoint)
+ */
+export interface CurrentEmployeeDto {
+  positionId: string;
+  employeeId: string;
+}
+

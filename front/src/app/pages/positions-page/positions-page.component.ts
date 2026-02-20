@@ -3,15 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { PositionService } from '../../services/position.service';
-import { PositionHistoryService } from '../../services/position-history.service';
 import { EmployeeService } from '../../services/employee.service';
 import { CompanyService } from '../../services/company.service';
 import { AuthService } from '../../services/auth.service';
 import { ScoreService } from '../../services/score.service';
-import { PositionHierarchyWithEmployee } from '../../models/position-history.model';
 import { PositionHierarchy } from '../../models/position.model';
 import { Company } from '../../models/company.model';
-import { Employee } from '../../models/employee.model';
+import { Employee, CurrentEmployee } from '../../models/employee.model';
 import { Score } from '../../models/score.model';
 
 interface PositionNode {
@@ -40,6 +38,9 @@ export class PositionsPageComponent implements OnInit {
   errorMessage: string = '';
   userEmail: string | null = null;
 
+  // Sidebar menu
+  isMenuOpen: boolean = false;
+
   // Pan and zoom properties
   panX: number = 0;
   panY: number = 0;
@@ -56,7 +57,6 @@ export class PositionsPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private positionService: PositionService,
-    private positionHistoryService: PositionHistoryService,
     private employeeService: EmployeeService,
     private companyService: CompanyService,
     private authService: AuthService,
@@ -152,12 +152,13 @@ export class PositionsPageComponent implements OnInit {
           // Нет подчиненных - загружаем только головную позицию
           this.positionService.getById(headPositionId).subscribe({
             next: (position) => {
-              this.tree = {
+              const rootNode: PositionNode = {
                 positionId: position.id,
                 title: position.title,
                 children: []
               };
-              this.isLoading = false;
+              // Загружаем сотрудников даже для одной позиции
+              this.loadCurrentEmployeesForTree(rootNode);
             }
           });
           return;
@@ -203,13 +204,8 @@ export class PositionsPageComponent implements OnInit {
               children: rootNodes
             };
 
-            // Для авторизованных пользователей загружаем данные о сотрудниках
-            if (this.isAuthorized) {
-              this.loadEmployeesForPositions(headPositionId, rootNode);
-            } else {
-              this.tree = rootNode;
-              this.isLoading = false;
-            }
+            // Загружаем текущих сотрудников для всего дерева
+            this.loadCurrentEmployeesForTree(rootNode);
           }
         });
       },
@@ -221,198 +217,166 @@ export class PositionsPageComponent implements OnInit {
     });
   }
 
-  loadEmployeesForPositions(headPositionId: string, positionTree: PositionNode): void {
-    // Шаг 2: headEmployeeId - это ID текущего авторизованного сотрудника
-    const headEmployeeId = this.authService.getUserId();
-    
-    if (!headEmployeeId) {
-      // Если нет авторизованного пользователя, просто отображаем позиции без сотрудников
+  /**
+   * Загружает текущих сотрудников компании и обогащает дерево позиций именами
+   */
+  loadCurrentEmployeesForTree(positionTree: PositionNode): void {
+    if (!this.companyId) {
       this.tree = positionTree;
       this.isLoading = false;
       return;
     }
 
-    // Получаем текущих подчиненных текущего сотрудника
-    this.loadEmployeeHierarchy(headEmployeeId, positionTree);
-  }
+    // Шаг 1: Получаем пары positionId → employeeId для данной компании
+    this.employeeService.getCurrentEmployees(this.companyId).subscribe({
+      next: (currentEmployees) => {
+        console.log('Current employees loaded:', currentEmployees);
 
-  loadEmployeeHierarchy(headEmployeeId: string, positionTree: PositionNode): void {
-    // Шаг 3: Получаем текущих подчиненных сотрудника (иерархия с сотрудниками, level относительно headEmployeeId)
-    this.positionHistoryService.getCurrentSubordinatesPositionHistories(headEmployeeId).subscribe({
-      next: (employeeHierarchy) => {
-        console.log('Employee hierarchy loaded:', employeeHierarchy);
-        
-        if (employeeHierarchy.length === 0) {
-          // Нет подчиненных - просто отображаем позиции без сотрудников
+        if (currentEmployees.length === 0) {
           this.tree = positionTree;
           this.isLoading = false;
           return;
         }
 
-        // Вычисляем дату два месяца назад
-        const twoMonthsAgo = new Date();
-        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-        const startDate = twoMonthsAgo.toISOString().split('T')[0]; // Формат YYYY-MM-DD
-
-        // Для каждого employeeId из иерархии загружаем информацию о сотруднике и его оценки за последние 2 месяца
-        const employeeRequests = employeeHierarchy.map(emp => 
-          forkJoin({
-            employee: this.employeeService.getById(emp.employeeId).pipe(
-              catchError(error => {
-                console.error(`Error loading employee ${emp.employeeId}:`, error);
-                return of(null);
-              })
-            ),
-            scores: this.scoreService.getByEmployeeId(emp.employeeId, 1, 12, startDate).pipe(
-              catchError(error => {
-                console.error(`Error loading scores for employee ${emp.employeeId}:`, error);
-                return of([]);
-              })
-            )
-          }).pipe(
-            map(result => ({
-              positionId: emp.positionId,
-              employeeId: emp.employeeId,
-              employeeName: result.employee?.fullName,
-              scores: result.scores
-            }))
+        // Шаг 2: Для каждого employeeId загружаем информацию о сотруднике
+        const employeeRequests = currentEmployees.map(ce =>
+          this.employeeService.getById(ce.employeeId).pipe(
+            map(employee => ({
+              positionId: ce.positionId,
+              employeeId: ce.employeeId,
+              employeeName: employee.fullName,
+              employeeEmail: employee.email
+            })),
+            catchError(error => {
+              console.error(`Error loading employee ${ce.employeeId}:`, error);
+              return of(null);
+            })
           )
         );
 
-        // Загружаем всех сотрудников и их оценки параллельно
         forkJoin(employeeRequests).subscribe({
-          next: (employeeData) => {
-            console.log('Employee data with scores loaded:', employeeData);
-            
-            // Создаем карту positionId -> employeeId, employeeName и последние оценки
-            const employeeMap = new Map<string, { 
-              employeeId: string; 
-              employeeName: string;
-              efficiency?: number;
-              engagement?: number;
-              competency?: number;
-            }>();
-            
-            employeeData.forEach(data => {
-              if (data.employeeName) {
-                if (data.scores && data.scores.length > 0) {
-                  // Берем последнюю оценку (самую свежую) из оценок за последние 2 месяца
-                  const latestScore = data.scores.sort((a, b) => 
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                  )[0];
-                  
-                  employeeMap.set(data.positionId, {
-                    employeeId: data.employeeId,
-                    employeeName: data.employeeName,
-                    efficiency: latestScore.efficiencyScore,
-                    engagement: latestScore.engagementScore,
-                    competency: latestScore.competencyScore
-                  });
-                } else {
-                  // Есть сотрудник, но нет оценок за последние 2 месяца - показываем серые кружки
-                  employeeMap.set(data.positionId, {
-                    employeeId: data.employeeId,
-                    employeeName: data.employeeName
-                    // efficiency, engagement, competency остаются undefined - будут серые кружки
-                  });
+          next: (employeeDataList) => {
+            console.log('Employee data loaded:', employeeDataList);
+
+            // Создаем карту positionId → { employeeId, employeeName }
+            const employeeMap = new Map<string, { employeeId: string; employeeName: string }>();
+            let currentUserEmployeeId: string | null = null;
+            const currentEmail = this.authService.getEmail();
+
+            employeeDataList.forEach(data => {
+              if (data && data.employeeName) {
+                employeeMap.set(data.positionId, {
+                  employeeId: data.employeeId,
+                  employeeName: data.employeeName
+                });
+
+                // Находим employeeId текущего авторизованного пользователя по email
+                if (currentEmail && data.employeeEmail && data.employeeEmail.toLowerCase() === currentEmail.toLowerCase()) {
+                  currentUserEmployeeId = data.employeeId;
+                  console.log('Found current user employeeId:', currentUserEmployeeId, 'by email:', currentEmail);
                 }
               }
             });
 
-            console.log('Employee map created:', Array.from(employeeMap.entries()));
-            console.log('Position tree before enrichment:', JSON.stringify(positionTree, null, 2));
+            console.log('Employee map:', Array.from(employeeMap.entries()));
+            console.log('Current user employeeId:', currentUserEmployeeId);
 
-            // Создаем новое дерево с данными о сотрудниках (не мутируем существующее)
-            const enrichedTree = this.enrichTreeWithEmployeesNew(positionTree, employeeMap);
-            
-            console.log('Position tree after enrichment:', JSON.stringify(enrichedTree, null, 2));
-            console.log('isAuthorized:', this.isAuthorized);
-            
-            // Устанавливаем новое дерево
-            this.tree = enrichedTree;
-            this.isLoading = false;
-            
-            // Принудительно обновляем представление
-            setTimeout(() => {
-              this.cdr.detectChanges();
-              console.log('Tree after detectChanges:', this.tree);
-            }, 0);
+            // Шаг 3: Обогащаем дерево именами сотрудников
+            const enrichedTree = this.enrichTreeWithEmployees(positionTree, employeeMap);
+
+            // Шаг 4: Если авторизован и нашли employeeId — загружаем последние оценки подчинённых
+            if (this.isAuthorized && currentUserEmployeeId) {
+              this.loadLastScoresForTree(enrichedTree, currentUserEmployeeId);
+            } else {
+              this.tree = enrichedTree;
+              this.isLoading = false;
+              setTimeout(() => {
+                this.cdr.detectChanges();
+              }, 0);
+            }
           },
           error: (error) => {
             console.error('Error loading employees:', error);
-            // В случае ошибки просто отображаем позиции без сотрудников
             this.tree = positionTree;
             this.isLoading = false;
           }
         });
       },
       error: (error) => {
-        console.error('Error loading employee hierarchy:', error);
-        // В случае ошибки просто отображаем позиции без сотрудников
+        console.error('Error loading current employees:', error);
         this.tree = positionTree;
         this.isLoading = false;
       }
     });
   }
 
-  enrichTreeWithEmployees(node: PositionNode, employeeMap: Map<string, { employeeId: string; employeeName: string }>): void {
-    // Обновляем текущий узел
+  enrichTreeWithEmployees(node: PositionNode, employeeMap: Map<string, { employeeId: string; employeeName: string }>): PositionNode {
     const employeeData = employeeMap.get(node.positionId);
-    console.log(`Enriching node ${node.positionId} (${node.title}):`, employeeData);
-    if (employeeData) {
-      node.employeeId = employeeData.employeeId;
-      node.employeeName = employeeData.employeeName;
-      console.log(`Set employeeName for ${node.positionId}: ${node.employeeName}`);
-    } else {
-      console.log(`No employee data found for position ${node.positionId}`);
-    }
 
-    // Рекурсивно обновляем дочерние узлы
-    if (node.children) {
-      node.children.forEach(child => {
-        this.enrichTreeWithEmployees(child, employeeMap);
-      });
-    }
-  }
-
-  enrichTreeWithEmployeesNew(node: PositionNode, employeeMap: Map<string, { 
-    employeeId: string; 
-    employeeName: string;
-    efficiency?: number;
-    engagement?: number;
-    competency?: number;
-  }>): PositionNode {
-    // Создаем новый узел (не мутируем существующий)
-    const employeeData = employeeMap.get(node.positionId);
-    console.log(`Enriching node ${node.positionId} (${node.title}):`, employeeData);
-    
     const newNode: PositionNode = {
       positionId: node.positionId,
       title: node.title,
-      children: node.children ? node.children.map(child => this.enrichTreeWithEmployeesNew(child, employeeMap)) : undefined
+      children: node.children ? node.children.map(child => this.enrichTreeWithEmployees(child, employeeMap)) : undefined
     };
 
     if (employeeData) {
       newNode.employeeId = employeeData.employeeId;
       newNode.employeeName = employeeData.employeeName;
-      newNode.efficiency = employeeData.efficiency;
-      newNode.engagement = employeeData.engagement;
-      newNode.competency = employeeData.competency;
-      console.log(`Set employeeName for ${node.positionId}: ${newNode.employeeName}`);
-      console.log(`Set scores for ${node.positionId}:`, {
-        efficiency: newNode.efficiency,
-        engagement: newNode.engagement,
-        competency: newNode.competency
-      });
-    } else {
-      console.log(`No employee data found for position ${node.positionId}`);
     }
 
     return newNode;
   }
 
-  private deepCopy<T>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj));
+  /**
+   * Загружает последние оценки подчинённых авторизованного сотрудника и обогащает дерево
+   */
+  loadLastScoresForTree(positionTree: PositionNode, headEmployeeId: string): void {
+    console.log('Loading last scores for headEmployeeId:', headEmployeeId);
+
+    this.scoreService.getSubordinatesLastScores(headEmployeeId).subscribe({
+      next: (scores) => {
+        console.log('Last scores loaded:', scores);
+
+        // Создаём карту: employeeId → последняя оценка
+        const scoreMap = new Map<string, Score>();
+        scores.forEach(score => {
+          scoreMap.set(score.employeeId, score);
+        });
+
+        // Обогащаем дерево оценками
+        const enrichedTree = this.enrichTreeWithScores(positionTree, scoreMap);
+
+        this.tree = enrichedTree;
+        this.isLoading = false;
+
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: (error) => {
+        console.error('Error loading last scores:', error);
+        // В случае ошибки отображаем дерево без оценок
+        this.tree = positionTree;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  enrichTreeWithScores(node: PositionNode, scoreMap: Map<string, Score>): PositionNode {
+    const score = node.employeeId ? scoreMap.get(node.employeeId) : undefined;
+
+    const newNode: PositionNode = {
+      ...node,
+      children: node.children ? node.children.map(child => this.enrichTreeWithScores(child, scoreMap)) : undefined
+    };
+
+    if (score) {
+      newNode.efficiency = score.efficiencyScore;
+      newNode.engagement = score.engagementScore;
+      newNode.competency = score.competencyScore;
+    }
+
+    return newNode;
   }
 
   goToLogin(): void {

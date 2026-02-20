@@ -20,6 +20,5 @@ public interface IScoreRepository
     Task<IEnumerable<BaseScore>> GetScoresByAuthorIdAsync(Guid authorId, DateTimeOffset? startDate,
         DateTimeOffset? endDate, int pageNumber, int pageSize);
 
-    Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeIdAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize);
+    Task<IEnumerable<BaseScore>> GetSubordinatesLastScoresByEmployeeIdAsync(Guid employeeId);
 }

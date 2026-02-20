@@ -263,4 +263,18 @@ public class PositionHistoryService : IPositionHistoryService
             throw;
         }
     }
+
+    public async Task<IEnumerable<BasePositionHistory>> GetCurrentEmployeesByCompanyId(Guid companyId)
+    {
+        try
+        {
+            var result = await _repository.GetCurrentEmployeesByCompanyId(companyId);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting current employees by company id {companyId}", companyId);
+            throw;
+        }
+    }
 }

@@ -35,3 +35,11 @@ export interface UpdateEmployee {
   duties?: string; // JSON string
 }
 
+/**
+ * Domain model for current employee on a position
+ */
+export interface CurrentEmployee {
+  positionId: string;
+  employeeId: string;
+}
+

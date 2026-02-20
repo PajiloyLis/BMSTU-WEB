@@ -1,7 +1,9 @@
 <div class="positions-page">
+  <app-sidebar-menu [(isOpen)]="isMenuOpen"></app-sidebar-menu>
+
   <div class="positions-container">
     <header class="positions-topbar">
-      <div class="positions-topbar__menu">
+      <div class="positions-topbar__menu" (click)="isMenuOpen = true">
         <span class="burger-icon"></span>
       </div>
 
@@ -39,41 +41,28 @@
           <div class="tree-content" [style.transform]="getTransformStyle()">
             <div class="tree-root">
             <div class="tree-node tree-node--root">
-              <div class="tree-node__title">{{ tree.title }}</div>
-              <div class="tree-node__body" *ngIf="isAuthorized">
+              <div class="tree-node__header">{{ tree.title }}</div>
+              <div class="tree-node__body">
                 <div *ngIf="tree?.employeeName; else noEmployee">
                   <div class="employee-name">{{ tree.employeeName }}</div>
-                  <div class="scores-row" *ngIf="tree.employeeName">
+                  <div class="scores-row" *ngIf="tree.efficiency !== undefined">
                     <div class="score-item">
                       <span class="score-label">Эффективность</span>
-                      <span class="score-circle" 
-                            [class.score-circle--has-value]="tree.efficiency !== undefined"
-                            [class.score-circle--no-value]="tree.efficiency === undefined"
-                            [attr.data-score]="tree.efficiency">
-                        {{ tree.efficiency !== undefined ? tree.efficiency : '○' }}
-                      </span>
+                      <span class="score-value" [attr.data-score]="tree.efficiency">{{ tree.efficiency }}</span>
                     </div>
                     <div class="score-item">
                       <span class="score-label">Вовлеченность</span>
-                      <span class="score-circle"
-                            [class.score-circle--has-value]="tree.engagement !== undefined"
-                            [class.score-circle--no-value]="tree.engagement === undefined"
-                            [attr.data-score]="tree.engagement">
-                        {{ tree.engagement !== undefined ? tree.engagement : '○' }}
-                      </span>
+                      <span class="score-value" [attr.data-score]="tree.engagement">{{ tree.engagement }}</span>
                     </div>
                     <div class="score-item">
                       <span class="score-label">Компетентность</span>
-                      <span class="score-circle"
-                            [class.score-circle--has-value]="tree.competency !== undefined"
-                            [class.score-circle--no-value]="tree.competency === undefined"
-                            [attr.data-score]="tree.competency">
-                        {{ tree.competency !== undefined ? tree.competency : '○' }}
-                      </span>
+                      <span class="score-value" [attr.data-score]="tree.competency">{{ tree.competency }}</span>
                     </div>
                   </div>
                 </div>
-                <ng-template #noEmployee>Не назначен</ng-template>
+                <ng-template #noEmployee>
+                  <div class="employee-name employee-name--empty">Не назначен</div>
+                </ng-template>
               </div>
             </div>
 
@@ -93,41 +82,28 @@
                 <div class="tree-branch">
                   <div class="tree-connector-vertical"></div>
                   <div class="tree-node" [class.tree-node--small]="!isRoot">
-                    <div class="tree-node__title">{{ child.title }}</div>
-                    <div class="tree-node__body" *ngIf="isAuthorized">
+                    <div class="tree-node__header">{{ child.title }}</div>
+                    <div class="tree-node__body">
                       <div *ngIf="child?.employeeName; else noEmployeeTemplate">
                         <div class="employee-name">{{ child.employeeName }}</div>
-                        <div class="scores-row" *ngIf="child.employeeName">
+                        <div class="scores-row" *ngIf="child.efficiency !== undefined">
                           <div class="score-item">
                             <span class="score-label">Эффективность</span>
-                            <span class="score-circle"
-                                  [class.score-circle--has-value]="child.efficiency !== undefined"
-                                  [class.score-circle--no-value]="child.efficiency === undefined"
-                                  [attr.data-score]="child.efficiency">
-                              {{ child.efficiency !== undefined ? child.efficiency : '○' }}
-                            </span>
+                            <span class="score-value" [attr.data-score]="child.efficiency">{{ child.efficiency }}</span>
                           </div>
                           <div class="score-item">
                             <span class="score-label">Вовлеченность</span>
-                            <span class="score-circle"
-                                  [class.score-circle--has-value]="child.engagement !== undefined"
-                                  [class.score-circle--no-value]="child.engagement === undefined"
-                                  [attr.data-score]="child.engagement">
-                              {{ child.engagement !== undefined ? child.engagement : '○' }}
-                            </span>
+                            <span class="score-value" [attr.data-score]="child.engagement">{{ child.engagement }}</span>
                           </div>
                           <div class="score-item">
                             <span class="score-label">Компетентность</span>
-                            <span class="score-circle"
-                                  [class.score-circle--has-value]="child.competency !== undefined"
-                                  [class.score-circle--no-value]="child.competency === undefined"
-                                  [attr.data-score]="child.competency">
-                              {{ child.competency !== undefined ? child.competency : '○' }}
-                            </span>
+                            <span class="score-value" [attr.data-score]="child.competency">{{ child.competency }}</span>
                           </div>
                         </div>
                       </div>
-                      <ng-template #noEmployeeTemplate>Не назначен</ng-template>
+                      <ng-template #noEmployeeTemplate>
+                        <div class="employee-name employee-name--empty">Не назначен</div>
+                      </ng-template>
                     </div>
                   </div>
                   

@@ -19,6 +19,7 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { PostsPageComponent } from './pages/posts-page/posts-page.component';
 import { PositionsPageComponent } from './pages/positions-page/positions-page.component';
 import { PersonalCabinetPageComponent } from './pages/personal-cabinet-page/personal-cabinet-page.component';
+import { SidebarMenuComponent } from './components/sidebar-menu/sidebar-menu.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { PersonalCabinetPageComponent } from './pages/personal-cabinet-page/pers
     HomePageComponent,
     PostsPageComponent,
     PositionsPageComponent,
-    PersonalCabinetPageComponent
+    PersonalCabinetPageComponent,
+    SidebarMenuComponent
   ],
   imports: [
     BrowserModule,

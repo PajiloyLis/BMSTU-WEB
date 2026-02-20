@@ -215,17 +215,16 @@ public class ScoreController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("employees/{headEmployeeId:guid}/subordinates/scores")]
+    [HttpGet("employees/{headEmployeeId:guid}/subordinates/lasrScores")]
     [SwaggerOperation("getSubordinatesScoresByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(ScoreDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
-    public async Task<IActionResult> GetSubordinatesScoresByHeadEmployeeId([FromRoute] [Required] Guid employeeId,
-        [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] DateTimeOffset? startDate = null, [FromQuery] DateTimeOffset? endDate = null)
+    public async Task<IActionResult> GetSubordinatesLastScoresByHeadEmployeeId([FromRoute] [Required] Guid headEmployeeId)
     {
         try
         {
-            var scores = await _scoreService.GetScoresSubordinatesByEmployeeAsync(employeeId, startDate, endDate, pageNumber, pageSize);
+            var scores = await _scoreService.GetSubordinatesLastScoresByEmployeeAsync(headEmployeeId);
 
             return Ok(scores.Select(ScoreConverter.Convert));
         }

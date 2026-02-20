@@ -188,7 +188,7 @@ public class PositionHistoryController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("employees/{headEmployeeId:guid}/currentSubordinates/positionHistories")]
+    [HttpGet("employees/{headEmployeeId:guid}/currentSubordinates/positionHistories/byHeadEmployee")]
     [SwaggerOperation("getCurrentSubordinatesByHeadEmployeeId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyWithEmployeeDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -210,7 +210,7 @@ public class PositionHistoryController : ControllerBase
     }
     
     [Authorize(Roles = "admin,employee")]
-    [HttpGet("employees/{headPositionId:guid}/currentSubordinates/positionHistories")]
+    [HttpGet("employees/{headPositionId:guid}/currentSubordinates/positionHistories/byHeadPosition")]
     [SwaggerOperation("getCurrentSubordinatesByHeadPositionId")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionHierarchyWithEmployeeDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -223,6 +223,27 @@ public class PositionHistoryController : ControllerBase
             var positionHistories = await _positionHistoryService.GetCurrentSubordinatesByPositionAsync(headPositionId, startDate, endDate);
 
             return Ok(positionHistories.Select(PositionHistoryConverter.Convert));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
+        }
+    }
+    
+    [Authorize(Roles = "admin,employee")]
+    [HttpGet("employees/{companyId:guid}/currentEmployees/")]
+    [SwaggerOperation("getCurrentEmployeesByCompanyId")]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(IEnumerable<CurrentPositionEmployeeDto>))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorDto))]
+    public async Task<IActionResult> GetCurrentEmployeesByCompanyId([FromRoute] [Required] Guid companyId)
+    {
+        try
+        {
+            var positionHistories = await _positionHistoryService.GetCurrentEmployeesByCompanyId(companyId);
+
+            return Ok(positionHistories.Select(PositionHistoryConverter.ReducedConvert));
         }
         catch (Exception e)
         {

@@ -1,7 +1,9 @@
 <div class="cabinet-page">
+  <app-sidebar-menu [(isOpen)]="isMenuOpen"></app-sidebar-menu>
+
   <div class="cabinet-container">
     <header class="cabinet-topbar">
-      <div class="cabinet-topbar__menu">
+      <div class="cabinet-topbar__menu" (click)="isMenuOpen = true">
         <span class="burger-icon"></span>
       </div>
 

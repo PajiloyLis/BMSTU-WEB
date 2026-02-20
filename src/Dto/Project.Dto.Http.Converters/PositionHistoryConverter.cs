@@ -18,4 +18,12 @@ public static class PositionHistoryConverter
             position.EndDate
         );
     }
+
+    public static CurrentPositionEmployeeDto? ReducedConvert(BasePositionHistory? position)
+    {
+        if (position is null)
+            return null;
+
+        return new CurrentPositionEmployeeDto(position.PositionId, position.EmployeeId);
+    }
 }

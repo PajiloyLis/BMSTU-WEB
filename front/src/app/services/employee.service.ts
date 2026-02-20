@@ -4,8 +4,8 @@ import { map } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { HttpService } from './http.service';
 import { ConvertersService } from './converters.service';
-import { EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto } from '../dto/employee.dto';
-import { Employee, CreateEmployee, UpdateEmployee } from '../models/employee.model';
+import { EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto, CurrentEmployeeDto } from '../dto/employee.dto';
+import { Employee, CreateEmployee, UpdateEmployee, CurrentEmployee } from '../models/employee.model';
 
 @Injectable({
   providedIn: 'root'
@@ -58,6 +58,18 @@ export class EmployeeService {
 
   getPhoto(employeeId: string): Observable<Blob> {
     return this.httpService.getBlob(`employees/${employeeId}/photo`);
+  }
+
+  /**
+   * Получить текущих сотрудников компании (пары positionId + employeeId)
+   */
+  getCurrentEmployees(companyId: string): Observable<CurrentEmployee[]> {
+    return this.httpService.get<CurrentEmployeeDto[]>(`employees/${companyId}/currentEmployees`).pipe(
+      map(dtos => dtos.map(dto => ({
+        positionId: dto.positionId,
+        employeeId: dto.employeeId
+      })))
+    );
   }
 }
 

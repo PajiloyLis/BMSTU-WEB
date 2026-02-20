@@ -207,13 +207,12 @@
 
 .tree-node {
   min-width: 150px;
-  background: #62d66b;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  padding: 8px 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   font-size: 12px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .tree-node--root {
@@ -224,27 +223,34 @@
   font-size: 11px;
 }
 
-.tree-node__title {
+.tree-node__header {
+  background: #BADBA2;
+  padding: 8px 10px;
   font-weight: 800;
-  margin-bottom: 4px;
+  color: #0f310f;
 }
 
 .tree-node__body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
+  background: #80EF80;
+  padding: 8px 10px;
 }
 
 .employee-name {
   font-weight: 600;
-  margin-bottom: 4px;
+  font-style: italic;
+  color: #0f310f;
+}
+
+.employee-name--empty {
+  color: #555555;
+  font-style: italic;
 }
 
 .scores-row {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-top: 6px;
 }
 
 .score-item {
@@ -258,47 +264,34 @@
 .score-label {
   flex: 1;
   text-align: left;
+  font-weight: 600;
+  color: #0f310f;
 }
 
-.score-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.score-value {
   font-weight: 700;
   font-size: 11px;
   flex-shrink: 0;
-  border: 2px solid #0f310f;
-  
-  &.score-circle--no-value {
-    background: #cccccc;
-    color: #666666;
+  -webkit-text-stroke: 0.5px #000000;
+
+  &[data-score="1"] {
+    color: #FF0000;
   }
-  
-  &.score-circle--has-value {
-    color: #ffffff;
-    
-    &[data-score="1"] {
-      background: #ff4444;
-    }
-    
-    &[data-score="2"] {
-      background: #ff8844;
-    }
-    
-    &[data-score="3"] {
-      background: #ffcc44;
-    }
-    
-    &[data-score="4"] {
-      background: #88ff44;
-    }
-    
-    &[data-score="5"] {
-      background: #44ff44;
-    }
+
+  &[data-score="2"] {
+    color: #FF7700;
+  }
+
+  &[data-score="3"] {
+    color: #FFFF00;
+  }
+
+  &[data-score="4"] {
+    color: #B8FF14;
+  }
+
+  &[data-score="5"] {
+    color: #00FF00;
   }
 }
 

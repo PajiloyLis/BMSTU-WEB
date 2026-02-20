@@ -41,6 +41,7 @@ export class PersonalCabinetPageComponent implements OnInit {
   isSelf: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
+  isMenuOpen: boolean = false;
 
   history: HistoryEntry[] = [];
   education: EducationEntry[] = [];

@@ -1,0 +1,21 @@
+<!-- Overlay для закрытия меню при клике вне -->
+<div class="sidebar-overlay" *ngIf="isOpen" (click)="close()"></div>
+
+<!-- Боковое меню -->
+<aside class="sidebar" [class.sidebar--open]="isOpen">
+  <nav class="sidebar__nav">
+    <a class="sidebar__link sidebar__link--main" (click)="goToHome()">Главная</a>
+
+    <div class="sidebar__company" *ngFor="let c of companies">
+      <span class="sidebar__company-name">{{ c.title }}</span>
+      <a class="sidebar__sublink" (click)="goToCompanyPosts(c.companyId)">Должности</a>
+      <a class="sidebar__sublink" (click)="goToCompanyPositions(c.companyId)">Позиции</a>
+    </div>
+
+    <div class="sidebar__bottom" *ngIf="!isAuthorized">
+      <a class="sidebar__link" (click)="goToLogin()">Вход</a>
+      <a class="sidebar__link" (click)="goToRegister()">Регистрация</a>
+    </div>
+  </nav>
+</aside>
+

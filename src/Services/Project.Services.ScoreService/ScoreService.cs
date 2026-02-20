@@ -111,14 +111,12 @@ public class ScoreService : IScoreService
         }
     }
 
-    public async Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
+    public async Task<IEnumerable<BaseScore>> GetSubordinatesLastScoresByEmployeeAsync(Guid employeeId)
     {
         try
         {
             var result =
-                await _repository.GetScoresSubordinatesByEmployeeIdAsync(employeeId, startDate,
-                    endDate, pageNumber, pageSize);
+                await _repository.GetSubordinatesLastScoresByEmployeeIdAsync(employeeId);
             _logger.LogInformation("Subordinates scores for employee {EmployeeId} were retrieved", employeeId);
             return result;
         }

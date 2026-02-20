@@ -1,7 +1,9 @@
 <div class="posts-page">
+  <app-sidebar-menu [(isOpen)]="isMenuOpen"></app-sidebar-menu>
+
   <div class="posts-container">
     <header class="posts-topbar">
-      <div class="posts-topbar__menu">
+      <div class="posts-topbar__menu" (click)="isMenuOpen = true">
         <span class="burger-icon"></span>
       </div>
 

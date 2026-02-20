@@ -17,8 +17,7 @@ public interface IScoreService
     Task<IEnumerable<BaseScore>> GetScoresByAuthorIdAsync(Guid authorId, DateTimeOffset? startDate,
         DateTimeOffset? endDate, int pageNumber, int pageSize);
 
-    Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize);
+    Task<IEnumerable<BaseScore>> GetSubordinatesLastScoresByEmployeeAsync(Guid employeeId);
 
     Task<IEnumerable<BaseScore>> GetScoresByPositionIdAsync(Guid positionId, DateTimeOffset? startDate,
         DateTimeOffset? endDate, int pageNumber, int pageSize);

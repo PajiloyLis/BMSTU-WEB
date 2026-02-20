@@ -424,4 +424,23 @@ public class PositionHistoryRepository : IPositionHistoryRepository
             throw;
         }
     }
+
+    public async Task<IEnumerable<BasePositionHistory>> GetCurrentEmployeesByCompanyId(Guid companyId)
+    {
+        try
+        {
+            var positions = await _context.PositionDb.Where(p => p.CompanyId == companyId).Select(p => p.Id)
+                .ToListAsync();
+            if (positions is null || positions.Count == 0)
+                throw new PositionNotFoundException($"Positions for company {companyId} not found");
+            var currentPositionHistories = await _context.PositionHistoryDb
+                .Where(p => positions.Contains(p.PositionId) && p.EndDate == null).ToListAsync();
+            return currentPositionHistories.Select(p => PositionHistoryConverter.Convert(p)).ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error getting current employees for company {companyId}");
+            throw;
+        }
+    }
 }

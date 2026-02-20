@@ -27,6 +27,7 @@ export class PostsPageComponent implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
   userEmail: string | null = null;
+  isMenuOpen: boolean = false;
 
   constructor(
     private route: ActivatedRoute,

@@ -16,6 +16,7 @@ export class HomePageComponent implements OnInit {
   errorMessage: string = '';
   isAuthorized: boolean = false;
   userEmail: string | null = null;
+  isMenuOpen: boolean = false;
 
   constructor(
     private companyService: CompanyService,

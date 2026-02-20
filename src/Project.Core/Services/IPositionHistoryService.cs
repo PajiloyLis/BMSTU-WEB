@@ -75,4 +75,5 @@ public interface IPositionHistoryService
         DateOnly? startDate, DateOnly? endDate, int pageNumber, int pageSize);
 
     Task<IEnumerable<BasePositionHistory>> GetCurrentSubordinatesByPositionAsync(Guid managerPositionId, DateOnly? startDate, DateOnly? endDate);
+    Task<IEnumerable<BasePositionHistory>> GetCurrentEmployeesByCompanyId(Guid companyId);
 }

@@ -232,31 +232,27 @@ public class ScoreRepository : IScoreRepository
         }
     }
 
-    public async Task<IEnumerable<BaseScore>> GetScoresSubordinatesByEmployeeIdAsync(Guid employeeId,
-        DateTimeOffset? startDate, DateTimeOffset? endDate, int pageNumber, int pageSize)
+    public async Task<IEnumerable<BaseScore>> GetSubordinatesLastScoresByEmployeeIdAsync(Guid employeeId)
     {
         try
         {
             var subordinates = await GetAllCurrentSubordinates(employeeId);
             var employees = subordinates.Select(x => x.EmployeeId).ToList();
             
-            if (employees == null)
+            if (employees == null || employees.Count == 0)
             {
-                _logger.LogWarning("Employee {EmployeeId} has no position assigned", employeeId);
-                throw new ScoreNotFoundException($"Employee {employeeId} has no position assigned");
+                _logger.LogWarning("No subordinates for employee {EmployeeId}", employeeId);
+                throw new ScoreNotFoundException($"Employee {employeeId} has no subordinates");
             }
 
-            var query = _context.ScoreDb.Where(s => employees.Contains(s.EmployeeId));
-
-            if (startDate.HasValue)
-                query = query.Where(s => s.CreatedAt >= startDate.Value.ToUniversalTime());
-            if (endDate.HasValue)
-                query = query.Where(s => s.CreatedAt <= endDate.Value.ToUniversalTime());
-
-            var scores = await query
-                .Select(s => ScoreConverter.Convert(s)!)
-                .ToListAsync();
-
+            List<BaseScore> scores = new List<BaseScore>();
+            foreach (var employee in employees)
+            {
+                var employeeScores = (await _context.ScoreDb.Where(s => s.EmployeeId == employee && s.CreatedAt < DateTimeOffset.UtcNow)
+                    .OrderByDescending(s => s.CreatedAt).ToListAsync());
+                if(employeeScores.Count != 0)
+                    scores.Add(ScoreConverter.Convert(employeeScores.First()));
+            }
             _logger.LogInformation(
                 "Scores for subordinates of employee {EmployeeId} were retrieved",
                 employeeId);
@@ -293,7 +289,8 @@ public class ScoreRepository : IScoreRepository
                     return new PositionHierarchyWithEmployee(e.EmployeeId, e.PositionId, position.ParentId,
                         position.Title,
                         subordinates[i].Level + 1);
-                });
+                }).ToList();
+                subordinates.AddRange(resultChildren);
                 ++i;
             }
 

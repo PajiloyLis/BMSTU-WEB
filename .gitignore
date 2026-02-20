@@ -43,3 +43,8 @@
 
 /data/
 /src/Project.HttpServer/uploads/
+
+# Allure
+/allure-results/
+/allure-report/
+/tools/
