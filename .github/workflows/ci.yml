@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # ──────────────────────────────────────────────
+  # 1. Сборка бэкенда (.NET 9)
+  # ──────────────────────────────────────────────
+  build-backend:
+    name: Сборка бэкенда
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Восстановление зависимостей
+        run: dotnet restore src/Project.sln
+
+      - name: Сборка решения
+        run: dotnet build src/Project.sln --configuration Release --no-restore
+
+  # ──────────────────────────────────────────────
+  # 2. Тесты сервисов
+  # ──────────────────────────────────────────────
+  test-services:
+    name: Тесты сервисов
+    runs-on: ubuntu-latest
+    needs: build-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Восстановление зависимостей
+        run: dotnet restore src/Tests/Project.Service.Tests/Project.Service.Tests.csproj
+
+      - name: Сборка тестов сервисов
+        run: dotnet build src/Tests/Project.Service.Tests/Project.Service.Tests.csproj --configuration Release --no-restore
+
+      - name: Запуск тестов сервисов
+        run: >
+          dotnet test src/Tests/Project.Service.Tests/Project.Service.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=service-tests.trx"
+          --results-directory TestResults
+
+      - name: Загрузка результатов тестов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-test-results
+          path: TestResults/
+
+  # ──────────────────────────────────────────────
+  # 3. Тесты репозиториев (Testcontainers + Docker)
+  # ──────────────────────────────────────────────
+  test-repositories:
+    name: Тесты репозиториев
+    runs-on: ubuntu-latest
+    needs: build-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Восстановление зависимостей
+        run: dotnet restore src/Tests/Project.Repository.Tests/Project.Repository.Tests.csproj
+
+      - name: Сборка тестов репозиториев
+        run: dotnet build src/Tests/Project.Repository.Tests/Project.Repository.Tests.csproj --configuration Release --no-restore
+
+      - name: Запуск тестов репозиториев
+        run: >
+          dotnet test src/Tests/Project.Repository.Tests/Project.Repository.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=repository-tests.trx"
+          --results-directory TestResults
+
+      - name: Загрузка результатов тестов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-test-results
+          path: TestResults/
+
+  # ──────────────────────────────────────────────
+  # 4. Сборка фронтенда (Angular)
+  # ──────────────────────────────────────────────
+  build-frontend:
+    name: Сборка фронтенда
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
+
+      - name: Установка зависимостей
+        working-directory: front
+        run: npm ci
+
+      - name: Сборка Angular-приложения
+        working-directory: front
+        run: npm run build
+
