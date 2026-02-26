@@ -38,7 +38,7 @@
 /src/Tests/Project.Repository.Tests/obj/
 /Debug/
 /Logs/
-/scripts/
+# /scripts/
 *.zip
 /docs/images/*.drawio
 /docs/images/*.bkp
