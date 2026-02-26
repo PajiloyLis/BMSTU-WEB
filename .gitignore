@@ -32,7 +32,10 @@
 /src/Services/Project.Services.PostService/obj/
 /src/Services/Project.Services.ScoreService/bin/
 /src/Services/Project.Services.ScoreService/obj/
-/src/Tests/
+/src/Tests/Project.Service.Tests/bin/
+/src/Tests/Project.Service.Tests/obj/
+/src/Tests/Project.Repository.Tests/bin/
+/src/Tests/Project.Repository.Tests/obj/
 /Debug/
 /Logs/
 /scripts/
