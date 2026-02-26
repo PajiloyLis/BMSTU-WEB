@@ -214,7 +214,7 @@ jobs:
 
       - name: Генерация Allure-отчёта
         run: |
-          ./allure-2.36.0/bin/allure generate merged-allure-results -o allure-report --clean
+          ./allure-2.36.0/bin/allure generate merged-allure-results -o allure-report --clean --single-file
 
       - name: Загрузка Allure-отчёта
         if: always()
