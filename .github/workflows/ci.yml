@@ -24,10 +24,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Восстановление зависимостей
-        run: dotnet restore src/Project.sln
+        run: dotnet restore src/Project.HttpServer/Project.HttpServer.csproj
 
-      - name: Сборка решения
-        run: dotnet build src/Project.sln --configuration Release --no-restore
+      - name: Сборка бэкенда (без тестовых проектов)
+        run: dotnet build src/Project.HttpServer/Project.HttpServer.csproj --configuration Release --no-restore
 
   # ──────────────────────────────────────────────
   # 2. Тесты сервисов
