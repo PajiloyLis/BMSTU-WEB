@@ -193,9 +193,14 @@ jobs:
 
       - name: Поиск проекта контроллерных тестов
         run: |
-          CONTROLLER_TESTS_PROJECT="$(find src/Tests -maxdepth 2 -type f -name 'Project.*Controller*.Tests.csproj' | head -n 1)"
+          CONTROLLER_TESTS_PROJECT="src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj"
+          if [ ! -f "$CONTROLLER_TESTS_PROJECT" ]; then
+            CONTROLLER_TESTS_PROJECT="$(find src/Tests -maxdepth 2 -type f -name 'Project.Controller.Tests.csproj' | head -n 1)"
+          fi
           if [ -z "$CONTROLLER_TESTS_PROJECT" ]; then
             echo "::error::Не найден csproj контроллерных тестов"
+            echo "Содержимое src/Tests:"
+            ls -la src/Tests || true
             find src/Tests -maxdepth 2 -type f -name '*.csproj'
             exit 1
           fi

@@ -1,0 +1,1948 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj": {}
+  },
+  "projects": {
+    "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/Database.Context.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/Database.Context.csproj",
+        "projectName": "Database.Context",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/Database.Context.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/Database.Models.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/Database.Models.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/Database.Models.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/Database.Models.csproj",
+        "projectName": "Database.Models",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/Database.Models.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Models/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/Database.Repositories.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/Database.Repositories.csproj",
+        "projectName": "Database.Repositories",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/Database.Repositories.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/Database.Context.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Context/Database.Context.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.66, )"
+            },
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/Project.Dto.Http.Converters.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/Project.Dto.Http.Converters.csproj",
+        "projectName": "Project.Dto.Http.Converters",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/Project.Dto.Http.Converters.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj",
+        "projectName": "Project.Dto.Http",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj",
+        "projectName": "Project.Core",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/Project.HttpServer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/Project.HttpServer.csproj",
+        "projectName": "Project.HttpServer",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/Project.HttpServer.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/Database.Repositories.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Database/Database.Repositories/Database.Repositories.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/Project.Dto.Http.Converters.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http.Converters/Project.Dto.Http.Converters.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Dto/Project.Dto.Http/Project.Dto.Http.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/Project.Service.AuthorizationService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/Project.Service.AuthorizationService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/Project.Services.CompanyService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/Project.Services.CompanyService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/Project.Services.EmployeeService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/Project.Services.EmployeeService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/Project.Services.ScoreService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/Project.Services.ScoreService.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.Abstractions": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Cryptography.KeyDerivation": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Http.Abstractions": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.OpenApi": {
+              "target": "Package",
+              "version": "[1.6.24, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.21.2, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[8.1.2, )"
+            },
+            "Swashbuckle.AspNetCore.Annotations": {
+              "target": "Package",
+              "version": "[8.1.2, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.11.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/Project.Service.AuthorizationService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/Project.Service.AuthorizationService.csproj",
+        "projectName": "Project.Service.AuthorizationService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/Project.Service.AuthorizationService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Service.AuthorizationService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/Project.Services.CompanyService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/Project.Services.CompanyService.csproj",
+        "projectName": "Project.Services.CompanyService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/Project.Services.CompanyService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.CompanyService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj",
+        "projectName": "Project.Services.EducationService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/Project.Services.EmployeeService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/Project.Services.EmployeeService.csproj",
+        "projectName": "Project.Services.EmployeeService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/Project.Services.EmployeeService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EmployeeService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.EducationService/Project.Services.EducationService.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj",
+        "projectName": "Project.Services.PositionHistoryService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj",
+        "projectName": "Project.Services.PositionService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/Project.Services.PositionService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PositionHistoryService/Project.Services.PositionHistoryService.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj",
+        "projectName": "Project.Services.PostHistoryService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj",
+        "projectName": "Project.Services.PostService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/Project.Services.PostService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.PostHistoryService/Project.Services.PostHistoryService.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/Project.Services.ScoreService.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/Project.Services.ScoreService.csproj",
+        "projectName": "Project.Services.ScoreService",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/Project.Services.ScoreService.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Services/Project.Services.ScoreService/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj",
+        "projectName": "Project.Controller.Tests",
+        "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj",
+        "packagesPath": "/home/ivan/.nuget/packages/",
+        "outputPath": "/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ivan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.Core/Project.Core.csproj"
+              },
+              "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/Project.HttpServer.csproj": {
+                "projectPath": "/home/ivan/Study/BMSTU-WEB/src/Project.HttpServer/Project.HttpServer.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "JWT": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.14.0, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.8.37, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

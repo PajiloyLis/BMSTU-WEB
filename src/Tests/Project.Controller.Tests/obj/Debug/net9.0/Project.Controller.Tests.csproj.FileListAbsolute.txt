@@ -1,0 +1,7 @@
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/bin/Debug/net9.0/.msCoverageSourceRootsMapping_Project.Controller.Tests
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.csproj.AssemblyReference.cache
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.GeneratedMSBuildEditorConfig.editorconfig
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.AssemblyInfoInputs.cache
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.AssemblyInfo.cs
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.csproj.CoreCompileInputs.cache
+/home/ivan/Study/BMSTU-WEB/src/Tests/Project.Controller.Tests/obj/Debug/net9.0/Project.Controller.Tests.sourcelink.json
