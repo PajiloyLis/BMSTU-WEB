@@ -148,6 +148,7 @@ public class CompanyRepository : ICompanyRepository
         catch (CompanyNotFoundException e)
         {
             _logger.LogWarning(e, $"Company with id {companyId} not found for deleting");
+            throw;
         }
         catch (Exception e)
         {

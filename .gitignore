@@ -36,6 +36,12 @@
 /src/Tests/Project.Service.Tests/obj/
 /src/Tests/Project.Repository.Tests/bin/
 /src/Tests/Project.Repository.Tests/obj/
+/src/Tests/Project.Controller.Tests/bin/
+/src/Tests/Project.Controller.Tests/obj/
+/src/Tests/Project.Integration.Tests/bin/
+/src/Tests/Project.Integration.Tests/obj/
+/src/Tests/Project.E2E.Tests/bin/
+/src/Tests/Project.E2E.Tests/obj/
 /Debug/
 /Logs/
 # /scripts/
@@ -49,5 +55,7 @@
 
 # Allure
 /allure-results/
+/src/Tests/**/allure-results/
 /allure-report/
+/.allure-merged-results/
 /tools/

@@ -18,7 +18,6 @@ public class Startup
             .AddProjectDbRepositories()
             // .AddProjectMongoDbRepositories()
             .AddHttpContextAccessor()
-            .AddProjectRedisCache(Configuration)
             .AddProjectAuthorization(Configuration)
             .AddProjectCors(Configuration.GetValue("AllowedHeaders", "AllowAllHeaders"))
             .AddProjectDbContext(Configuration)

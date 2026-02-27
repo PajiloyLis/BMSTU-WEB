@@ -5,7 +5,6 @@ using Project.Core.Models;
 using Project.Core.Models.Employee;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.EmployeeService;
 
@@ -14,7 +13,7 @@ public class EmployeeService : IEmployeeService
     private readonly IEmployeeRepository _employeeRepository;
     private readonly ILogger<EmployeeService> _logger;
 
-    public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger, IConnectionMultiplexer cache)
+    public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger)
     {
         _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

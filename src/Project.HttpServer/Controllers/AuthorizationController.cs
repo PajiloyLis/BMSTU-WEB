@@ -72,9 +72,14 @@ public class AuthorizationController : ControllerBase
                 dto.Email);
             return Ok(AuthorizationDataConverter.Convert(authData));
         }
-        catch (UserNotFoundException ex)
+        catch (UserAlreadyExistsException ex)
         {
             _logger.LogWarning(ex, $"User with email {dto.Email} already exists");
+            return BadRequest(new ErrorDto(ex.GetType().Name, ex.Message));
+        }
+        catch (UserNotFoundException ex)
+        {
+            _logger.LogWarning(ex, $"Employee or company with email {dto.Email} was not found for registration");
             return BadRequest(new ErrorDto(ex.GetType().Name, ex.Message));
         }
         catch (Exception ex)

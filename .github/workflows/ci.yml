@@ -254,12 +254,136 @@ jobs:
           if-no-files-found: warn
 
   # ──────────────────────────────────────────────
-  # 5. Генерация Allure-отчёта
+  # 5. Интеграционные тесты
+  # ──────────────────────────────────────────────
+  test-integration:
+    name: Интеграционные тесты
+    runs-on: ubuntu-latest
+    needs: [test-services, test-repositories, test-controllers]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Восстановление зависимостей
+        run: dotnet restore src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj
+
+      - name: Сборка integration тестов
+        run: dotnet build src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj --configuration Release --no-restore
+
+      - name: Запуск integration тестов
+        run: >
+          dotnet test src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=integration-tests.trx"
+          --results-directory TestResults
+          -- xUnit.ReporterSwitch=allure
+
+      - name: Сбор Allure-результатов (integration)
+        if: always()
+        run: |
+          rm -rf ci-allure-results
+          mkdir -p ci-allure-results
+          found=0
+          while IFS= read -r dir; do
+            found=1
+            echo "Найдена директория Allure: $dir"
+            cp -R "$dir"/. ci-allure-results/ || true
+          done < <(find . -type d -name allure-results)
+          if [ "$found" -eq 0 ]; then
+            echo "Allure-результаты не найдены"
+          fi
+          echo "Файлов собрано: $(find ci-allure-results -type f | wc -l)"
+
+      - name: Загрузка результатов integration тестов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: TestResults/
+
+      - name: Загрузка Allure-результатов (integration)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-allure-results
+          path: ci-allure-results/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
+  # 6. E2E тесты
+  # ──────────────────────────────────────────────
+  test-e2e:
+    name: E2E тесты
+    runs-on: ubuntu-latest
+    needs: [test-integration]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Восстановление зависимостей
+        run: dotnet restore src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
+
+      - name: Сборка e2e тестов
+        run: dotnet build src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj --configuration Release --no-restore
+
+      - name: Запуск e2e тестов
+        run: >
+          dotnet test src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=e2e-tests.trx"
+          --results-directory TestResults
+          -- xUnit.ReporterSwitch=allure
+
+      - name: Сбор Allure-результатов (e2e)
+        if: always()
+        run: |
+          rm -rf ci-allure-results
+          mkdir -p ci-allure-results
+          found=0
+          while IFS= read -r dir; do
+            found=1
+            echo "Найдена директория Allure: $dir"
+            cp -R "$dir"/. ci-allure-results/ || true
+          done < <(find . -type d -name allure-results)
+          if [ "$found" -eq 0 ]; then
+            echo "Allure-результаты не найдены"
+          fi
+          echo "Файлов собрано: $(find ci-allure-results -type f | wc -l)"
+
+      - name: Загрузка результатов e2e тестов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: TestResults/
+
+      - name: Загрузка Allure-результатов (e2e)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-allure-results
+          path: ci-allure-results/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
+  # 7. Генерация Allure-отчёта
   # ──────────────────────────────────────────────
   allure-report:
     name: Allure-отчёт
     runs-on: ubuntu-latest
-    needs: [test-services, test-repositories, test-controllers]
+    needs: [test-services, test-repositories, test-controllers, test-integration, test-e2e]
     if: always()
 
     steps:
@@ -303,7 +427,7 @@ jobs:
           if-no-files-found: warn
 
   # ──────────────────────────────────────────────
-  # 6. Сборка фронтенда (Angular)
+  # 8. Сборка фронтенда (Angular)
   # ──────────────────────────────────────────────
   build-frontend:
     name: Сборка фронтенда

@@ -26,7 +26,7 @@ public class EducationController : ControllerBase
     }
 
     [Authorize(Roles = "employee, admin")]
-    [HttpGet("{educationId:guid}")]
+    [HttpGet("educations/{educationId:guid}")]
     [SwaggerOperation("getEducationById")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(EducationDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]
@@ -40,7 +40,12 @@ public class EducationController : ControllerBase
 
             return Ok(EducationConverter.Convert(education));
         }
-        catch (EducationNotFoundException e)
+        catch (EducationNotFoundException  e)
+        {
+            _logger.LogWarning(e, e.Message);
+            return StatusCode(StatusCodes.Status404NotFound, new ErrorDto(e.GetType().Name, e.Message));
+        }
+        catch (EducationLevelNotFoundException  e)
         {
             _logger.LogWarning(e, e.Message);
             return StatusCode(StatusCodes.Status404NotFound, new ErrorDto(e.GetType().Name, e.Message));
@@ -78,6 +83,11 @@ public class EducationController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));
         }
         catch (ArgumentException e)
+        {
+            _logger.LogWarning(e, e.Message);
+            return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));
+        }
+        catch (EducationLevelNotFoundException e)
         {
             _logger.LogWarning(e, e.Message);
             return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));
@@ -121,6 +131,11 @@ public class EducationController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));
         }
         catch (ArgumentException e)
+        {
+            _logger.LogWarning(e, e.Message);
+            return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));
+        }
+        catch (EducationLevelNotFoundException e)
         {
             _logger.LogWarning(e, e.Message);
             return StatusCode(StatusCodes.Status400BadRequest, new ErrorDto(e.GetType().Name, e.Message));

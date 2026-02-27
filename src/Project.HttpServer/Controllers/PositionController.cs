@@ -8,7 +8,6 @@ using Project.Core.Services;
 using Project.Dto.Http;
 using Project.Dto.Http.Converters;
 using Project.Dto.Http.Position;
-using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Project.HttpServer.Controllers;
@@ -89,7 +88,7 @@ public class PositionController : ControllerBase
     }
 
     [Authorize(Roles="admin")]
-    [HttpPatch("positions/{positiondId:guid}/title")]
+    [HttpPatch("positions/{positionId:guid}/title")]
     [SwaggerOperation("updatePositionTitle")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PositionDto))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, type: typeof(ErrorDto))]

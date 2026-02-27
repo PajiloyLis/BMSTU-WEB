@@ -27,8 +27,7 @@ public class PostHistoryServiceTests : IAsyncLifetime
 
         _postHistoryService = new PostHistoryService(
             postHistoryRepository,
-            NullLogger<PostHistoryService>.Instance,
-            null!); // IConnectionMultiplexer не используется
+            NullLogger<PostHistoryService>.Instance);
     }
 
     public async Task InitializeAsync()

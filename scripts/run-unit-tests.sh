@@ -7,6 +7,8 @@
 #   ./run-unit-tests.sh repo                   — только тесты репозиториев
 #   ./run-unit-tests.sh service                — только тесты сервисов
 #   ./run-unit-tests.sh controller             — только тесты контроллеров
+#   ./run-unit-tests.sh integration            — только интеграционные тесты
+#   ./run-unit-tests.sh e2e                    — только e2e тесты
 #   ./run-unit-tests.sh company                — тесты Company (repo + service)
 #   ./run-unit-tests.sh controller company     — только тесты CompanyController
 #   ./run-unit-tests.sh repo employee          — тесты EmployeeRepository
@@ -24,18 +26,39 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(dirname "$SCRIPT_DIR")/src"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+LOCK_FILE="$ROOT_DIR/.run-unit-tests.lock"
 REPO_TESTS="$SRC_DIR/Tests/Project.Repository.Tests/Project.Repository.Tests.csproj"
 SERVICE_TESTS="$SRC_DIR/Tests/Project.Service.Tests/Project.Service.Tests.csproj"
 CONTROLLER_TESTS="$SRC_DIR/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj"
+INTEGRATION_TESTS="$SRC_DIR/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj"
+E2E_TESTS="$SRC_DIR/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj"
 ALLURE_BIN="$ROOT_DIR/tools/allure-2.36.0/bin/allure"
 ALLURE_RESULTS="$ROOT_DIR/allure-results"
 ALLURE_REPORT="$ROOT_DIR/allure-report"
+ALLURE_MERGED_RESULTS="$ROOT_DIR/.allure-merged-results"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
+
+# Защита от гонок: параллельные запуски скрипта могут конфликтовать при очистке/пересборке bin/obj.
+exec 9>"$LOCK_FILE"
+LOCK_ACQUIRED=0
+
+cleanup_lock() {
+    if [ "$LOCK_ACQUIRED" -eq 1 ]; then
+        flock -u 9 || true
+    fi
+    exec 9>&- || true
+}
+
+trap cleanup_lock EXIT INT TERM
+
+echo -e "${YELLOW}Ожидание блокировки запуска тестов (lock: $LOCK_FILE)...${NC}"
+flock 9
+LOCK_ACQUIRED=1
 
 # Доступные сущности для фильтрации
 ENTITIES="company employee education position positionhistory post posthistory score"
@@ -89,6 +112,9 @@ build_entity_filter() {
         controller)
             echo "FullyQualifiedName~${entity_pascal}Controller"
             ;;
+        integration)
+            echo "FullyQualifiedName~${entity_pascal}"
+            ;;
         *)
             echo "FullyQualifiedName~${entity_pascal}"
             ;;
@@ -107,6 +133,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         controller|controllers)
             TARGET="controller"
+            shift
+            ;;
+        integration|integrations|it)
+            TARGET="integration"
+            shift
+            ;;
+        e2e)
+            TARGET="e2e"
             shift
             ;;
         --filter)
@@ -155,6 +189,8 @@ while [[ $# -gt 0 ]]; do
             echo "  ./run-unit-tests.sh repo                   — только тесты репозиториев"
             echo "  ./run-unit-tests.sh service                — только тесты сервисов"
             echo "  ./run-unit-tests.sh controller             — только тесты контроллеров"
+            echo "  ./run-unit-tests.sh integration            — только интеграционные тесты"
+            echo "  ./run-unit-tests.sh e2e                    — только e2e тесты"
             echo "  ./run-unit-tests.sh company                — тесты Company (repo + service)"
             echo "  ./run-unit-tests.sh repo employee          — тесты EmployeeRepository"
             echo "  ./run-unit-tests.sh service education      — тесты EducationService"
@@ -256,6 +292,12 @@ case "$TARGET" in
     controller)
         build_project "$CONTROLLER_TESTS" "Тесты контроллеров"
         ;;
+    integration)
+        build_project "$INTEGRATION_TESTS" "Интеграционные тесты"
+        ;;
+    e2e)
+        build_project "$E2E_TESTS" "E2E тесты"
+        ;;
     *)
         build_project "$REPO_TESTS" "Тесты репозиториев"
         build_project "$SERVICE_TESTS" "Тесты сервисов"
@@ -264,7 +306,9 @@ case "$TARGET" in
 esac
 echo ""
 
-rm -rf "$ALLURE_RESULTS" 2>/dev/null
+# Очищаем все директории с результатами Allure перед запуском (включая вложенные тестовые проекты)
+find "$ROOT_DIR" -type d -name allure-results -prune -exec rm -rf {} + 2>/dev/null || true
+rm -rf "$ALLURE_MERGED_RESULTS" 2>/dev/null
 
 FAILED=0
 
@@ -277,6 +321,12 @@ case "$TARGET" in
         ;;
     controller)
         run_tests "$CONTROLLER_TESTS" "Тесты контроллеров" || FAILED=1
+        ;;
+    integration)
+        run_tests "$INTEGRATION_TESTS" "Интеграционные тесты" || FAILED=1
+        ;;
+    e2e)
+        run_tests "$E2E_TESTS" "E2E тесты" || FAILED=1
         ;;
     *)
         run_tests "$REPO_TESTS" "Тесты репозиториев" || FAILED=1
@@ -303,13 +353,20 @@ if [ -n "$ALLURE" ]; then
         exit 1
     fi
 
-    if [ ! -d "$ALLURE_RESULTS" ] || [ -z "$(ls -A "$ALLURE_RESULTS" 2>/dev/null)" ]; then
-        echo -e "${RED}Директория allure-results пуста или не найдена.${NC}"
-        echo -e "${YELLOW}Убедитесь, что Allure.Xunit установлен в тестовых проектах.${NC}"
+    mkdir -p "$ALLURE_MERGED_RESULTS"
+    found=0
+    while IFS= read -r dir; do
+        found=1
+        cp -R "$dir"/. "$ALLURE_MERGED_RESULTS"/ 2>/dev/null || true
+    done < <(find "$ROOT_DIR" -type d -name allure-results)
+
+    if [ "$found" -eq 0 ] || [ -z "$(ls -A "$ALLURE_MERGED_RESULTS" 2>/dev/null)" ]; then
+        echo -e "${RED}Allure-результаты не найдены ни в одном тестовом проекте.${NC}"
+        echo -e "${YELLOW}Проверьте, что тесты запускались с '-- xUnit.ReporterSwitch=allure'.${NC}"
         exit 1
     fi
 
-    "$ALLURE_BIN" generate "$ALLURE_RESULTS" -o "$ALLURE_REPORT" --clean 2>&1
+    "$ALLURE_BIN" generate "$ALLURE_MERGED_RESULTS" -o "$ALLURE_REPORT" --clean 2>&1
     echo -e "${GREEN}Allure-отчёт сгенерирован: ${ALLURE_REPORT}/index.html${NC}"
 
     if [ -n "$ALLURE_OPEN" ]; then

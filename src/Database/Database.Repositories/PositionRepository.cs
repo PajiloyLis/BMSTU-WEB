@@ -127,7 +127,7 @@ public class PositionRepository : IPositionRepository
                     $"Position with title {positionDb.Title} already exists in company {positionDb.CompanyId}");
             }
 
-            positionDb.Title = positionDb.Title ?? positionDb.Title;
+            positionDb.Title = title ?? positionDb.Title;
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Position with id {Id} was updated", positionDb.Id);

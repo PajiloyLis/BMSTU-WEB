@@ -25,8 +25,7 @@ public class PostServiceTests : IAsyncLifetime
 
         _postService = new PostService(
             postRepository,
-            NullLogger<PostService>.Instance,
-            null!); // IConnectionMultiplexer не используется в сервисе
+            NullLogger<PostService>.Instance);
     }
 
     public async Task InitializeAsync()

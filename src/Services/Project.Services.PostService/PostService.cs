@@ -4,7 +4,6 @@ using Project.Core.Models;
 using Project.Core.Models.Post;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.PostService;
 
@@ -13,8 +12,7 @@ public class PostService : IPostService
     private readonly ILogger<PostService> _logger;
     private readonly IPostRepository _postRepository;
 
-    public PostService(IPostRepository postRepository, ILogger<PostService> logger,
-        IConnectionMultiplexer connectionMultiplexer)
+    public PostService(IPostRepository postRepository, ILogger<PostService> logger)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

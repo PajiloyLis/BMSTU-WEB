@@ -23,7 +23,6 @@ using Project.Services.PostHistoryService.Extensions;
 using Project.Services.PostService.Extensions;
 using Project.Services.ScoreService.Extensions;
 using Project.Services.AuthorizationService.Extensions;
-using StackExchange.Redis;
 
 namespace Project.HttpServer.Extensions;
 
@@ -211,21 +210,4 @@ public static class ServiceProviderExtension
     //     return serviceCollection;
     // }
     
-    public static IServiceCollection AddProjectRedisCache(this IServiceCollection serviceCollection, 
-        IConfiguration configuration)
-    {
-        var redisConfiguration = configuration.GetConnectionString("RedisConnection");
-    
-        if (!string.IsNullOrEmpty(redisConfiguration))
-        {
-            serviceCollection.AddSingleton<IConnectionMultiplexer>(sp => 
-                ConnectionMultiplexer.Connect(redisConfiguration));
-        }
-        else
-        {
-            serviceCollection.AddDistributedMemoryCache();
-        }
-    
-        return serviceCollection;
-    }
 }

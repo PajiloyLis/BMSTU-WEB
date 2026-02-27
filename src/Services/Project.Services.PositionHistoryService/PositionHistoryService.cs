@@ -4,7 +4,6 @@ using Project.Core.Exceptions;
 using Project.Core.Models.PositionHistory;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.PositionHistoryService;
 
@@ -15,7 +14,7 @@ public class PositionHistoryService : IPositionHistoryService
 
     public PositionHistoryService(
         IPositionHistoryRepository repository,
-        ILogger<PositionHistoryService> logger, IConnectionMultiplexer cache)
+        ILogger<PositionHistoryService> logger)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

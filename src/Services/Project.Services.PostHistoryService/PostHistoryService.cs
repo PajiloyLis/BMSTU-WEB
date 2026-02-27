@@ -4,7 +4,6 @@ using Project.Core.Exceptions;
 using Project.Core.Models.PostHistory;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.PostHistoryService;
 
@@ -15,7 +14,7 @@ public class PostHistoryService : IPostHistoryService
 
     public PostHistoryService(
         IPostHistoryRepository repository,
-        ILogger<PostHistoryService> logger, IConnectionMultiplexer cache)
+        ILogger<PostHistoryService> logger)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

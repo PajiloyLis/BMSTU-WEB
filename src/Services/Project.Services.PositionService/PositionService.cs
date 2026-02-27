@@ -5,7 +5,6 @@ using Project.Core.Models.Position;
 using Project.Core.Models.PositionHistory;
 using Project.Core.Repositories;
 using Project.Core.Services;
-using StackExchange.Redis;
 
 namespace Project.Services.PositionService;
 
