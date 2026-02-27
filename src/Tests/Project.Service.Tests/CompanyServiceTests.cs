@@ -192,16 +192,13 @@ public class CompanyServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task DeleteCompanyAsync_NonExistentId_DoesNotThrow()
+    public async Task DeleteCompanyAsync_NonExistentId_ThrowsCompanyNotFoundException()
     {
         // Arrange
         var nonExistentId = Guid.NewGuid();
 
-        // Act — не должен выбрасывать исключение (repository ловит CompanyNotFoundException)
-        var exception = await Record.ExceptionAsync(() =>
+        // Act & Assert
+        await Assert.ThrowsAsync<CompanyNotFoundException>(() =>
             _companyService.DeleteCompanyAsync(nonExistentId));
-
-        // Assert
-        Assert.Null(exception);
     }
 }

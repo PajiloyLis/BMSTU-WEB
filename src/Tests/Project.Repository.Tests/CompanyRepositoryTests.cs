@@ -157,14 +157,11 @@ public class CompanyRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task DeleteCompanyAsync_ShouldNotThrowWhenCompanyNotFound()
+    public async Task DeleteCompanyAsync_ShouldThrowWhenCompanyNotFound()
     {
-        // Act
-        var exception = await Record.ExceptionAsync(() => 
+        // Act & Assert
+        await Assert.ThrowsAsync<CompanyNotFoundException>(() =>
             _repository.DeleteCompanyAsync(Guid.NewGuid()));
-
-        // Assert
-        Assert.Null(exception);
     }
 
     // ===== GetCompaniesAsync =====

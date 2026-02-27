@@ -124,10 +124,7 @@ public class PositionServiceTests : IAsyncLifetime
         // Assert
         Assert.NotNull(result);
         Assert.Equal(created.Id, result.Id);
-        // NOTE: В текущей реализации PositionRepository.UpdatePositionTitleAsync есть баг:
-        // positionDb.Title = positionDb.Title ?? positionDb.Title (параметр title не используется).
-        // Поэтому title не обновляется, и тест проверяет фактическое поведение.
-        Assert.Equal("Менеджер", result.Title);
+        Assert.Equal("Старший менеджер", result.Title);
     }
 
     [Fact]

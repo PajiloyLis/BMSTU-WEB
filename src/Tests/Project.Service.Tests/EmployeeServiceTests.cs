@@ -24,8 +24,7 @@ public class EmployeeServiceTests : IAsyncLifetime
 
         _employeeService = new EmployeeService(
             employeeRepository,
-            NullLogger<EmployeeService>.Instance,
-            null!);
+            NullLogger<EmployeeService>.Instance);
     }
 
     public Task InitializeAsync() => _fixture.ResetDatabaseAsync();

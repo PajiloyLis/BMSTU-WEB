@@ -28,8 +28,7 @@ public class PositionHistoryServiceTests : IAsyncLifetime
 
         _positionHistoryService = new PositionHistoryService(
             positionHistoryRepository,
-            NullLogger<PositionHistoryService>.Instance,
-            null!);
+            NullLogger<PositionHistoryService>.Instance);
     }
 
     public async Task InitializeAsync()
