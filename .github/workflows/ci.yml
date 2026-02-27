@@ -331,7 +331,7 @@ jobs:
                       {"name": "host", "value": "github-actions"}
                   ]
               }
-              with open(f"ci-allure-results/integration-skipped-{i}.json", "w", encoding="utf-8") as out:
+              with open(f"ci-allure-results/integration-skipped-{i}-result.json", "w", encoding="utf-8") as out:
                   json.dump(payload, out)
           PY
 
@@ -450,7 +450,7 @@ jobs:
                       {"name": "host", "value": "github-actions"}
                   ]
               }
-              with open(f"ci-allure-results/e2e-skipped-{i}.json", "w", encoding="utf-8") as out:
+              with open(f"ci-allure-results/e2e-skipped-{i}-result.json", "w", encoding="utf-8") as out:
                   json.dump(payload, out)
           PY
 
