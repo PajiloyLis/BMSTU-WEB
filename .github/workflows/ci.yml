@@ -393,7 +393,9 @@ jobs:
 
       - name: Восстановление зависимостей
         if: env.RUN_E2E == 'true'
-        run: dotnet restore src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
+        run: |
+          dotnet restore src/Project.HttpServer/Project.HttpServer.csproj
+          dotnet restore src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
 
       - name: Сборка e2e тестов
         if: env.RUN_E2E == 'true'
