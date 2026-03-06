@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /workspace
+
+# Copy only backend code and db scripts needed for e2e tests.
+COPY src ./src
+COPY DB_data_scripts ./DB_data_scripts
+
+RUN dotnet restore src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
+RUN dotnet build src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj -c Release --no-restore
+
+CMD ["dotnet", "test", "src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj", "--configuration", "Release", "--no-build", "--logger", "trx;LogFileName=e2e-tests.trx", "--results-directory", "TestResults", "--", "xUnit.ReporterSwitch=allure"]

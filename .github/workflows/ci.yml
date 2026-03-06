@@ -319,25 +319,13 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Восстановление зависимостей
+      - name: Подготовка test-скриптов
         if: env.RUN_E2E == 'true'
-        run: |
-          dotnet restore src/Project.HttpServer/Project.HttpServer.csproj
-          dotnet restore src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
+        run: chmod +x scripts/*.sh
 
-      - name: Сборка e2e тестов
+      - name: Запуск e2e тестов (external app + test db + tests container)
         if: env.RUN_E2E == 'true'
-        run: dotnet build src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj --configuration Release --no-restore
-
-      - name: Запуск e2e тестов
-        if: env.RUN_E2E == 'true'
-        run: >
-          dotnet test src/Tests/Project.E2E.Tests/Project.E2E.Tests.csproj
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=e2e-tests.trx"
-          --results-directory TestResults
-          -- xUnit.ReporterSwitch=allure
+        run: ./scripts/run-e2e-external.sh
 
       - name: Synthetic skipped для e2e (если integration не прошел)
         if: env.RUN_E2E != 'true'
