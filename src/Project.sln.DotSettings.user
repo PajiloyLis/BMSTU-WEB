@@ -37,7 +37,7 @@
     &lt;TestId&gt;xUnit::3971F637-EB50-4170-A65E-4B2081267F99::net9.0::Project.Repository.Tests.EmployeeRepositoryTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=34fdfd45_002Dbca4_002D48e6_002Dba52_002De39a78667232/@EntryIndexedValue">JetBrains.ReSharper.UnitTestFramework.Session.Serialization.SessionState</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=37a10800_002Da6e5_002D4cf5_002Da35c_002De0ba2ebbd1b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetScoreByIdAsync_ShouldReturnScore_WhenExists" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::3971F637-EB50-4170-A65E-4B2081267F99::net9.0::Project.Repository.Tests.ScoreRepositoryTests.GetScoreByIdAsync_ShouldReturnScore_WhenExists&lt;/TestId&gt;

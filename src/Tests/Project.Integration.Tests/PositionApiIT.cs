@@ -14,15 +14,13 @@ public sealed class PositionApiIT : IAsyncLifetime
     private static readonly Guid SeedCompanyId = Guid.Parse("fa001e78-8ff1-4bb3-b417-d518483ca7b3");
     private static readonly Guid SeedHeadPositionId = Guid.Parse("fa001e78-0001-4000-8000-000000000001");
 
-    private readonly PostgresContainerFixture _dbFixture;
+    private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
-    private readonly IntegrationTestWebAppFactory _factory;
 
-    public PositionApiIT(PostgresContainerFixture dbFixture)
+    public PositionApiIT(IntegrationDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
-        _factory = new IntegrationTestWebAppFactory(_dbFixture.ConnectionString);
-        _client = _factory.CreateClient();
+        _client = IntegrationApiClientFactory.CreateClient();
     }
 
     public async Task InitializeAsync()

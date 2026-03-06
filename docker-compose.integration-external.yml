@@ -1,0 +1,48 @@
+services:
+  test-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: "${INTEGRATION_DB_NAME:-integration_external}"
+      POSTGRES_USER: "${INTEGRATION_DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${INTEGRATION_DB_PASSWORD:-postgres}"
+    volumes:
+      - "./DB_data_scripts:/db-data:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${INTEGRATION_DB_USER:-postgres} -d ${INTEGRATION_DB_NAME:-integration_external}"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  app-under-test:
+    image: bmstu/app-under-test:local
+    build:
+      context: .
+      dockerfile: Dockerfile.app-under-test
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=test-db;Port=5432;Database=${INTEGRATION_DB_NAME:-integration_external};Username=${INTEGRATION_DB_USER:-postgres};Password=${INTEGRATION_DB_PASSWORD:-postgres}"
+    depends_on:
+      test-db:
+        condition: service_healthy
+
+  integration-tests:
+    image: bmstu/integration-tests:local
+    build:
+      context: .
+      dockerfile: Dockerfile.integration-tests
+    working_dir: /workspace
+    environment:
+      INTEGRATION_BASE_URL: "http://app-under-test:8080"
+      INTEGRATION_DB_HOST: "test-db"
+      INTEGRATION_DB_HOST_PORT: "5432"
+      INTEGRATION_DB_NAME: "${INTEGRATION_DB_NAME:-integration_external}"
+      INTEGRATION_DB_USER: "${INTEGRATION_DB_USER:-postgres}"
+      INTEGRATION_DB_PASSWORD: "${INTEGRATION_DB_PASSWORD:-postgres}"
+    volumes:
+      - "./src/Tests/Project.Integration.Tests/allure-results:/workspace/src/Tests/Project.Integration.Tests/allure-results"
+      - "./TestResults:/workspace/TestResults"
+    depends_on:
+      test-db:
+        condition: service_healthy
+      app-under-test:
+        condition: service_started

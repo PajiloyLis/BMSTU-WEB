@@ -13,15 +13,13 @@ public sealed class CompanyApiIT : IAsyncLifetime
 {
     private static readonly Guid SeedCompanyId = Guid.Parse("fa001e78-8ff1-4bb3-b417-d518483ca7b3");
 
-    private readonly PostgresContainerFixture _dbFixture;
+    private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
-    private readonly IntegrationTestWebAppFactory _factory;
 
-    public CompanyApiIT(PostgresContainerFixture dbFixture)
+    public CompanyApiIT(IntegrationDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
-        _factory = new IntegrationTestWebAppFactory(_dbFixture.ConnectionString);
-        _client = _factory.CreateClient();
+        _client = IntegrationApiClientFactory.CreateClient();
     }
 
     public async Task InitializeAsync()

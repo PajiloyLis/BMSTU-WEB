@@ -15,15 +15,13 @@ public sealed class ScoreApiIT : IAsyncLifetime
     private static readonly Guid SeedAuthorId = Guid.Parse("bf8732c8-208b-4c1e-af7f-a996eb0f1061");
     private static readonly Guid SeedPositionId = Guid.Parse("fa001e78-0001-4000-8000-000000000001");
 
-    private readonly PostgresContainerFixture _dbFixture;
+    private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
-    private readonly IntegrationTestWebAppFactory _factory;
 
-    public ScoreApiIT(PostgresContainerFixture dbFixture)
+    public ScoreApiIT(IntegrationDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
-        _factory = new IntegrationTestWebAppFactory(_dbFixture.ConnectionString);
-        _client = _factory.CreateClient();
+        _client = IntegrationApiClientFactory.CreateClient();
     }
 
     public async Task InitializeAsync()

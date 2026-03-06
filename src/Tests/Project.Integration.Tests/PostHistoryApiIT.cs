@@ -14,15 +14,13 @@ public sealed class PostHistoryApiIT : IAsyncLifetime
     private static readonly Guid SeedEmployeeId = Guid.Parse("bad8a5a0-ec08-412e-8f19-0d9e993d5651");
     private static readonly Guid SeedPostId = Guid.Parse("d7aac778-85f0-4953-897e-a5689da272e4");
 
-    private readonly PostgresContainerFixture _dbFixture;
+    private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
-    private readonly IntegrationTestWebAppFactory _factory;
 
-    public PostHistoryApiIT(PostgresContainerFixture dbFixture)
+    public PostHistoryApiIT(IntegrationDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
-        _factory = new IntegrationTestWebAppFactory(_dbFixture.ConnectionString);
-        _client = _factory.CreateClient();
+        _client = IntegrationApiClientFactory.CreateClient();
     }
 
     public async Task InitializeAsync()

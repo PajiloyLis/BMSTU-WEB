@@ -11,15 +11,13 @@ namespace Project.Integration.Tests;
 [Collection(IntegrationCollection.Name)]
 public sealed class EmployeeApiIT : IAsyncLifetime
 {
-    private readonly PostgresContainerFixture _dbFixture;
+    private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
-    private readonly IntegrationTestWebAppFactory _factory;
 
-    public EmployeeApiIT(PostgresContainerFixture dbFixture)
+    public EmployeeApiIT(IntegrationDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
-        _factory = new IntegrationTestWebAppFactory(_dbFixture.ConnectionString);
-        _client = _factory.CreateClient();
+        _client = IntegrationApiClientFactory.CreateClient();
     }
 
     public async Task InitializeAsync()
@@ -58,7 +56,7 @@ public sealed class EmployeeApiIT : IAsyncLifetime
     {
         var update = EmployeeObjectFabric.UpdateEmployeeDto();
 
-        var updateResponse = await _client.PatchAsJsonAsync($"/api/v1/employees/{PostgresContainerFixture.SeedEmployeeId}", update);
+        var updateResponse = await _client.PatchAsJsonAsync($"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}", update);
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
         var updated = await updateResponse.Content.ReadFromJsonAsync<EmployeeDto>();
         Assert.NotNull(updated);
@@ -72,7 +70,7 @@ public sealed class EmployeeApiIT : IAsyncLifetime
         var invalid = EmployeeObjectFabric.UpdateEmployeeDto(email: "invalid-email");
 
         var response = await _client.PatchAsJsonAsync(
-            $"/api/v1/employees/{PostgresContainerFixture.SeedEmployeeId}",
+            $"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}",
             invalid);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

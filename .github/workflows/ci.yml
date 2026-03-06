@@ -45,31 +45,11 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Поиск проекта сервисных тестов
-        run: |
-          SERVICE_TESTS_PROJECT="$(find src/Tests -maxdepth 2 -type f -name 'Project.*Service*.Tests.csproj' | head -n 1)"
-          if [ -z "$SERVICE_TESTS_PROJECT" ]; then
-            echo "::error::Не найден csproj сервисных тестов"
-            find src/Tests -maxdepth 2 -type f -name '*.csproj'
-            exit 1
-          fi
-          echo "SERVICE_TESTS_PROJECT=$SERVICE_TESTS_PROJECT" >> "$GITHUB_ENV"
-          echo "Найден проект: $SERVICE_TESTS_PROJECT"
-
-      - name: Восстановление зависимостей
-        run: dotnet restore "$SERVICE_TESTS_PROJECT"
-
-      - name: Сборка тестов сервисов
-        run: dotnet build "$SERVICE_TESTS_PROJECT" --configuration Release --no-restore
+      - name: Подготовка test-скриптов
+        run: chmod +x scripts/*.sh
 
       - name: Запуск тестов сервисов
-        run: >
-          dotnet test "$SERVICE_TESTS_PROJECT"
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=service-tests.trx"
-          --results-directory TestResults
-          -- xUnit.ReporterSwitch=allure
+        run: ./scripts/run-tests-services.sh
 
       - name: Сбор Allure-результатов (сервисы)
         if: always()
@@ -118,31 +98,11 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Поиск проекта репозиторных тестов
-        run: |
-          REPOSITORY_TESTS_PROJECT="$(find src/Tests -maxdepth 2 -type f -name 'Project.*Repository*.Tests.csproj' | head -n 1)"
-          if [ -z "$REPOSITORY_TESTS_PROJECT" ]; then
-            echo "::error::Не найден csproj репозиторных тестов"
-            find src/Tests -maxdepth 2 -type f -name '*.csproj'
-            exit 1
-          fi
-          echo "REPOSITORY_TESTS_PROJECT=$REPOSITORY_TESTS_PROJECT" >> "$GITHUB_ENV"
-          echo "Найден проект: $REPOSITORY_TESTS_PROJECT"
-
-      - name: Восстановление зависимостей
-        run: dotnet restore "$REPOSITORY_TESTS_PROJECT"
-
-      - name: Сборка тестов репозиториев
-        run: dotnet build "$REPOSITORY_TESTS_PROJECT" --configuration Release --no-restore
+      - name: Подготовка test-скриптов
+        run: chmod +x scripts/*.sh
 
       - name: Запуск тестов репозиториев
-        run: >
-          dotnet test "$REPOSITORY_TESTS_PROJECT"
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=repository-tests.trx"
-          --results-directory TestResults
-          -- xUnit.ReporterSwitch=allure
+        run: ./scripts/run-tests-repositories.sh
 
       - name: Сбор Allure-результатов (репозитории)
         if: always()
@@ -191,36 +151,11 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Поиск проекта контроллерных тестов
-        run: |
-          CONTROLLER_TESTS_PROJECT="src/Tests/Project.Controller.Tests/Project.Controller.Tests.csproj"
-          if [ ! -f "$CONTROLLER_TESTS_PROJECT" ]; then
-            CONTROLLER_TESTS_PROJECT="$(find src/Tests -maxdepth 2 -type f -name 'Project.Controller.Tests.csproj' | head -n 1)"
-          fi
-          if [ -z "$CONTROLLER_TESTS_PROJECT" ]; then
-            echo "::error::Не найден csproj контроллерных тестов"
-            echo "Содержимое src/Tests:"
-            ls -la src/Tests || true
-            find src/Tests -maxdepth 2 -type f -name '*.csproj'
-            exit 1
-          fi
-          echo "CONTROLLER_TESTS_PROJECT=$CONTROLLER_TESTS_PROJECT" >> "$GITHUB_ENV"
-          echo "Найден проект: $CONTROLLER_TESTS_PROJECT"
-
-      - name: Восстановление зависимостей
-        run: dotnet restore "$CONTROLLER_TESTS_PROJECT"
-
-      - name: Сборка тестов контроллеров
-        run: dotnet build "$CONTROLLER_TESTS_PROJECT" --configuration Release --no-restore
+      - name: Подготовка test-скриптов
+        run: chmod +x scripts/*.sh
 
       - name: Запуск тестов контроллеров
-        run: >
-          dotnet test "$CONTROLLER_TESTS_PROJECT"
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=controller-tests.trx"
-          --results-directory TestResults
-          -- xUnit.ReporterSwitch=allure
+        run: ./scripts/run-tests-controllers.sh
 
       - name: Сбор Allure-результатов (контроллеры)
         if: always()
@@ -263,6 +198,8 @@ jobs:
     if: always()
     env:
       RUN_INTEGRATION: ${{ needs.test-services.result == 'success' && needs.test-repositories.result == 'success' && needs.test-controllers.result == 'success' }}
+      INTEGRATION_BASE_URL: ${{ vars.INTEGRATION_BASE_URL }}
+      INTEGRATION_DB_HOST_PORT: ${{ vars.INTEGRATION_DB_HOST_PORT }}
 
     steps:
       - uses: actions/checkout@v4
@@ -274,21 +211,11 @@ jobs:
 
       - name: Восстановление зависимостей
         if: env.RUN_INTEGRATION == 'true'
-        run: dotnet restore src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj
+        run: chmod +x scripts/*.sh
 
-      - name: Сборка integration тестов
+      - name: Запуск integration тестов (external app + test db + tests container)
         if: env.RUN_INTEGRATION == 'true'
-        run: dotnet build src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj --configuration Release --no-restore
-
-      - name: Запуск integration тестов
-        if: env.RUN_INTEGRATION == 'true'
-        run: >
-          dotnet test src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=integration-tests.trx"
-          --results-directory TestResults
-          -- xUnit.ReporterSwitch=allure
+        run: ./scripts/run-integration-external.sh
 
       - name: Synthetic skipped для integration (если upstream упал)
         if: env.RUN_INTEGRATION != 'true'

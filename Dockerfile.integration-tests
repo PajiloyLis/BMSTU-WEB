@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /workspace
+
+# Copy only backend code and db scripts needed for integration tests.
+COPY src ./src
+COPY DB_data_scripts ./DB_data_scripts
+
+RUN dotnet restore src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj
+RUN dotnet build src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj -c Release --no-restore
+
+CMD ["dotnet", "test", "src/Tests/Project.Integration.Tests/Project.Integration.Tests.csproj", "--configuration", "Release", "--no-build", "--logger", "trx;LogFileName=integration-tests.trx", "--results-directory", "TestResults", "--", "xUnit.ReporterSwitch=allure"]
