@@ -59,3 +59,4 @@
 /allure-report/
 /.allure-merged-results/
 /tools/
+/benchmark/results/

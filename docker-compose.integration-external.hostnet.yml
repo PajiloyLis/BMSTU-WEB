@@ -1,0 +1,19 @@
+services:
+  test-db:
+    network_mode: host
+    command: ["postgres", "-p", "${INTEGRATION_HOST_DB_PORT:-55432}"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p ${INTEGRATION_HOST_DB_PORT:-55432} -U ${INTEGRATION_DB_USER:-postgres} -d ${INTEGRATION_DB_NAME:-integration_external}"]
+
+  app-under-test:
+    network_mode: host
+    environment:
+      ASPNETCORE_URLS: "http://127.0.0.1:${INTEGRATION_HOST_APP_PORT:-58080}"
+      ConnectionStrings__DefaultConnection: "Host=127.0.0.1;Port=${INTEGRATION_HOST_DB_PORT:-55432};Database=${INTEGRATION_DB_NAME:-integration_external};Username=${INTEGRATION_DB_USER:-postgres};Password=${INTEGRATION_DB_PASSWORD:-postgres}"
+
+  integration-tests:
+    network_mode: host
+    environment:
+      INTEGRATION_BASE_URL: "http://127.0.0.1:${INTEGRATION_HOST_APP_PORT:-58080}"
+      INTEGRATION_DB_HOST: "127.0.0.1"
+      INTEGRATION_DB_HOST_PORT: "${INTEGRATION_HOST_DB_PORT:-55432}"

@@ -30,6 +30,46 @@ jobs:
         run: dotnet build src/Project.HttpServer/Project.HttpServer.csproj --configuration Release --no-restore
 
   # ──────────────────────────────────────────────
+  # 1.1 Benchmark (индексы vs без индексов)
+  # ──────────────────────────────────────────────
+  benchmark:
+    name: Benchmark (indexes vs no-indexes)
+    runs-on: ubuntu-latest
+    needs: build-backend
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Подготовка benchmark-скриптов
+        run: chmod +x scripts/*.sh
+
+      - name: Запуск benchmark (100 прогонов)
+        env:
+          BENCH_RUNS: "100"
+        run: bash ./scripts/run-benchmark-indexes.sh all
+
+      - name: Упаковка benchmark-артефактов
+        if: always()
+        run: |
+          rm -rf benchmark-artifacts
+          mkdir -p benchmark-artifacts
+
+          if [ -d benchmark/results ]; then
+            tar -czf benchmark-artifacts/benchmark-results.tar.gz benchmark/results
+          else
+            echo "benchmark/results directory not found." > benchmark-artifacts/README.txt
+          fi
+
+      - name: Загрузка benchmark-артефактов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-artifacts/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
   # 2. Тесты сервисов
   # ──────────────────────────────────────────────
   test-services:

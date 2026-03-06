@@ -1,0 +1,38 @@
+services:
+  test-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: "${BENCH_DB_NAME:-bench_external}"
+      POSTGRES_USER: "${BENCH_DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${BENCH_DB_PASSWORD:-postgres}"
+    volumes:
+      - "../DB_data_scripts:/db-data:ro"
+      - "./sql:/benchmark-sql:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BENCH_DB_USER:-postgres} -d ${BENCH_DB_NAME:-bench_external}"]
+      interval: 2s
+      timeout: 2s
+      retries: 60
+
+  app-under-test:
+    image: bmstu/app-under-test:local
+    build:
+      context: ..
+      dockerfile: Dockerfile.app-under-test
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Integration"
+      ASPNETCORE_URLS: "http://+:8080"
+      IntegrationTestAuth__Enabled: "false"
+      ConnectionStrings__DefaultConnection: "Host=test-db;Port=5432;Database=${BENCH_DB_NAME:-bench_external};Username=${BENCH_DB_USER:-postgres};Password=${BENCH_DB_PASSWORD:-postgres}"
+    depends_on:
+      test-db:
+        condition: service_healthy
+
+  loadgen:
+    image: grafana/k6:0.57.0
+    working_dir: /benchmark
+    volumes:
+      - "./:/benchmark"
+    depends_on:
+      app-under-test:
+        condition: service_started

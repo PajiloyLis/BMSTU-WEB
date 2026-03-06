@@ -1,0 +1,15 @@
+services:
+  test-db:
+    network_mode: host
+    command: ["postgres", "-p", "${BENCH_HOST_DB_PORT:-55434}"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p ${BENCH_HOST_DB_PORT:-55434} -U ${BENCH_DB_USER:-postgres} -d ${BENCH_DB_NAME:-bench_external}"]
+
+  app-under-test:
+    network_mode: host
+    environment:
+      ASPNETCORE_URLS: "http://127.0.0.1:${BENCH_HOST_APP_PORT:-58082}"
+      ConnectionStrings__DefaultConnection: "Host=127.0.0.1;Port=${BENCH_HOST_DB_PORT:-55434};Database=${BENCH_DB_NAME:-bench_external};Username=${BENCH_DB_USER:-postgres};Password=${BENCH_DB_PASSWORD:-postgres}"
+
+  loadgen:
+    network_mode: host
