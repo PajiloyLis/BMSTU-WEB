@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Database.Context;
 using Database.Repositories.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Npgsql;
 using Project.Core.Models;
+using Project.HttpServer.Infrastructure;
 using Project.Service.AuthorizationService.Configuration;
 using Project.Services.CompanyService.Extensions;
 using Project.Services.EducationService.Extensions;
@@ -122,38 +124,57 @@ public static class ServiceProviderExtension
     public static IServiceCollection AddProjectAuthorization(this IServiceCollection serviceCollection,
         IConfiguration configuration)
     {
-        // 1. Добавляем сервисы аутентификации (JWT Bearer)
-        serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                var jwtSection = configuration.GetSection("JwtConfiguration");
-                options.TokenValidationParameters = new TokenValidationParameters
+        var testAuthEnabled = configuration.GetValue<bool>("IntegrationTestAuth:Enabled");
+        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
+        var useIntegrationTestAuth = testAuthEnabled &&
+                                     environmentName.Equals("Integration", StringComparison.OrdinalIgnoreCase);
+
+        // 1. Добавляем сервисы аутентификации
+        if (useIntegrationTestAuth)
+        {
+            serviceCollection.AddAuthentication(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSection["Issuer"],
-                    ValidateAudience = true,
-                    ValidAudience = jwtSection["Audience"],
-                    ValidateLifetime = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSection["SecurityKey"])),
-                    ClockSkew = TimeSpan.Zero,
-                
-                    // Указываем, что ClaimTypes.NameIdentifier будет содержать user_id
-                    NameClaimType = ClaimTypes.Email
-                };
-                options.Events = new JwtBearerEvents
+                    options.DefaultAuthenticateScheme = IntegrationTestAuthHandler.SchemeName;
+                    options.DefaultChallengeScheme = IntegrationTestAuthHandler.SchemeName;
+                })
+                .AddScheme<AuthenticationSchemeOptions, IntegrationTestAuthHandler>(
+                    IntegrationTestAuthHandler.SchemeName,
+                    _ => { });
+        }
+        else
+        {
+            serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    OnMessageReceived = context =>
+                    var jwtSection = configuration.GetSection("JwtConfiguration");
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        var accessToken = context.Request.Query["access_token"];
-                        if (!string.IsNullOrEmpty(accessToken))
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtSection["Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = jwtSection["Audience"],
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtSection["SecurityKey"])),
+                        ClockSkew = TimeSpan.Zero,
+                    
+                        // Указываем, что ClaimTypes.NameIdentifier будет содержать user_id
+                        NameClaimType = ClaimTypes.Email
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
                         {
-                            context.Token = accessToken;
+                            var accessToken = context.Request.Query["access_token"];
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
                         }
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    };
+                });
+        }
         
         // 2. Добавляем политики авторизации
         serviceCollection.AddAuthorization(options =>

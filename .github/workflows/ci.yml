@@ -200,6 +200,7 @@ jobs:
       RUN_INTEGRATION: ${{ needs.test-services.result == 'success' && needs.test-repositories.result == 'success' && needs.test-controllers.result == 'success' }}
       INTEGRATION_BASE_URL: ${{ vars.INTEGRATION_BASE_URL }}
       INTEGRATION_DB_HOST_PORT: ${{ vars.INTEGRATION_DB_HOST_PORT }}
+      INTEGRATION_TEST_AUTH_ENABLED: "true"
 
     steps:
       - uses: actions/checkout@v4

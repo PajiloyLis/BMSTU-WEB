@@ -19,7 +19,9 @@ services:
       context: .
       dockerfile: Dockerfile.app-under-test
     environment:
+      ASPNETCORE_ENVIRONMENT: "Integration"
       ASPNETCORE_URLS: "http://+:8080"
+      IntegrationTestAuth__Enabled: "${INTEGRATION_TEST_AUTH_ENABLED:-true}"
       ConnectionStrings__DefaultConnection: "Host=test-db;Port=5432;Database=${INTEGRATION_DB_NAME:-integration_external};Username=${INTEGRATION_DB_USER:-postgres};Password=${INTEGRATION_DB_PASSWORD:-postgres}"
     depends_on:
       test-db:

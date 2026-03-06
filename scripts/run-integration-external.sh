@@ -9,6 +9,7 @@ COMPOSE_FILE="$ROOT_DIR/docker-compose.integration-external.yml"
 INTEGRATION_DB_NAME="${INTEGRATION_DB_NAME:-integration_external}"
 INTEGRATION_DB_USER="${INTEGRATION_DB_USER:-postgres}"
 INTEGRATION_DB_PASSWORD="${INTEGRATION_DB_PASSWORD:-postgres}"
+INTEGRATION_TEST_AUTH_ENABLED="${INTEGRATION_TEST_AUTH_ENABLED:-true}"
 KEEP_INTEGRATION_APP_UP="${KEEP_INTEGRATION_APP_UP:-0}"
 RUN_ID="$(date +%s)-$$"
 COMPOSE_PROJECT_NAME="bmstu-integration-${RUN_ID}"
@@ -28,6 +29,7 @@ echo "[INFO] Compose project: $COMPOSE_PROJECT_NAME"
 export INTEGRATION_DB_NAME
 export INTEGRATION_DB_USER
 export INTEGRATION_DB_PASSWORD
+export INTEGRATION_TEST_AUTH_ENABLED
 
 echo "[INFO] Starting test-db and app-under-test containers"
 docker compose -p "$COMPOSE_PROJECT_NAME" -f "$COMPOSE_FILE" up -d --build --force-recreate test-db app-under-test
