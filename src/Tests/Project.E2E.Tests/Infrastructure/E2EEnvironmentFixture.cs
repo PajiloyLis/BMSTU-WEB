@@ -168,7 +168,7 @@ public class E2EEnvironmentFixture : IAsyncLifetime
         {
             try
             {
-                using var response = await client.GetAsync($"{BaseApiUrl}companies");
+                using var response = await client.GetAsync($"{BaseApiUrl}api/v1/companies");
                 if (response.StatusCode is System.Net.HttpStatusCode.OK or System.Net.HttpStatusCode.Unauthorized)
                     return;
             }

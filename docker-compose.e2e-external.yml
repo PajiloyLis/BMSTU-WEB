@@ -34,7 +34,7 @@ services:
       dockerfile: Dockerfile.e2e-tests
     working_dir: /workspace
     environment:
-      E2E_BASE_URL: "http://app-under-test:8080/api/v1/"
+      E2E_BASE_URL: "http://app-under-test:8080/"
       E2E_DB_HOST: "test-db"
       E2E_DB_HOST_PORT: "5432"
       E2E_DB_NAME: "${E2E_DB_NAME:-e2e_external}"

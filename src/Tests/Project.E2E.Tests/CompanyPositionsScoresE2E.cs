@@ -14,6 +14,7 @@ namespace Project.E2E.Tests;
 [Collection(E2ECollection.Name)]
 public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
 {
+    private const string ApiPrefix = "api/v1/";
     private const string SeedEmployeeEmail = "fedorova@example.com";
     private const string SeedEmployeePassword = "fedorova";
     private static readonly DateTimeOffset LastMonthBoundary = DateTimeOffset.UtcNow.AddDays(-31);
@@ -24,7 +25,7 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
     public CompanyPositionsScoresE2E(E2EEnvironmentFixture fixture)
     {
         _fixture = fixture;
-        _client = new HttpClient { BaseAddress = new Uri(_fixture.BaseApiUrl + "/") };
+        _client = new HttpClient { BaseAddress = new Uri(_fixture.BaseApiUrl) };
     }
 
     public async Task InitializeAsync()
@@ -43,24 +44,24 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
     {
         var authData = await RegisterAndAuthorizeAsync();
 
-        var companiesResponse = await _client.GetAsync("companies");
+        var companiesResponse = await _client.GetAsync($"{ApiPrefix}companies");
         Assert.Equal(HttpStatusCode.OK, companiesResponse.StatusCode);
         var companies = await companiesResponse.Content.ReadFromJsonAsync<List<CompanyDto>>();
         Assert.NotNull(companies);
         var company = Assert.Single(companies.Where(c => c.Title == "ООО ДанныеАналитика").Take(1));
 
-        var headPositionResponse = await _client.GetAsync($"companies/{company.CompanyId}/headPosition");
+        var headPositionResponse = await _client.GetAsync($"{ApiPrefix}companies/{company.CompanyId}/headPosition");
         Assert.Equal(HttpStatusCode.OK, headPositionResponse.StatusCode);
         var headPosition = await headPositionResponse.Content.ReadFromJsonAsync<PositionDto>();
         Assert.NotNull(headPosition);
 
-        var subordinatesResponse = await _client.GetAsync($"positions/{headPosition.Id}/subordinates");
+        var subordinatesResponse = await _client.GetAsync($"{ApiPrefix}positions/{headPosition.Id}/subordinates");
         Assert.Equal(HttpStatusCode.OK, subordinatesResponse.StatusCode);
         var subordinates = await subordinatesResponse.Content.ReadFromJsonAsync<List<PositionHierarchyDto>>();
         Assert.NotNull(subordinates);
         Assert.NotEmpty(subordinates);
         
-        var currentEmployeesResponse = await _client.GetAsync($"employees/{company.CompanyId}/currentEmployees/");
+        var currentEmployeesResponse = await _client.GetAsync($"{ApiPrefix}employees/{company.CompanyId}/currentEmployees/");
         if (currentEmployeesResponse.StatusCode != HttpStatusCode.OK)
         {
             var body = await currentEmployeesResponse.Content.ReadAsStringAsync();
@@ -86,13 +87,13 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
             4,
             5);
 
-        var createScoreResponse = await _client.PostAsJsonAsync("scores", createScoreRequest);
+        var createScoreResponse = await _client.PostAsJsonAsync($"{ApiPrefix}scores", createScoreRequest);
         Assert.Equal(HttpStatusCode.Created, createScoreResponse.StatusCode);
         var createdScore = await createScoreResponse.Content.ReadFromJsonAsync<ScoreDto>();
         Assert.NotNull(createdScore);
 
         var lastScoresResponse =
-            await _client.GetAsync($"employees/{authData.Id}/subordinates/lasrScores");
+            await _client.GetAsync($"{ApiPrefix}employees/{authData.Id}/subordinates/lasrScores");
         Assert.Equal(HttpStatusCode.OK, lastScoresResponse.StatusCode);
         var lastScores = await lastScoresResponse.Content.ReadFromJsonAsync<List<ScoreDto>>();
         Assert.NotNull(lastScores);
@@ -110,7 +111,7 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
     private async Task<AuthorizationDataDto> RegisterAndAuthorizeAsync()
     {
         var registerResponse = await _client.PostAsJsonAsync(
-            "auth/register",
+            $"{ApiPrefix}auth/register",
             new LoginDto(SeedEmployeePassword, SeedEmployeeEmail));
         if (registerResponse.StatusCode != HttpStatusCode.OK)
         {
@@ -119,7 +120,7 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
         }
 
         var loginResponse = await _client.PostAsJsonAsync(
-            "auth/login",
+            $"{ApiPrefix}auth/login",
             new LoginDto(SeedEmployeePassword, SeedEmployeeEmail));
         if (loginResponse.StatusCode != HttpStatusCode.OK)
         {
