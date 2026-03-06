@@ -68,16 +68,6 @@ run_profile() {
     docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /benchmark-sql/generate_large_dataset.sql >/dev/null
     docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f "$index_sql" >/dev/null
 
-    # Wait for app readiness.
-    if [ "$BENCH_HOST_NETWORK" = "1" ]; then
-      curl -sS --retry 60 --retry-all-errors --retry-delay 1 \
-        "http://127.0.0.1:${BENCH_HOST_APP_PORT}/api/v1/companies" >/dev/null
-    else
-      docker run --rm --network "${compose_project}_default" curlimages/curl:8.11.1 \
-        -sS --retry 60 --retry-all-errors --retry-delay 1 \
-        "http://app-under-test:8080/api/v1/companies" >/dev/null
-    fi
-
     # k6 run in background to sample docker stats while test is running.
     local bench_base_url="http://app-under-test:8080/api/v1"
     if [ "$BENCH_HOST_NETWORK" = "1" ]; then

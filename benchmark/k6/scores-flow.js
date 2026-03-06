@@ -20,18 +20,26 @@ function api(path) {
 }
 
 export function setup() {
-  const loginRes = http.post(
-    api("/auth/login"),
-    JSON.stringify({ email: userEmail, password: userPassword }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+  // App startup can be slow in CI. Retry login preflight instead of relying on an extra curl container.
+  let loginRes = null;
+  let body = null;
+  for (let i = 0; i < 60; i++) {
+    loginRes = http.post(
+      api("/auth/login"),
+      JSON.stringify({ email: userEmail, password: userPassword }),
+      { headers: { "Content-Type": "application/json" } }
+    );
+    if (loginRes.status === 200) {
+      body = loginRes.json();
+      return { token: body?.token || "", userId: body?.id || "" };
+    }
+    sleep(1);
+  }
 
   check(loginRes, {
     "login status 200": (r) => r.status === 200
   });
-
-  const body = loginRes.json();
-  return { token: body?.token || "", userId: body?.id || "" };
+  return { token: "", userId: "" };
 }
 
 export default function (data) {
