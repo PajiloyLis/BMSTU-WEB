@@ -167,7 +167,7 @@ public class EducationRepository : IEducationRepository
 
     private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_context.Database.CurrentTransaction is not null)
+        if (!_context.Database.IsRelational() || _context.Database.CurrentTransaction is not null)
         {
             await _context.SaveChangesAsync(cancellationToken);
             return;
