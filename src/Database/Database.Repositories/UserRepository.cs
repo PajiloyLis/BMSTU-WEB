@@ -53,7 +53,7 @@ public class UserRepository : IUserRepository
             }
 
             _context.UserDb.Remove(user);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
         }
         catch (Exception e)
         {
@@ -81,7 +81,7 @@ public class UserRepository : IUserRepository
                 
             user.Password = passwordHash ?? passwordOld;
             user.Email = email ?? emailOld;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
         }
         catch (Exception e)
         {
@@ -103,7 +103,7 @@ public class UserRepository : IUserRepository
             var companyEmail = await _context.CompanyDb.Select(e => e.Email).AsNoTracking().ToListAsync();
             user.Role = companyEmail.Contains(user.Email)? "admin" : "employee";
             await _context.UserDb.AddAsync(UserConverter.Convert(user));
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
             return user;
         }
         catch (Exception e)
@@ -113,7 +113,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-        public async Task<Guid> GetCurrentUserIdAsync(string email)
+    public async Task<Guid> GetCurrentUserIdAsync(string email)
     {
         try
         {
@@ -140,6 +140,28 @@ public class UserRepository : IUserRepository
         catch (Exception e)
         {
             Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(UserRepository));
             throw;
         }
     }

@@ -40,7 +40,7 @@ public class CompanyRepository : ICompanyRepository
                     $"Company with same title - {company.Title} or phone - {company.PhoneNumber} or email - {company.Email} or inn - {company.Inn} or kpp - {company.Kpp} or ogrn - {company.Ogrn} or id - {company.Id} already exists");
 
             await _context.CompanyDb.AddAsync(company);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             return CompanyConverter.Convert(company);
         }
@@ -77,7 +77,7 @@ public class CompanyRepository : ICompanyRepository
             companyToUpdate.Ogrn = company.Ogrn ?? companyToUpdate.Ogrn;
             companyToUpdate.Address = company.Address ?? companyToUpdate.Address;
 
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             return CompanyConverter.Convert(companyToUpdate);
         }
@@ -143,7 +143,7 @@ public class CompanyRepository : ICompanyRepository
                 .Where(e => positions.Select(x => x.Id).ToList().Contains(e.PositionId)).ToListAsync();
             positionHistories.ForEach(e => e.EndDate=DateOnly.FromDateTime(DateTime.Now));
             
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
         }
         catch (CompanyNotFoundException e)
         {
@@ -168,6 +168,28 @@ public class CompanyRepository : ICompanyRepository
         catch (Exception e)
         {
             _logger.LogError(e, "Error getting companies");
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(CompanyRepository));
             throw;
         }
     }

@@ -43,7 +43,7 @@ public class PostRepository : IPostRepository
             }
 
             await _context.PostDb.AddAsync(postDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Post with id {Id} was added", postDb.Id);
             return PostConverter.Convert(postDb)!;
@@ -105,7 +105,7 @@ public class PostRepository : IPostRepository
 
             postDb.Title = post.Title ?? postDb.Title;
             postDb.Salary = post.Salary ?? postDb.Salary;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Post with id {Id} was updated", post.Id);
             return PostConverter.Convert(postDb)!;
@@ -148,13 +148,35 @@ public class PostRepository : IPostRepository
             }
 
             _context.PostDb.Remove(post);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Post with id {Id} was deleted", postId);
         }
         catch (Exception e) when (e is not PostNotFoundException)
         {
             _logger.LogError(e, "Error occurred while deleting post with id {Id}", postId);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(PostRepository));
             throw;
         }
     }

@@ -34,7 +34,7 @@ public class PostHistoryRepository : IPostHistoryRepository
 
             var postHistoryDb = PostHistoryConverter.Convert(createPostHistory);
             await _context.PostHistoryDb.AddAsync(postHistoryDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Successfully added post history for employee {EmployeeId} and post {PostId}",
                 createPostHistory.EmployeeId, createPostHistory.PostId);
@@ -107,7 +107,7 @@ public class PostHistoryRepository : IPostHistoryRepository
             if (updatePostHistory.EndDate.HasValue)
                 postHistoryDb.EndDate = updatePostHistory.EndDate.Value;
 
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Successfully updated post history for employee {EmployeeId} and post {PostId}",
                 updatePostHistory.EmployeeId, updatePostHistory.PostId);
@@ -144,7 +144,7 @@ public class PostHistoryRepository : IPostHistoryRepository
             }
 
             _context.PostHistoryDb.Remove(postHistoryDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Successfully deleted post history for employee {EmployeeId} and post {PostId}",
                 employeeId, postId);
@@ -252,6 +252,28 @@ public class PostHistoryRepository : IPostHistoryRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting subordinates post history for manager {ManagerId}", managerId);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(PostHistoryRepository));
             throw;
         }
     }

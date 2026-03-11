@@ -40,7 +40,7 @@ public class EducationRepository : IEducationRepository
             }
 
             await _context.EducationDb.AddAsync(educationDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Education with id {Id} was added for employee {EmployeeId}",
                 educationDb.Id, education.EmployeeId);
@@ -112,7 +112,7 @@ public class EducationRepository : IEducationRepository
             educationDb.StartDate = education.StartDate ?? educationDb.StartDate;
             educationDb.EndDate = education.EndDate ?? educationDb.EndDate;
 
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Education with id {Id} was updated", education.Id);
             return EducationConverter.Convert(educationDb);
@@ -154,13 +154,35 @@ public class EducationRepository : IEducationRepository
             }
 
             _context.EducationDb.Remove(educationDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Education with id {Id} was deleted", educationId);
         }
         catch (Exception e) when (e is not EducationNotFoundException)
         {
             _logger.LogError(e, "Error deleting education with id {Id}", educationId);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(EducationRepository));
             throw;
         }
     }

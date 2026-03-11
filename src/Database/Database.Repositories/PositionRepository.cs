@@ -45,7 +45,7 @@ public class PositionRepository : IPositionRepository
             }
 
             await _context.PositionDb.AddAsync(positionDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Position with id {Id} was added", positionDb.Id);
             return PositionConverter.Convert(positionDb)!;
@@ -128,7 +128,7 @@ public class PositionRepository : IPositionRepository
             }
 
             positionDb.Title = title ?? positionDb.Title;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Position with id {Id} was updated", positionDb.Id);
             return PositionConverter.Convert(positionDb)!;
@@ -169,7 +169,7 @@ public class PositionRepository : IPositionRepository
             }
 
             positionDb.ParentId = parentId;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Position with id {Id} was updated", id);
             return PositionConverter.Convert(positionDb)!;
@@ -213,7 +213,7 @@ public class PositionRepository : IPositionRepository
             children.ForEach(e => e.ParentId = positionDb.ParentId);
 
             positionDb.ParentId = parentId;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Position with id {Id} was updated", id);
             return PositionConverter.Convert(positionDb)!;
@@ -239,7 +239,7 @@ public class PositionRepository : IPositionRepository
             }
 
             _context.PositionDb.Remove(position);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Position with id {Id} was deleted", id);
         }
@@ -272,6 +272,28 @@ public class PositionRepository : IPositionRepository
         catch (Exception e)
         {
             _logger.LogError(e, "Error occurred while getting subordinates for position {ParentId}", parentId);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(PositionRepository));
             throw;
         }
     }

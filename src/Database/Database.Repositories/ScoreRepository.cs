@@ -34,7 +34,7 @@ public class ScoreRepository : IScoreRepository
             }
 
             await _context.ScoreDb.AddAsync(scoreDb);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Score with id {Id} was added", scoreDb.Id);
             return ScoreConverter.Convert(scoreDb)!;
@@ -85,7 +85,7 @@ public class ScoreRepository : IScoreRepository
             scoreDb.EfficiencyScore = score.EfficiencyScore ?? scoreDb.EfficiencyScore;
             scoreDb.EngagementScore = score.EngagementScore ?? scoreDb.EngagementScore;
             scoreDb.CompetencyScore = score.CompetencyScore ?? scoreDb.CompetencyScore;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Score with id {Id} was updated", score.Id);
             return ScoreConverter.Convert(scoreDb)!;
@@ -111,7 +111,7 @@ public class ScoreRepository : IScoreRepository
             }
 
             _context.ScoreDb.Remove(score);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             _logger.LogInformation("Score with id {Id} was deleted", id);
         }
@@ -301,6 +301,28 @@ public class ScoreRepository : IScoreRepository
             _logger.LogError(ex,
                 "Error getting current subordinates for manager {ManagerId}",
                 managerId);
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(ScoreRepository));
             throw;
         }
     }

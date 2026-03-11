@@ -1,4 +1,4 @@
-﻿using Database.Context;
+using Database.Context;
 using Database.Models;
 using Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +36,7 @@ public class EmployeeRepository : IEmployeeRepository
                     $"Employee with email - {newEmployee.Email} or phone - {employee.Phone} or id - {employee.Id} already exists");
 
             await _context.EmployeeDb.AddAsync(employee);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             return EmployeeConverter.Convert(employee);
         }
@@ -57,7 +57,7 @@ public class EmployeeRepository : IEmployeeRepository
             var educations = await _context.EducationDb.Where(e=>e.EmployeeId==employeeId).ToListAsync();
             _context.EducationDb.RemoveRange(educations);
             _context.EmployeeDb.Remove(employee);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
         }
         catch (EmployeeNotFoundException e)
         {
@@ -156,7 +156,7 @@ public class EmployeeRepository : IEmployeeRepository
             employee.Photo = updatedUpdateEmployee.Photo ?? employee.Photo;
             employee.Duties = updatedUpdateEmployee.Duties ?? employee.Duties;
 
-            await _context.SaveChangesAsync();
+            await SaveChangesWithTransactionAsync();
 
             return EmployeeConverter.Convert(employee);
         }
@@ -168,6 +168,28 @@ public class EmployeeRepository : IEmployeeRepository
         catch (Exception e)
         {
             _logger.LogError(e, $"Error updating employee with id - {updatedUpdateEmployee.EmployeeId}");
+            throw;
+        }
+    }
+
+    private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_context.Database.CurrentTransaction is not null)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Transaction rolled back in {Repository}", nameof(EmployeeRepository));
             throw;
         }
     }
