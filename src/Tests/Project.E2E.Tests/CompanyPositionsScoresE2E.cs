@@ -73,9 +73,7 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
         Assert.NotNull(currentEmployees);
         Assert.NotEmpty(currentEmployees);
 
-        var testEmployeePositionId = currentEmployees.Where(e => e.EmployeeId == authData.Id).Select(e => e.PositionId).FirstOrDefault();
-        var subordinatePositionId = subordinates.Where(s => s.ParentId == testEmployeePositionId).Select(s => s.PositionId).FirstOrDefault();
-        var subordinateWithPosition = currentEmployees.FirstOrDefault(e => e.PositionId == subordinatePositionId);
+        var subordinateWithPosition = ResolveSubordinateWithPosition(authData.Id, currentEmployees, subordinates);
         Assert.NotNull(subordinateWithPosition);
 
         var createScoreRequest = new CreateScoreDto(
@@ -135,6 +133,26 @@ public sealed class CompanyPositionsScoresE2E : IAsyncLifetime
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", authData.Token);
         return authData;
+    }
+
+    private static CurrentPositionEmployeeDto ResolveSubordinateWithPosition(
+        Guid managerEmployeeId,
+        List<CurrentPositionEmployeeDto> currentEmployees,
+        List<PositionHierarchyDto> subordinates)
+    {
+        var managerPositionId = currentEmployees
+            .Where(e => e.EmployeeId == managerEmployeeId)
+            .Select(e => e.PositionId)
+            .FirstOrDefault();
+
+        var subordinatePositionId = subordinates
+            .Where(s => s.ParentId == managerPositionId)
+            .Select(s => s.PositionId)
+            .FirstOrDefault();
+
+        var subordinateWithPosition = currentEmployees.FirstOrDefault(e => e.PositionId == subordinatePositionId);
+        return subordinateWithPosition
+               ?? throw new InvalidOperationException("Failed to resolve subordinate position for authorized manager.");
     }
 }
 
