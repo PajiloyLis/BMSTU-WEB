@@ -9,7 +9,7 @@ using Xunit;
 namespace Project.Integration.Tests;
 
 [Collection(IntegrationCollection.Name)]
-public sealed class EmployeeApiIT : IAsyncLifetime
+public sealed class EmployeeApiIT
 {
     private readonly IntegrationDatabaseFixture _dbFixture;
     private readonly HttpClient _client;
@@ -20,103 +20,110 @@ public sealed class EmployeeApiIT : IAsyncLifetime
         _client = IntegrationApiClientFactory.CreateClient();
     }
 
-    public async Task InitializeAsync()
-    {
-        await _dbFixture.ResetToBaselineAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _dbFixture.ResetToBaselineAsync();
-    }
-
     [Fact]
     public async Task CreateAndGetEmployee_ShouldReturnCreatedEntity()
     {
-        var request = EmployeeObjectFabric.CreateEmployeeDto();
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var request = EmployeeObjectFabric.CreateEmployeeDto();
 
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/employees", request);
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        var created = await createResponse.Content.ReadFromJsonAsync<EmployeeDto>();
-        Assert.NotNull(created);
-        Assert.NotEqual(Guid.Empty, created.EmployeeId);
-        Assert.Equal(request.FullName, created.FullName);
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/employees", request);
+            Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+            var created = await createResponse.Content.ReadFromJsonAsync<EmployeeDto>();
+            Assert.NotNull(created);
+            Assert.NotEqual(Guid.Empty, created.EmployeeId);
+            Assert.Equal(request.FullName, created.FullName);
 
-
-        var getResponse = await _client.GetAsync($"/api/v1/employees/{created.EmployeeId}");
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        var fetched = await getResponse.Content.ReadFromJsonAsync<EmployeeDto>();
-        Assert.NotNull(fetched);
-        Assert.Equal(created.EmployeeId, fetched.EmployeeId);
-        Assert.Equal(created.Email, fetched.Email);
+            var getResponse = await _client.GetAsync($"/api/v1/employees/{created.EmployeeId}");
+            Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+            var fetched = await getResponse.Content.ReadFromJsonAsync<EmployeeDto>();
+            Assert.NotNull(fetched);
+            Assert.Equal(created.EmployeeId, fetched.EmployeeId);
+            Assert.Equal(created.Email, fetched.Email);
+        });
     }
 
     [Fact]
     public async Task UpdateEmployee_ShouldReturnUpdatedEntity()
     {
-        var update = EmployeeObjectFabric.UpdateEmployeeDto();
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var update = EmployeeObjectFabric.UpdateEmployeeDto();
 
-        var updateResponse = await _client.PatchAsJsonAsync($"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}", update);
-        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
-        var updated = await updateResponse.Content.ReadFromJsonAsync<EmployeeDto>();
-        Assert.NotNull(updated);
-        Assert.Equal(update.FullName, updated.FullName);
-        Assert.Equal(update.Email, updated.Email);
+            var updateResponse = await _client.PatchAsJsonAsync($"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}", update);
+            Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+            var updated = await updateResponse.Content.ReadFromJsonAsync<EmployeeDto>();
+            Assert.NotNull(updated);
+            Assert.Equal(update.FullName, updated.FullName);
+            Assert.Equal(update.Email, updated.Email);
+        });
     }
 
     [Fact]
     public async Task UpdateEmployee_WithInvalidEmail_ShouldReturnBadRequest()
     {
-        var invalid = EmployeeObjectFabric.UpdateEmployeeDto(email: "invalid-email");
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var invalid = EmployeeObjectFabric.UpdateEmployeeDto(email: "invalid-email");
 
-        var response = await _client.PatchAsJsonAsync(
-            $"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}",
-            invalid);
+            var response = await _client.PatchAsJsonAsync(
+                $"/api/v1/employees/{IntegrationDatabaseFixture.SeedEmployeeId}",
+                invalid);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
-        Assert.NotNull(error);
-        Assert.Equal(nameof(ArgumentException), error.ErrorType);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            Assert.NotNull(error);
+            Assert.Equal(nameof(ArgumentException), error.ErrorType);
+        });
     }
 
     [Fact]
     public async Task DeleteEmployee_ShouldReturnNoContent_AndThenNotFound()
     {
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/employees", EmployeeObjectFabric.CreateEmployeeDto());
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        var created = await createResponse.Content.ReadFromJsonAsync<EmployeeDto>();
-        Assert.NotNull(created);
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/employees", EmployeeObjectFabric.CreateEmployeeDto());
+            Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+            var created = await createResponse.Content.ReadFromJsonAsync<EmployeeDto>();
+            Assert.NotNull(created);
 
-        var deleteResponse = await _client.DeleteAsync($"/api/v1/employees/{created.EmployeeId}");
-        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+            var deleteResponse = await _client.DeleteAsync($"/api/v1/employees/{created.EmployeeId}");
+            Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
-        var getResponse = await _client.GetAsync($"/api/v1/employees/{created.EmployeeId}");
-        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+            var getResponse = await _client.GetAsync($"/api/v1/employees/{created.EmployeeId}");
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        });
     }
 
     [Fact]
     public async Task DeleteEmployee_WhenNotFound_ShouldReturnNotFound()
     {
-        var missingId = Guid.NewGuid();
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var missingId = Guid.NewGuid();
 
-        var response = await _client.DeleteAsync($"/api/v1/employees/{missingId}");
+            var response = await _client.DeleteAsync($"/api/v1/employees/{missingId}");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
-        Assert.NotNull(error);
-        Assert.Equal("EmployeeNotFoundException", error.ErrorType);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            Assert.NotNull(error);
+            Assert.Equal("EmployeeNotFoundException", error.ErrorType);
+        });
     }
 
     [Fact]
     public async Task CreateEmployee_WithInvalidEmail_ShouldReturnBadRequest()
     {
-        var invalid = EmployeeObjectFabric.CreateEmployeeDto(email: "invalid-email");
+        await _dbFixture.RunMutatingTestAsync(async () =>
+        {
+            var invalid = EmployeeObjectFabric.CreateEmployeeDto(email: "invalid-email");
 
-        var response = await _client.PostAsJsonAsync("/api/v1/employees", invalid);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
-        Assert.NotNull(error);
-        Assert.Equal(nameof(ArgumentException), error.ErrorType);
+            var response = await _client.PostAsJsonAsync("/api/v1/employees", invalid);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            Assert.NotNull(error);
+            Assert.Equal(nameof(ArgumentException), error.ErrorType);
+        });
     }
 }
 

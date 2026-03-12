@@ -1,5 +1,6 @@
 using Database.Context;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Xunit;
 
 namespace Project.Integration.Tests.Infrastructure;
@@ -23,6 +24,7 @@ public class IntegrationDatabaseFixture : IAsyncLifetime
     private string _createScriptPath = string.Empty;
     private string _truncateScriptPath = string.Empty;
     private string _copyScriptPath = string.Empty;
+    private const long IntegrationTestLockKey = 7_304_001;
 
     public string ConnectionString { get; private set; } = string.Empty;
     public int ExposedDbHostPort { get; private set; }
@@ -40,11 +42,12 @@ public class IntegrationDatabaseFixture : IAsyncLifetime
         ConnectionString = BuildConnectionString();
         ExposedDbHostPort = ResolveDbHostPort();
         await WaitForDatabaseReadyAsync();
-
-        await using var context = CreateDbContext();
-        await ExecuteScriptAsync(context, _createScriptPath);
-
-        await ResetToBaselineAsync();
+        await RunWithDatabaseLockAsync(async () =>
+        {
+            await using var context = CreateDbContext();
+            await ExecuteScriptAsync(context, _createScriptPath);
+            await ResetToBaselineAsync();
+        });
     }
 
     public async Task ResetToBaselineAsync()
@@ -57,6 +60,76 @@ public class IntegrationDatabaseFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await Task.CompletedTask;
+    }
+
+    public Task RunWithDatabaseLockAsync(Func<Task> action)
+    {
+        return RunWithExclusiveDatabaseLockAsync(action);
+    }
+
+    public async Task RunWithExclusiveDatabaseLockAsync(Func<Task> action)
+    {
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+
+        await using var lockCommand = connection.CreateCommand();
+        lockCommand.CommandText = $"SELECT pg_advisory_lock({IntegrationTestLockKey});";
+        lockCommand.CommandTimeout = 0;
+        await lockCommand.ExecuteNonQueryAsync();
+
+        try
+        {
+            await action();
+        }
+        finally
+        {
+            await using var unlockCommand = connection.CreateCommand();
+            unlockCommand.CommandText = $"SELECT pg_advisory_unlock({IntegrationTestLockKey});";
+            await unlockCommand.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task RunWithSharedDatabaseLockAsync(Func<Task> action)
+    {
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+
+        await using var lockCommand = connection.CreateCommand();
+        lockCommand.CommandText = $"SELECT pg_advisory_lock_shared({IntegrationTestLockKey});";
+        lockCommand.CommandTimeout = 0;
+        await lockCommand.ExecuteNonQueryAsync();
+
+        try
+        {
+            await action();
+        }
+        finally
+        {
+            await using var unlockCommand = connection.CreateCommand();
+            unlockCommand.CommandText = $"SELECT pg_advisory_unlock_shared({IntegrationTestLockKey});";
+            await unlockCommand.ExecuteNonQueryAsync();
+        }
+    }
+
+    public Task RunMutatingTestAsync(Func<Task> action)
+    {
+        return RunWithExclusiveDatabaseLockAsync(async () =>
+        {
+            await ResetToBaselineAsync();
+            try
+            {
+                await action();
+            }
+            finally
+            {
+                await ResetToBaselineAsync();
+            }
+        });
+    }
+
+    public Task RunReadOnlyTestAsync(Func<Task> action)
+    {
+        return RunWithSharedDatabaseLockAsync(action);
     }
 
     private ProjectDbContext CreateDbContext()
