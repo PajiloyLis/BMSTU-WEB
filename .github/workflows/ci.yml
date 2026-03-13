@@ -44,9 +44,19 @@ jobs:
       - name: Подготовка benchmark-скриптов
         run: chmod +x scripts/*.sh
 
+      - name: Установка python-зависимостей для графиков
+        run: python3 -m pip install --user matplotlib
+
       - name: Запуск benchmark (100 прогонов)
         env:
           BENCH_RUNS: "100"
+          BENCH_WORKLOADS: "scores-flow,scores-degradation,scores-max-load,scores-recovery"
+          BENCH_APP_CPUS: "1.5"
+          BENCH_APP_MEM_LIMIT: "1536m"
+          BENCH_DB_CPUS: "1.0"
+          BENCH_DB_MEM_LIMIT: "1024m"
+          BENCH_LOADGEN_CPUS: "1.0"
+          BENCH_LOADGEN_MEM_LIMIT: "1024m"
         run: bash ./scripts/run-benchmark-indexes.sh all
 
       - name: Упаковка benchmark-артефактов

@@ -1,6 +1,8 @@
 services:
   test-db:
     image: postgres:15-alpine
+    cpus: "${BENCH_DB_CPUS:-1.0}"
+    mem_limit: "${BENCH_DB_MEM_LIMIT:-1024m}"
     environment:
       POSTGRES_DB: "${BENCH_DB_NAME:-bench_external}"
       POSTGRES_USER: "${BENCH_DB_USER:-postgres}"
@@ -16,6 +18,8 @@ services:
 
   app-under-test:
     image: bmstu/app-under-test:local
+    cpus: "${BENCH_APP_CPUS:-1.5}"
+    mem_limit: "${BENCH_APP_MEM_LIMIT:-1536m}"
     build:
       context: ..
       dockerfile: Dockerfile.app-under-test
@@ -30,6 +34,8 @@ services:
 
   loadgen:
     image: grafana/k6:0.57.0
+    cpus: "${BENCH_LOADGEN_CPUS:-1.0}"
+    mem_limit: "${BENCH_LOADGEN_MEM_LIMIT:-1024m}"
     working_dir: /benchmark
     volumes:
       - "./:/benchmark"

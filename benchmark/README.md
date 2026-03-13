@@ -1,69 +1,96 @@
-# Benchmark: indexes vs no-indexes
+# Бенчмарк: индексы vs без индексов
 
-This benchmark compares two DB profiles for your API:
+Этот набор бенчмарков сравнивает два профиля БД для вашего API:
 
-- `without-index` - target indexes dropped
-- `with-index` - target indexes created
+- `without-index` — целевые индексы удалены
+- `with-index` — целевые индексы созданы
 
-Both profiles run the same workload (`scores-flow`) against the same seeded dataset.
+Оба профиля запускают одинаковый набор сценариев на одной и той же стартовой выборке данных.
 
-## What is measured
+Доступные сценарии нагрузки:
 
-- API latency (`med`, `p95`, `p99`) from k6 summary
-- request rate and failed request rate
-- resource usage snapshots for app/db containers (`CPU%`, `RAM MiB`)
+- `scores-flow` — базовый смешанный сценарий.
+- `scores-degradation` — ступенчатое повышение нагрузки для поиска точки деградации.
+- `scores-max-load` — длительная работа на высокой нагрузке.
+- `scores-recovery` — перегрузка и восстановление.
 
-## Dataset strategy
+## Что измеряется
 
-- Baseline scripts are reused:
+- задержка API (`med`, `p95`, `p99`) из summary k6;
+- скорость запросов и доля ошибочных запросов;
+- срезы утилизации ресурсов для контейнеров app/db (`CPU%`, `RAM MiB`, `Net I/O MiB`, `Block I/O MiB`).
+
+## Стратегия данных
+
+- Переиспользуются базовые скрипты:
   - `DB_data_scripts/integration/create.sql`
   - `DB_data_scripts/integration/truncate.sql`
   - `DB_data_scripts/integration/copy_all.sql`
-- Dataset is then expanded with:
-  - `benchmark/sql/generate_large_dataset.sql` (`+100000` rows in `score_story`)
+- Набор данных расширяется скриптом:
+  - `benchmark/sql/generate_large_dataset.sql` (`+100000` строк в `score_story`)
 
-## Run
+## Запуск
 
-From repository root:
+Из корня репозитория:
 
 ```bash
 BENCH_RUNS=100 bash ./scripts/run-benchmark-indexes.sh all
 ```
 
-Quick smoke test:
+Запуск всех сценариев явно:
+
+```bash
+BENCH_WORKLOADS=scores-flow,scores-degradation,scores-max-load,scores-recovery \
+BENCH_RUNS=100 \
+bash ./scripts/run-benchmark-indexes.sh all
+```
+
+Быстрый smoke-тест:
 
 ```bash
 BENCH_RUNS=2 bash ./scripts/run-benchmark-indexes.sh all
 ```
 
-Host network mode (Linux, useful for bridge/DNS issues):
+Режим host network (Linux, полезно при проблемах bridge/DNS):
 
 ```bash
 BENCH_HOST_NETWORK=1 BENCH_RUNS=2 bash ./scripts/run-benchmark-indexes.sh all
 ```
 
-Optional host ports in host-network mode:
+Фиксация лимитов ресурсов для воспроизводимости:
+
+```bash
+BENCH_APP_CPUS=1.5 BENCH_APP_MEM_LIMIT=1536m \
+BENCH_DB_CPUS=1.0 BENCH_DB_MEM_LIMIT=1024m \
+BENCH_LOADGEN_CPUS=1.0 BENCH_LOADGEN_MEM_LIMIT=1024m \
+BENCH_RUNS=20 bash ./scripts/run-benchmark-indexes.sh all
+```
+
+Опциональные host-порты в host-network режиме:
 
 ```bash
 BENCH_HOST_NETWORK=1 BENCH_HOST_APP_PORT=58082 BENCH_HOST_DB_PORT=55434 BENCH_RUNS=2 bash ./scripts/run-benchmark-indexes.sh all
 ```
 
-Single profile:
+Запуск только одного профиля:
 
 ```bash
 BENCH_RUNS=20 bash ./scripts/run-benchmark-indexes.sh with-index
 BENCH_RUNS=20 bash ./scripts/run-benchmark-indexes.sh without-index
 ```
 
-## Output
+## Результаты
 
-- Raw run artifacts:
-  - `benchmark/results/with-index/run-*/`
-  - `benchmark/results/without-index/run-*/`
-- Aggregated report:
+- Сырые артефакты прогонов:
+  - `benchmark/results/with-index/<workload>/run-*/`
+  - `benchmark/results/without-index/<workload>/run-*/`
+- Агрегированные отчеты:
   - `benchmark/results/summary/summary.json`
   - `benchmark/results/summary/summary.csv`
+  - `benchmark/results/summary/report.md`
+  - `benchmark/results/summary/plots/*.png` (если установлен `matplotlib`; установка: `python3 -m pip install matplotlib`)
 
-## Notes
+## Примечания
 
-- In `BENCH_HOST_NETWORK=1` mode, avoid parallel benchmark runs with the same host ports.
+- В режиме `BENCH_HOST_NETWORK=1` избегайте параллельных запусков с одинаковыми host-портами.
+- По умолчанию запускается только `scores-flow`; для нескольких сценариев используйте `BENCH_WORKLOADS`.
