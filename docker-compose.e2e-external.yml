@@ -22,6 +22,14 @@ services:
       ASPNETCORE_ENVIRONMENT: "Integration"
       ASPNETCORE_URLS: "http://+:8080"
       IntegrationTestAuth__Enabled: "${E2E_TEST_AUTH_ENABLED:-false}"
+      AuthorizationSecurity__Enabled: "${E2E_AUTH_SECURITY_ENABLED:-false}"
+      AuthorizationSecurity__RequireTwoFactor: "${E2E_AUTH_REQUIRE_2FA:-true}"
+      AuthorizationSecurity__ExposeCodesForTests: "${E2E_AUTH_EXPOSE_CODES_FOR_TESTS:-false}"
+      AuthorizationSecurity__MaxFailedLoginAttempts: "${E2E_AUTH_MAX_FAILED_ATTEMPTS:-5}"
+      AuthorizationSecurity__LockoutMinutes: "${E2E_AUTH_LOCKOUT_MINUTES:-15}"
+      AuthorizationSecurity__OtpLifetimeMinutes: "${E2E_AUTH_OTP_LIFETIME_MINUTES:-5}"
+      AuthorizationSecurity__RecoveryTokenLifetimeMinutes: "${E2E_AUTH_RECOVERY_TOKEN_LIFETIME_MINUTES:-30}"
+      AuthorizationSecurity__PasswordMaxAgeDays: "${E2E_AUTH_PASSWORD_MAX_AGE_DAYS:-90}"
       ConnectionStrings__DefaultConnection: "Host=test-db;Port=5432;Database=${E2E_DB_NAME:-e2e_external};Username=${E2E_DB_USER:-postgres};Password=${E2E_DB_PASSWORD:-postgres}"
     depends_on:
       test-db:
@@ -42,6 +50,7 @@ services:
       E2E_DB_PASSWORD: "${E2E_DB_PASSWORD:-postgres}"
     volumes:
       - "./src/Tests/Project.E2E.Tests/allure-results:/workspace/src/Tests/Project.E2E.Tests/allure-results"
+      - "./src/Tests/Project.BDD.E2E.Tests/allure-results:/workspace/src/Tests/Project.BDD.E2E.Tests/allure-results"
       - "./TestResults:/workspace/TestResults"
     depends_on:
       test-db:

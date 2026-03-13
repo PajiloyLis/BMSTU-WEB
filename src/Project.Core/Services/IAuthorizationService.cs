@@ -27,4 +27,14 @@ public interface IAuthorizationService
         string email);
 
     Task<Guid> GetCurrentUserIdAsync(string email);
+
+    Task<LoginStartResult> StartLoginAsync(string email, string password);
+
+    Task<AuthorizationData> CompleteLoginWithOtpAsync(Guid challengeId, string otpCode);
+
+    Task<PasswordRecoveryResult> RequestPasswordRecoveryAsync(string email);
+
+    Task ResetPasswordWithRecoveryTokenAsync(string email, string recoveryToken, string newPassword);
+
+    Task ChangePasswordAsync(string email, string oldPassword, string newPassword);
 }

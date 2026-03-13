@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Project.Core\Project.Core.csproj" />
+      <ProjectReference Include="..\..\Database\Database.Context\Database.Context.csproj" />
     </ItemGroup>
 
 </Project>

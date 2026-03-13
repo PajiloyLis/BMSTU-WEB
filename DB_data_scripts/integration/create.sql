@@ -114,6 +114,25 @@ create table if not exists users
     email    varchar(255) unique not null check ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' ),
     password text not null unique,
     salt     text not null,
-    role     text not null
+    role     text not null,
+    failed_login_attempts int not null default 0,
+    lockout_until_utc timestamptz null,
+    last_password_changed_at_utc timestamptz not null default now(),
+    otp_challenge_id uuid null,
+    otp_code_hash text null,
+    otp_expires_at_utc timestamptz null,
+    recovery_token_hash text null,
+    recovery_token_expires_at_utc timestamptz null,
+    password_change_required bool not null default false
 );
+
+alter table users add column if not exists failed_login_attempts int not null default 0;
+alter table users add column if not exists lockout_until_utc timestamptz null;
+alter table users add column if not exists last_password_changed_at_utc timestamptz not null default now();
+alter table users add column if not exists otp_challenge_id uuid null;
+alter table users add column if not exists otp_code_hash text null;
+alter table users add column if not exists otp_expires_at_utc timestamptz null;
+alter table users add column if not exists recovery_token_hash text null;
+alter table users add column if not exists recovery_token_expires_at_utc timestamptz null;
+alter table users add column if not exists password_change_required bool not null default false;
 
