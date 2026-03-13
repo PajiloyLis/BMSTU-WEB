@@ -365,7 +365,7 @@ jobs:
 
       - name: Запуск e2e тестов (external app + test db + tests container)
         if: env.RUN_E2E == 'true'
-        run: ./scripts/run-e2e-external.sh
+        run: ./scripts/run-e2e-external.sh --filter "FullyQualifiedName!~ExternalAgeServiceE2E"
 
       - name: Synthetic skipped для e2e (если integration не прошел)
         if: env.RUN_E2E != 'true'
@@ -450,12 +450,117 @@ jobs:
           if-no-files-found: warn
 
   # ──────────────────────────────────────────────
+  # 6.1 E2E интеграция внешнего сервиса (mock)
+  # ──────────────────────────────────────────────
+  test-e2e-external-mock:
+    name: E2E внешний сервис (mock)
+    runs-on: ubuntu-latest
+    needs: [test-services, test-repositories, test-controllers, test-integration]
+    if: always()
+    env:
+      RUN_E2E_EXTERNAL: ${{ needs.test-services.result == 'success' && needs.test-repositories.result == 'success' && needs.test-controllers.result == 'success' && needs.test-integration.result == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Подготовка test-скриптов
+        if: env.RUN_E2E_EXTERNAL == 'true'
+        run: chmod +x scripts/*.sh
+
+      - name: Запуск e2e интеграции с mock-сервисом
+        if: env.RUN_E2E_EXTERNAL == 'true'
+        env:
+          E2E_EXTERNAL_MODE: "mock"
+          E2E_EXTERNAL_TEST_NAME: "ivan"
+        run: ./scripts/run-e2e-external.sh --filter "FullyQualifiedName~ExternalAgeServiceE2E"
+
+      - name: Сбор Allure-результатов (e2e external mock)
+        if: always() && env.RUN_E2E_EXTERNAL == 'true'
+        run: |
+          rm -rf ci-allure-results
+          mkdir -p ci-allure-results
+          found=0
+          while IFS= read -r dir; do
+            found=1
+            cp -R "$dir"/. ci-allure-results/ || true
+          done < <(find . -type d -name allure-results)
+          if [ "$found" -eq 0 ]; then
+            echo "Allure-результаты не найдены"
+          fi
+
+      - name: Загрузка Allure-результатов (e2e external mock)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-external-mock-allure-results
+          path: ci-allure-results/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
+  # 6.2 E2E интеграция внешнего сервиса (real)
+  # ──────────────────────────────────────────────
+  test-e2e-external-real:
+    name: E2E внешний сервис (real)
+    runs-on: ubuntu-latest
+    needs: [test-services, test-repositories, test-controllers, test-integration]
+    if: always()
+    env:
+      RUN_E2E_EXTERNAL: ${{ needs.test-services.result == 'success' && needs.test-repositories.result == 'success' && needs.test-controllers.result == 'success' && needs.test-integration.result == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Подготовка test-скриптов
+        if: env.RUN_E2E_EXTERNAL == 'true'
+        run: chmod +x scripts/*.sh
+
+      - name: Запуск e2e интеграции с реальным сервисом
+        if: env.RUN_E2E_EXTERNAL == 'true'
+        env:
+          E2E_EXTERNAL_MODE: "real"
+          E2E_EXTERNAL_REAL_BASE_URL: "https://api.agify.io"
+          E2E_EXTERNAL_TEST_NAME: "ivan"
+        run: ./scripts/run-e2e-external.sh --filter "FullyQualifiedName~ExternalAgeServiceE2E"
+
+      - name: Сбор Allure-результатов (e2e external real)
+        if: always() && env.RUN_E2E_EXTERNAL == 'true'
+        run: |
+          rm -rf ci-allure-results
+          mkdir -p ci-allure-results
+          found=0
+          while IFS= read -r dir; do
+            found=1
+            cp -R "$dir"/. ci-allure-results/ || true
+          done < <(find . -type d -name allure-results)
+          if [ "$found" -eq 0 ]; then
+            echo "Allure-результаты не найдены"
+          fi
+
+      - name: Загрузка Allure-результатов (e2e external real)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-external-real-allure-results
+          path: ci-allure-results/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
   # 7. Генерация Allure-отчёта
   # ──────────────────────────────────────────────
   allure-report:
     name: Allure-отчёт
     runs-on: ubuntu-latest
-    needs: [test-services, test-repositories, test-controllers, test-integration, test-e2e]
+    needs: [test-services, test-repositories, test-controllers, test-integration, test-e2e, test-e2e-external-mock, test-e2e-external-real]
     if: always()
 
     steps:
