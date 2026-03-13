@@ -32,6 +32,14 @@ class RunMetrics:
     req_rate: float
 
 
+@dataclass
+class RunResourceMetrics:
+    app_cpu_median: float = 0.0
+    app_mem_mib_median: float = 0.0
+    db_cpu_median: float = 0.0
+    db_mem_mib_median: float = 0.0
+
+
 def safe_mean(values: list[float]) -> float:
     return statistics.mean(values) if values else 0.0
 
@@ -108,7 +116,45 @@ def collect_run_dirs(scenario_dir: Path) -> list[Path]:
     return sorted([p for p in scenario_dir.iterdir() if p.is_dir() and p.name.startswith("run-")], key=lambda p: p.name)
 
 
-def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics]]:
+def detect_degradation_point(runs_metrics: list[RunMetrics], run_resources: list[RunResourceMetrics]) -> dict:
+    if len(runs_metrics) < 2:
+        return {"run": None, "reasons": [], "note": "Недостаточно прогонов для оценки точки деградации."}
+
+    baseline = runs_metrics[0]
+    for idx in range(1, len(runs_metrics)):
+        prev = runs_metrics[idx - 1]
+        cur = runs_metrics[idx]
+        res = run_resources[idx] if idx < len(run_resources) else RunResourceMetrics()
+        reasons: list[str] = []
+
+        if cur.p95 > max(prev.p95 * 1.25, baseline.p95 * 1.5):
+            reasons.append("резкий рост p95")
+        if cur.req_failed_rate > max(prev.req_failed_rate + 0.01, 0.02):
+            reasons.append("рост доли ошибок")
+        if cur.req_rate < prev.req_rate * 0.9:
+            reasons.append("падение пропускной способности")
+        if res.app_cpu_median >= 85 or res.db_cpu_median >= 85:
+            reasons.append("высокая загрузка CPU")
+
+        if len(reasons) >= 2:
+            return {
+                "run": idx + 1,
+                "reasons": reasons,
+                "p95_ms": cur.p95,
+                "failed_rate": cur.req_failed_rate,
+                "req_rate": cur.req_rate,
+                "app_cpu_median": res.app_cpu_median,
+                "db_cpu_median": res.db_cpu_median,
+            }
+
+    return {
+        "run": None,
+        "reasons": [],
+        "note": "Явной точки деградации не обнаружено по текущим порогам.",
+    }
+
+
+def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics], list[RunResourceMetrics]]:
     run_dirs = collect_run_dirs(scenario_dir)
 
     runs_metrics: list[RunMetrics] = []
@@ -120,6 +166,7 @@ def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics]]:
     db_mem: list[float] = []
     db_net: list[float] = []
     db_block: list[float] = []
+    run_resources: list[RunResourceMetrics] = []
 
     for run in run_dirs:
         summary_file = run / "k6-summary.json"
@@ -127,6 +174,10 @@ def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics]]:
             runs_metrics.append(parse_run_summary(summary_file))
 
         stats_file = run / "docker-stats.csv"
+        run_app_cpu: list[float] = []
+        run_app_mem: list[float] = []
+        run_db_cpu: list[float] = []
+        run_db_mem: list[float] = []
         if stats_file.exists():
             with stats_file.open("r", encoding="utf-8") as fh:
                 reader = csv.DictReader(fh)
@@ -142,11 +193,24 @@ def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics]]:
                         app_mem.append(mem)
                         app_net.append(net)
                         app_block.append(block)
+                        run_app_cpu.append(cpu)
+                        run_app_mem.append(mem)
                     elif "test-db" in container:
                         db_cpu.append(cpu)
                         db_mem.append(mem)
                         db_net.append(net)
                         db_block.append(block)
+                        run_db_cpu.append(cpu)
+                        run_db_mem.append(mem)
+
+        run_resources.append(
+            RunResourceMetrics(
+                app_cpu_median=safe_median(run_app_cpu),
+                app_mem_mib_median=safe_median(run_app_mem),
+                db_cpu_median=safe_median(run_db_cpu),
+                db_mem_mib_median=safe_median(run_db_mem),
+            )
+        )
 
     med_values = [m.med for m in runs_metrics]
     p95_values = [m.p95 for m in runs_metrics]
@@ -186,11 +250,18 @@ def summarize_scenario(scenario_dir: Path) -> tuple[dict, list[RunMetrics]]:
                 "block_io_mib": metric_summary(db_block),
             },
         },
+        "degradation_point": detect_degradation_point(runs_metrics, run_resources),
     }
-    return summary, runs_metrics
+    return summary, runs_metrics, run_resources
 
 
-def generate_plots(summary_dir: Path, profile: str, scenario: str, runs_metrics: list[RunMetrics]) -> None:
+def generate_plots(
+    summary_dir: Path,
+    profile: str,
+    scenario: str,
+    runs_metrics: list[RunMetrics],
+    run_resources: list[RunResourceMetrics],
+) -> None:
     global PLOTS_DISABLED_WARNED
     try:
         import matplotlib.pyplot as plt  # type: ignore
@@ -245,6 +316,37 @@ def generate_plots(summary_dir: Path, profile: str, scenario: str, runs_metrics:
     plt.savefig(plot_dir / f"{prefix}-percentiles.png", dpi=120)
     plt.close()
 
+    if run_resources:
+        resource_index = list(range(1, len(run_resources) + 1))
+        app_cpu_values = [r.app_cpu_median for r in run_resources]
+        db_cpu_values = [r.db_cpu_median for r in run_resources]
+        app_mem_values = [r.app_mem_mib_median for r in run_resources]
+        db_mem_values = [r.db_mem_mib_median for r in run_resources]
+
+        plt.figure(figsize=(10, 4))
+        plt.plot(resource_index, app_cpu_values, marker="o", linewidth=1, label="app-under-test")
+        plt.plot(resource_index, db_cpu_values, marker="o", linewidth=1, label="test-db")
+        plt.title(f"CPU медиана по прогонам: {profile}/{scenario}")
+        plt.xlabel("Прогон")
+        plt.ylabel("CPU, %")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(plot_dir / f"{prefix}-cpu-timeseries.png", dpi=120)
+        plt.close()
+
+        plt.figure(figsize=(10, 4))
+        plt.plot(resource_index, app_mem_values, marker="o", linewidth=1, label="app-under-test")
+        plt.plot(resource_index, db_mem_values, marker="o", linewidth=1, label="test-db")
+        plt.title(f"RAM медиана по прогонам: {profile}/{scenario}")
+        plt.xlabel("Прогон")
+        plt.ylabel("RAM, MiB")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(plot_dir / f"{prefix}-ram-timeseries.png", dpi=120)
+        plt.close()
+
 
 def write_summary_csv(summary_dir: Path, aggregate: dict) -> None:
     csv_file = summary_dir / "summary.csv"
@@ -267,6 +369,7 @@ def write_summary_csv(summary_dir: Path, aggregate: dict) -> None:
                 "db_mem_mib_median",
                 "db_net_io_mib_median",
                 "db_block_io_mib_median",
+                "degradation_run",
             ]
         )
 
@@ -289,6 +392,7 @@ def write_summary_csv(summary_dir: Path, aggregate: dict) -> None:
                         round(data["resources"]["test-db"]["mem_mib"]["median"], 3),
                         round(data["resources"]["test-db"]["net_io_mib"]["median"], 3),
                         round(data["resources"]["test-db"]["block_io_mib"]["median"], 3),
+                        data.get("degradation_point", {}).get("run") or "",
                     ]
                 )
 
@@ -306,16 +410,33 @@ def write_report_md(summary_dir: Path, aggregate: dict) -> None:
             lines.append(f"- p99 mean: {data['http_req_duration_ms']['p99_mean']:.3f} ms")
             lines.append(f"- Failed rate mean: {data['http_req_failed_rate']['mean']:.6f}")
             lines.append(f"- Request rate mean: {data['http_reqs_rate']['mean']:.3f} req/s")
+            degradation = data.get("degradation_point", {})
+            if degradation.get("run"):
+                lines.append(
+                    f"- Degradation point: run #{degradation['run']} "
+                    f"(reasons: {', '.join(degradation.get('reasons', []))})"
+                )
+            elif degradation.get("note"):
+                lines.append(f"- Degradation point: {degradation['note']}")
             lines.append("")
     report_file.write_text("\n".join(lines), encoding="utf-8")
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("Usage: aggregate-benchmark-results.py <results_dir>")
+    if len(sys.argv) > 2:
+        print("Usage: aggregate-benchmark-results.py [results_dir]")
         return 1
 
-    results_dir = Path(sys.argv[1]).resolve()
+    if len(sys.argv) == 2:
+        results_dir = Path(sys.argv[1]).resolve()
+    else:
+        repo_root = Path(__file__).resolve().parent.parent
+        results_dir = repo_root / "benchmark" / "results"
+        print(f"[INFO] results_dir не указан. Используется путь по умолчанию: {results_dir}")
+
+    if not results_dir.exists():
+        print(f"[ERROR] Директория с результатами не найдена: {results_dir}")
+        return 1
     summary_dir = results_dir / "summary"
     summary_dir.mkdir(parents=True, exist_ok=True)
 
@@ -328,14 +449,14 @@ def main() -> int:
         for scenario_dir in sorted(scenario_dirs, key=lambda d: d.name):
             # Backward compatibility for old structure profile/run-XXX.
             if scenario_dir.name.startswith("run-"):
-                summary, run_metrics = summarize_scenario(profile)
+                summary, run_metrics, run_resources = summarize_scenario(profile)
                 aggregate[profile.name]["scores-flow"] = summary
-                generate_plots(summary_dir, profile.name, "scores-flow", run_metrics)
+                generate_plots(summary_dir, profile.name, "scores-flow", run_metrics, run_resources)
                 break
 
-            summary, run_metrics = summarize_scenario(scenario_dir)
+            summary, run_metrics, run_resources = summarize_scenario(scenario_dir)
             aggregate[profile.name][scenario_dir.name] = summary
-            generate_plots(summary_dir, profile.name, scenario_dir.name, run_metrics)
+            generate_plots(summary_dir, profile.name, scenario_dir.name, run_metrics, run_resources)
 
     (summary_dir / "summary.json").write_text(
         json.dumps(aggregate, ensure_ascii=False, indent=2), encoding="utf-8"

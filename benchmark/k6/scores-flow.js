@@ -5,9 +5,9 @@ export const options = {
   summaryTrendStats: ["min", "avg", "med", "max", "p(50)", "p(75)", "p(90)", "p(95)", "p(99)"],
   setupTimeout: __ENV.BENCH_SETUP_TIMEOUT || "180s",
   stages: [
-    { duration: __ENV.BENCH_STAGE1_DURATION || "30s", target: Number(__ENV.BENCH_STAGE1_VUS || 10) },
-    { duration: __ENV.BENCH_STAGE2_DURATION || "60s", target: Number(__ENV.BENCH_STAGE2_VUS || 30) },
-    { duration: __ENV.BENCH_STAGE3_DURATION || "30s", target: Number(__ENV.BENCH_STAGE3_VUS || 10) }
+    { duration: __ENV.BENCH_STAGE1_DURATION || "2s", target: Number(__ENV.BENCH_STAGE1_VUS || 10) },
+    { duration: __ENV.BENCH_STAGE2_DURATION || "4s", target: Number(__ENV.BENCH_STAGE2_VUS || 30) },
+    { duration: __ENV.BENCH_STAGE3_DURATION || "2s", target: Number(__ENV.BENCH_STAGE3_VUS || 10) }
   ]
 };
 

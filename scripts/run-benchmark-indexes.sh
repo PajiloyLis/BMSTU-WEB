@@ -23,6 +23,7 @@ BENCH_DB_CPUS="${BENCH_DB_CPUS:-1.0}"
 BENCH_DB_MEM_LIMIT="${BENCH_DB_MEM_LIMIT:-1024m}"
 BENCH_LOADGEN_CPUS="${BENCH_LOADGEN_CPUS:-1.0}"
 BENCH_LOADGEN_MEM_LIMIT="${BENCH_LOADGEN_MEM_LIMIT:-1024m}"
+BENCH_RUNS_MODE="${BENCH_RUNS_MODE:-per-profile-total}" # per-profile-total|per-workload
 
 SCENARIO="${1:-all}" # all|with-index|without-index
 
@@ -58,53 +59,70 @@ run_profile() {
   local profile_dir="$BENCH_DIR/results/$profile"
   mkdir -p "$profile_dir"
 
-  echo "[INFO] Profile '$profile' started, runs: $RUNS, workloads: ${BENCH_WORKLOADS}"
+  local workload_count="${#WORKLOADS[@]}"
+  echo "[INFO] Profile '$profile' started, runs: $RUNS, workloads: ${BENCH_WORKLOADS}, mode: $BENCH_RUNS_MODE"
 
-  for workload in "${WORKLOADS[@]}"; do
+  for idx in "${!WORKLOADS[@]}"; do
+    local workload="${WORKLOADS[$idx]}"
     local workload_dir="$profile_dir/$workload"
     mkdir -p "$workload_dir"
-    echo "[INFO] Profile '$profile', workload '$workload' started"
-
-    for run in $(seq 1 "$RUNS"); do
-      local run_dir="$workload_dir/run-$(printf "%03d" "$run")"
-      local compose_project="bench-${profile}-${workload}-$(date +%s)-${run}"
-
-      mkdir -p "$run_dir"
-      echo "[INFO] [$profile][$workload][$run/$RUNS] compose project: $compose_project"
-
-      export BENCH_DB_NAME BENCH_DB_USER BENCH_DB_PASSWORD
-      export BENCH_APP_CPUS BENCH_APP_MEM_LIMIT
-      export BENCH_DB_CPUS BENCH_DB_MEM_LIMIT
-      export BENCH_LOADGEN_CPUS BENCH_LOADGEN_MEM_LIMIT
-
-      cleanup() {
-        docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" down --remove-orphans -v >/dev/null 2>&1 || true
-      }
-      trap cleanup RETURN
-
-      docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" up -d --build --force-recreate test-db app-under-test
-
-      local db_id
-      db_id="$(docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" ps -q test-db)"
-      local app_id
-      app_id="$(docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" ps -q app-under-test)"
-      local db_name
-      db_name="$(docker inspect --format '{{.Name}}' "$db_id" 2>/dev/null | sed 's#^/##')"
-      local app_name
-      app_name="$(docker inspect --format '{{.Name}}' "$app_id" 2>/dev/null | sed 's#^/##')"
-
-      # Baseline seed + benchmark expansion + index profile.
-      docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/create.sql >/dev/null
-      docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/truncate.sql >/dev/null
-      docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/copy_all.sql >/dev/null
-      docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /benchmark-sql/generate_large_dataset.sql >/dev/null
-      docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f "$index_sql" >/dev/null
-
-      # k6 run in background to sample docker stats while test is running.
-      local bench_base_url="http://app-under-test:8080/api/v1"
-      if [ "$BENCH_HOST_NETWORK" = "1" ]; then
-        bench_base_url="http://127.0.0.1:${BENCH_HOST_APP_PORT}/api/v1"
+    local runs_for_workload="$RUNS"
+    if [ "$BENCH_RUNS_MODE" = "per-profile-total" ]; then
+      local base_runs=$((RUNS / workload_count))
+      local extra_runs=$((RUNS % workload_count))
+      if [ "$idx" -lt "$extra_runs" ]; then
+        runs_for_workload=$((base_runs + 1))
+      else
+        runs_for_workload=$base_runs
       fi
+      if [ "$runs_for_workload" -lt 1 ]; then
+        runs_for_workload=1
+      fi
+    elif [ "$BENCH_RUNS_MODE" != "per-workload" ]; then
+      echo "[ERROR] BENCH_RUNS_MODE must be 'per-profile-total' or 'per-workload'"
+      exit 1
+    fi
+    echo "[INFO] Profile '$profile', workload '$workload' started, runs: $runs_for_workload"
+
+    local compose_project="bench-${profile}-${workload}-$(date +%s)"
+    export BENCH_DB_NAME BENCH_DB_USER BENCH_DB_PASSWORD
+    export BENCH_APP_CPUS BENCH_APP_MEM_LIMIT
+    export BENCH_DB_CPUS BENCH_DB_MEM_LIMIT
+    export BENCH_LOADGEN_CPUS BENCH_LOADGEN_MEM_LIMIT
+
+    cleanup_workload() {
+      docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" down --remove-orphans -v >/dev/null 2>&1 || true
+    }
+    trap cleanup_workload RETURN
+
+    echo "[INFO] [$profile][$workload] compose project: $compose_project"
+    docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" up -d --build --force-recreate test-db app-under-test
+
+    local db_id
+    db_id="$(docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" ps -q test-db)"
+    local app_id
+    app_id="$(docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" ps -q app-under-test)"
+    local db_name
+    db_name="$(docker inspect --format '{{.Name}}' "$db_id" 2>/dev/null | sed 's#^/##')"
+    local app_name
+    app_name="$(docker inspect --format '{{.Name}}' "$app_id" 2>/dev/null | sed 's#^/##')"
+
+    # Baseline seed + benchmark expansion + index profile once per workload.
+    docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/create.sql >/dev/null
+    docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/truncate.sql >/dev/null
+    docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /db-data/integration/copy_all.sql >/dev/null
+    docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f /benchmark-sql/generate_large_dataset.sql >/dev/null
+    docker exec "$db_id" psql -U "$BENCH_DB_USER" -d "$BENCH_DB_NAME" -f "$index_sql" >/dev/null
+
+    local bench_base_url="http://app-under-test:8080/api/v1"
+    if [ "$BENCH_HOST_NETWORK" = "1" ]; then
+      bench_base_url="http://127.0.0.1:${BENCH_HOST_APP_PORT}/api/v1"
+    fi
+
+    for run in $(seq 1 "$runs_for_workload"); do
+      local run_dir="$workload_dir/run-$(printf "%03d" "$run")"
+      mkdir -p "$run_dir"
+      echo "[INFO] [$profile][$workload][$run/$runs_for_workload] started"
 
       (
         docker compose -p "$compose_project" "${COMPOSE_ARGS[@]}" run --rm --user root \
@@ -127,10 +145,11 @@ run_profile() {
       done
       wait "$k6_pid"
 
-      trap - RETURN
-      cleanup
-      echo "[INFO] [$profile][$workload][$run/$RUNS] done"
+      echo "[INFO] [$profile][$workload][$run/$runs_for_workload] done"
     done
+
+    trap - RETURN
+    cleanup_workload
   done
 }
 
