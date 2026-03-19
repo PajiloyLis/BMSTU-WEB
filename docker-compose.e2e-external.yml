@@ -22,10 +22,19 @@ services:
       ASPNETCORE_ENVIRONMENT: "Integration"
       ASPNETCORE_URLS: "http://+:8080"
       IntegrationTestAuth__Enabled: "${E2E_TEST_AUTH_ENABLED:-false}"
+      ExternalServices__AgePrediction__UseMock: "${E2E_EXTERNAL_USE_MOCK:-true}"
+      ExternalServices__AgePrediction__MockBaseUrl: "http://external-age-mock:8080"
+      ExternalServices__AgePrediction__RealBaseUrl: "${E2E_EXTERNAL_REAL_BASE_URL:-https://api.agify.io}"
+      ExternalServices__AgePrediction__TimeoutSeconds: "${E2E_EXTERNAL_TIMEOUT_SECONDS:-10}"
       ConnectionStrings__DefaultConnection: "Host=test-db;Port=5432;Database=${E2E_DB_NAME:-e2e_external};Username=${E2E_DB_USER:-postgres};Password=${E2E_DB_PASSWORD:-postgres}"
     depends_on:
       test-db:
         condition: service_healthy
+
+  external-age-mock:
+    image: wiremock/wiremock:latest
+    volumes:
+      - "./mock/age-service:/home/wiremock"
 
   e2e-tests:
     image: bmstu/e2e-tests:local
@@ -40,6 +49,8 @@ services:
       E2E_DB_NAME: "${E2E_DB_NAME:-e2e_external}"
       E2E_DB_USER: "${E2E_DB_USER:-postgres}"
       E2E_DB_PASSWORD: "${E2E_DB_PASSWORD:-postgres}"
+      E2E_EXTERNAL_EXPECT_MOCK: "${E2E_EXTERNAL_EXPECT_MOCK:-true}"
+      E2E_EXTERNAL_TEST_NAME: "${E2E_EXTERNAL_TEST_NAME:-ivan}"
     volumes:
       - "./src/Tests/Project.E2E.Tests/allure-results:/workspace/src/Tests/Project.E2E.Tests/allure-results"
       - "./TestResults:/workspace/TestResults"

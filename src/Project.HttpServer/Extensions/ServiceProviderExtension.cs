@@ -15,6 +15,7 @@ using MongoDB.Driver;
 using Npgsql;
 using Project.Core.Models;
 using Project.HttpServer.Infrastructure;
+using Project.HttpServer.ExternalServices.AgePrediction;
 using Project.Service.AuthorizationService.Configuration;
 using Project.Services.CompanyService.Extensions;
 using Project.Services.EducationService.Extensions;
@@ -87,6 +88,13 @@ public static class ServiceProviderExtension
     {
         serviceCollection.Configure<JwtConfiguration>(configuration.GetSection("JwtConfiguration"));
         serviceCollection.Configure<PasswordHashingConfiguration>(configuration.GetSection("PasswordHashingConfiguration"));
+        serviceCollection.Configure<AgePredictionOptions>(configuration.GetSection("ExternalServices:AgePrediction"));
+
+        serviceCollection.AddHttpClient<IAgePredictionClient, AgePredictionClient>((sp, client) =>
+        {
+            var opts = sp.GetRequiredService<IOptionsMonitor<AgePredictionOptions>>().CurrentValue;
+            client.Timeout = TimeSpan.FromSeconds(Math.Max(1, opts.TimeoutSeconds));
+        });
         
         serviceCollection.AddCompanyService();
         serviceCollection.AddEducationService();

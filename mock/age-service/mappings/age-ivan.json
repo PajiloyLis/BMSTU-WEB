@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/",
+    "queryParameters": {
+      "name": {
+        "equalTo": "ivan"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "name": "ivan",
+      "age": 31,
+      "count": 12345
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "name": "unknown",
+      "age": 30,
+      "count": 1000
+    }
+  }
+}

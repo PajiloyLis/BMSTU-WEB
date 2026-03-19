@@ -47,7 +47,8 @@ jobs:
 
       - name: Запуск benchmark (100 прогонов)
         env:
-          BENCH_RUNS: "5"
+          BENCH_RUNS: "20"
+          BENCH_RUNS_MODE: "per-profile-total"
           BENCH_WORKLOADS: "scores-flow,scores-degradation,scores-max-load,scores-recovery"
           BENCH_APP_CPUS: "1.5"
           BENCH_APP_MEM_LIMIT: "1536m"
