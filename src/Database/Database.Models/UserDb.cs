@@ -12,6 +12,7 @@ public class UserDb
         Salt = salt;
         Role = role;
         Id = id;
+        LastPasswordChangedAtUtc = DateTimeOffset.UtcNow;
     }
     public string Password { get; set; }
 
@@ -22,6 +23,24 @@ public class UserDb
     public string Role { get; set; }
     
     public Guid Id { get; set; }
+
+    public int FailedLoginAttempts { get; set; }
+
+    public DateTimeOffset? LockoutUntilUtc { get; set; }
+
+    public DateTimeOffset LastPasswordChangedAtUtc { get; set; }
+
+    public Guid? OtpChallengeId { get; set; }
+
+    public string? OtpCodeHash { get; set; }
+
+    public DateTimeOffset? OtpExpiresAtUtc { get; set; }
+
+    public string? RecoveryTokenHash { get; set; }
+
+    public DateTimeOffset? RecoveryTokenExpiresAtUtc { get; set; }
+
+    public bool PasswordChangeRequired { get; set; }
 }
 
 public class UserMongoDb

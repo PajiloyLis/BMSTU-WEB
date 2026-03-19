@@ -450,12 +450,121 @@ jobs:
           if-no-files-found: warn
 
   # ──────────────────────────────────────────────
-  # 7. Генерация Allure-отчёта
+  # 7. BDD E2E тесты (LR4)
+  # ──────────────────────────────────────────────
+  test-bdd-e2e:
+    name: BDD E2E тесты (LR4)
+    runs-on: ubuntu-latest
+    needs: [test-services, test-repositories, test-controllers, test-integration]
+    if: always()
+    env:
+      RUN_BDD_E2E: ${{ needs.test-services.result == 'success' && needs.test-repositories.result == 'success' && needs.test-controllers.result == 'success' && needs.test-integration.result == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Подготовка test-скриптов
+        if: env.RUN_BDD_E2E == 'true'
+        run: chmod +x scripts/*.sh
+
+      - name: Запуск bdd e2e тестов (external app + test db + tests container)
+        if: env.RUN_BDD_E2E == 'true'
+        run: ./scripts/run-bdd-e2e-external.sh
+
+      - name: Synthetic skipped для bdd e2e (если integration не прошел)
+        if: env.RUN_BDD_E2E != 'true'
+        run: |
+          dotnet test src/Tests/Project.BDD.E2E.Tests/Project.BDD.E2E.Tests.csproj \
+            --configuration Release \
+            --list-tests \
+            --verbosity quiet > bdd-e2e-tests-list.txt || true
+          mkdir -p ci-allure-results
+          python3 - <<'PY'
+          import json
+          import uuid
+
+          tests = []
+          with open("bdd-e2e-tests-list.txt", "r", encoding="utf-8", errors="ignore") as f:
+              for line in f:
+                  if line.startswith("    "):
+                      name = line.strip()
+                      if name:
+                          tests.append(name)
+
+          if not tests:
+              tests = ["BDD E2E tests"]
+
+          for i, test_name in enumerate(tests, start=1):
+              payload = {
+                  "uuid": str(uuid.uuid4()),
+                  "name": test_name.split(".")[-1],
+                  "fullName": test_name,
+                  "status": "skipped",
+                  "statusDetails": {
+                      "message": "BDD E2E tests were skipped because integration stage did not succeed."
+                  },
+                  "stage": "finished",
+                  "labels": [
+                      {"name": "framework", "value": "xunit"},
+                      {"name": "language", "value": "csharp"},
+                      {"name": "parentSuite", "value": "CI"},
+                      {"name": "suite", "value": "BDD-E2E"},
+                      {"name": "host", "value": "github-actions"}
+                  ]
+              }
+              with open(f"ci-allure-results/bdd-e2e-skipped-{i}-result.json", "w", encoding="utf-8") as out:
+                  json.dump(payload, out)
+          PY
+
+      - name: Пометить bdd e2e job как failed (upstream упал)
+        if: env.RUN_BDD_E2E != 'true'
+        run: |
+          echo "::error::BDD E2E tests were skipped because required upstream jobs did not succeed."
+          exit 1
+
+      - name: Сбор Allure-результатов (bdd e2e)
+        if: always() && env.RUN_BDD_E2E == 'true'
+        run: |
+          rm -rf ci-allure-results
+          mkdir -p ci-allure-results
+          found=0
+          while IFS= read -r dir; do
+            found=1
+            echo "Найдена директория Allure: $dir"
+            cp -R "$dir"/. ci-allure-results/ || true
+          done < <(find . -type d -name allure-results)
+          if [ "$found" -eq 0 ]; then
+            echo "Allure-результаты не найдены"
+          fi
+          echo "Файлов собрано: $(find ci-allure-results -type f | wc -l)"
+
+      - name: Загрузка результатов bdd e2e тестов
+        if: always() && env.RUN_BDD_E2E == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bdd-e2e-test-results
+          path: TestResults/
+
+      - name: Загрузка Allure-результатов (bdd e2e)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bdd-e2e-allure-results
+          path: ci-allure-results/
+          if-no-files-found: warn
+
+  # ──────────────────────────────────────────────
+  # 8. Генерация Allure-отчёта
   # ──────────────────────────────────────────────
   allure-report:
     name: Allure-отчёт
     runs-on: ubuntu-latest
-    needs: [test-services, test-repositories, test-controllers, test-integration, test-e2e]
+    needs: [test-services, test-repositories, test-controllers, test-integration, test-e2e, test-bdd-e2e]
     if: always()
 
     steps:
