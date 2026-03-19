@@ -13,6 +13,10 @@ E2E_DB_PASSWORD="${E2E_DB_PASSWORD:-postgres}"
 E2E_TEST_AUTH_ENABLED="${E2E_TEST_AUTH_ENABLED:-false}"
 E2E_HOST_NETWORK="${E2E_HOST_NETWORK:-0}"
 KEEP_E2E_APP_UP="${KEEP_E2E_APP_UP:-0}"
+E2E_EXTERNAL_MODE="${E2E_EXTERNAL_MODE:-mock}" # mock|real
+E2E_EXTERNAL_REAL_BASE_URL="${E2E_EXTERNAL_REAL_BASE_URL:-https://api.agify.io}"
+E2E_EXTERNAL_TIMEOUT_SECONDS="${E2E_EXTERNAL_TIMEOUT_SECONDS:-10}"
+E2E_EXTERNAL_TEST_NAME="${E2E_EXTERNAL_TEST_NAME:-ivan}"
 RUN_ID="$(date +%s)-$$"
 COMPOSE_PROJECT_NAME="bmstu-e2e-${RUN_ID}"
 
@@ -38,9 +42,25 @@ export E2E_DB_NAME
 export E2E_DB_USER
 export E2E_DB_PASSWORD
 export E2E_TEST_AUTH_ENABLED
+export E2E_EXTERNAL_REAL_BASE_URL
+export E2E_EXTERNAL_TIMEOUT_SECONDS
+export E2E_EXTERNAL_TEST_NAME
 
-echo "[INFO] Starting test-db and app-under-test containers"
-docker compose -p "$COMPOSE_PROJECT_NAME" "${COMPOSE_ARGS[@]}" up -d --build --force-recreate test-db app-under-test
+SERVICES_TO_START=(test-db app-under-test)
+if [ "$E2E_EXTERNAL_MODE" = "mock" ]; then
+    export E2E_EXTERNAL_USE_MOCK="true"
+    export E2E_EXTERNAL_EXPECT_MOCK="true"
+    SERVICES_TO_START+=(external-age-mock)
+elif [ "$E2E_EXTERNAL_MODE" = "real" ]; then
+    export E2E_EXTERNAL_USE_MOCK="false"
+    export E2E_EXTERNAL_EXPECT_MOCK="false"
+else
+    echo "[ERROR] E2E_EXTERNAL_MODE must be 'mock' or 'real'"
+    exit 1
+fi
+
+echo "[INFO] Starting containers for mode '$E2E_EXTERNAL_MODE': ${SERVICES_TO_START[*]}"
+docker compose -p "$COMPOSE_PROJECT_NAME" "${COMPOSE_ARGS[@]}" up -d --build --force-recreate "${SERVICES_TO_START[@]}"
 
 echo "[INFO] Building e2e-tests image"
 docker compose -p "$COMPOSE_PROJECT_NAME" "${COMPOSE_ARGS[@]}" build e2e-tests
