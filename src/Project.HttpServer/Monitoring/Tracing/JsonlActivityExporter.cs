@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 
 namespace Project.HttpServer.Monitoring.Tracing;
