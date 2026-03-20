@@ -79,49 +79,35 @@ public class EducationRepository : IEducationRepository
 
     public async Task<BaseEducation> UpdateEducationAsync(UpdateEducation education)
     {
-        try
-        {
-            var educationDb = await _context.EducationDb
-                .FirstOrDefaultAsync(e => e.Id == education.Id && e.EmployeeId == education.EmployeeId);
+        var educationDb = await _context.EducationDb
+            .Where(e => e.Id == education.Id)
+            .Where(e => e.EmployeeId == education.EmployeeId)
+            .FirstOrDefaultAsync();
 
-            if (educationDb is null)
-            {
-                _logger.LogWarning("Education with id {Id} not found for update", education.Id);
-                throw new EducationNotFoundException($"Education with id {education.Id} not found");
-            }
+        if (educationDb is null)
+            throw new EducationNotFoundException($"Education with id {education.Id} not found");
 
-            var existingEducation = await _context.EducationDb
-                .Where(e => e.Id != education.Id &&
-                            e.EmployeeId == education.EmployeeId &&
-                            e.Institution == education.Institution &&
-                            e.StudyField == education.StudyField &&
-                            e.StartDate == education.StartDate &&
-                            e.EndDate == education.EndDate)
-                .FirstOrDefaultAsync();
+        var existingEducation = await _context.EducationDb
+            .Where(e => e.Id != education.Id)
+            .Where(e => e.EmployeeId == education.EmployeeId)
+            .Where(e => e.Institution == education.Institution)
+            .Where(e => e.StudyField == education.StudyField)
+            .Where(e => e.StartDate == education.StartDate)
+            .Where(e => e.EndDate == education.EndDate)
+            .FirstOrDefaultAsync();
 
-            if (existingEducation is not null)
-            {
-                _logger.LogWarning("Education record already exists for employee {EmployeeId}", education.EmployeeId);
-                throw new EducationAlreadyExistsException("Education record already exists");
-            }
+        if (existingEducation is not null)
+            throw new EducationAlreadyExistsException("Education record already exists");
 
-            educationDb.Institution = education.Institution ?? educationDb.Institution;
-            educationDb.StudyField = education.StudyField ?? educationDb.StudyField;
-            if (education.Level is not null)
-                educationDb.Level = education.Level.ToStringVal();
-            educationDb.StartDate = education.StartDate ?? educationDb.StartDate;
-            educationDb.EndDate = education.EndDate ?? educationDb.EndDate;
+        educationDb.Institution = education.Institution ?? educationDb.Institution;
+        educationDb.StudyField = education.StudyField ?? educationDb.StudyField;
+        if (education.Level is not null)
+            educationDb.Level = education.Level.ToStringVal();
+        educationDb.StartDate = education.StartDate ?? educationDb.StartDate;
+        educationDb.EndDate = education.EndDate ?? educationDb.EndDate;
 
-            await SaveChangesWithTransactionAsync();
-
-            _logger.LogInformation("Education with id {Id} was updated", education.Id);
-            return EducationConverter.Convert(educationDb);
-        }
-        catch (Exception e) when (e is not EducationNotFoundException)
-        {
-            _logger.LogError(e, "Error updating education with id {Id}", education.Id);
-            throw;
-        }
+        await SaveChangesWithTransactionAsync();
+        return EducationConverter.Convert(educationDb);
     }
 
     public async Task<IEnumerable<BaseEducation>> GetEducationsAsync(Guid employeeId, int pageNumber, int pageSize)

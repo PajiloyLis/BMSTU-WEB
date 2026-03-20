@@ -133,43 +133,32 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<BaseEmployee> UpdateEmployeeAsync(UpdateEmployee updatedUpdateEmployee)
     {
-        try
-        {
-            //Check for users with another Id and same Phone or Email
-            var existingEmployeesCount = await _context.EmployeeDb.Where(u => u.Id != updatedUpdateEmployee.EmployeeId)
-                .Where(u => u.Email == updatedUpdateEmployee.Email ||
-                            (updatedUpdateEmployee.PhoneNumber != null &&
-                             u.Phone == updatedUpdateEmployee.PhoneNumber)).AsNoTracking()
-                .CountAsync();
+        // Check for users with another Id and same Phone or Email
+        var existingEmployeesCount = await _context.EmployeeDb
+            .Where(u => u.Id != updatedUpdateEmployee.EmployeeId)
+            .Where(u =>
+                u.Email == updatedUpdateEmployee.Email |
+                (updatedUpdateEmployee.PhoneNumber != null & u.Phone == updatedUpdateEmployee.PhoneNumber))
+            .AsNoTracking()
+            .CountAsync();
 
-            if (existingEmployeesCount > 0)
-                throw new EmployeeAlreadyExistsException(
-                    $"Employee with email - {updatedUpdateEmployee.Email} or phone - {updatedUpdateEmployee.PhoneNumber}");
-            var employee = await _context.EmployeeDb.FirstOrDefaultAsync(u => u.Id == updatedUpdateEmployee.EmployeeId);
-            if (employee is null)
-                throw new EmployeeNotFoundException($"Employee with id - {updatedUpdateEmployee.EmployeeId} not found");
+        if (existingEmployeesCount > 0)
+            throw new EmployeeAlreadyExistsException(
+                $"Employee with email - {updatedUpdateEmployee.Email} or phone - {updatedUpdateEmployee.PhoneNumber}");
 
-            employee.Email = updatedUpdateEmployee.Email ?? employee.Email;
-            employee.Phone = updatedUpdateEmployee.PhoneNumber ?? employee.Phone;
-            employee.FullName = updatedUpdateEmployee.FullName ?? employee.FullName;
-            employee.BirthDate = updatedUpdateEmployee.BirthDate ?? employee.BirthDate;
-            employee.Photo = updatedUpdateEmployee.Photo ?? employee.Photo;
-            employee.Duties = updatedUpdateEmployee.Duties ?? employee.Duties;
+        var employee = await _context.EmployeeDb.FirstOrDefaultAsync(u => u.Id == updatedUpdateEmployee.EmployeeId);
+        if (employee is null)
+            throw new EmployeeNotFoundException($"Employee with id - {updatedUpdateEmployee.EmployeeId} not found");
 
-            await SaveChangesWithTransactionAsync();
+        employee.Email = updatedUpdateEmployee.Email ?? employee.Email;
+        employee.Phone = updatedUpdateEmployee.PhoneNumber ?? employee.Phone;
+        employee.FullName = updatedUpdateEmployee.FullName ?? employee.FullName;
+        employee.BirthDate = updatedUpdateEmployee.BirthDate ?? employee.BirthDate;
+        employee.Photo = updatedUpdateEmployee.Photo ?? employee.Photo;
+        employee.Duties = updatedUpdateEmployee.Duties ?? employee.Duties;
 
-            return EmployeeConverter.Convert(employee);
-        }
-        catch (EmployeeNotFoundException e)
-        {
-            _logger.LogWarning(e, $"Error getting employee with id - {updatedUpdateEmployee.EmployeeId}");
-            throw;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Error updating employee with id - {updatedUpdateEmployee.EmployeeId}");
-            throw;
-        }
+        await SaveChangesWithTransactionAsync();
+        return EmployeeConverter.Convert(employee);
     }
 
     private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)

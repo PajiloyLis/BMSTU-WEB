@@ -26,6 +26,9 @@ jobs:
       - name: Восстановление зависимостей
         run: dotnet restore src/Project.HttpServer/Project.HttpServer.csproj
 
+      - name: Проверка кода-стайла
+        run: ./scripts/run-code-quality-checks.sh
+
       - name: Сборка бэкенда (без тестовых проектов)
         run: dotnet build src/Project.HttpServer/Project.HttpServer.csproj --configuration Release --no-restore
 

@@ -24,10 +24,15 @@ public class Startup
             // .AddProjectMongoDbContext(Configuration)
             .AddProjectServices(Configuration);
 
-        // Конфигурация для загрузки файлов
-        services.Configure<IISServerOptions>(options =>
+        // Ограничения на размер загрузки (актуально для Kestrel/Docker).
+        services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
         {
-            options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+            options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+        });
+
+        services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+        {
+            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
         });
     }
 
