@@ -132,7 +132,7 @@ run_code_style_check() {
 
   # Глушим предупреждения про отсутствие XML-комментариев.
   # Это CS1591.
-  BUILD_ARGS+=( "/p:NoWarn=CS1591" )
+  BUILD_ARGS+=( "-p:NoWarn=CS1591" )
 
   # Явно включаем .NET analyzers.
   BUILD_ARGS+=( "/p:RunAnalyzersDuringBuild=true" "/p:EnableNETAnalyzers=true" )
