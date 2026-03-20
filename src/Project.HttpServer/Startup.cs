@@ -1,4 +1,5 @@
 using Project.HttpServer.Extensions;
+using Project.HttpServer.Monitoring.Tracing;
 
 namespace Project.HttpServer;
 
@@ -23,6 +24,20 @@ public class Startup
             .AddProjectDbContext(Configuration)
             // .AddProjectMongoDbContext(Configuration)
             .AddProjectServices(Configuration);
+
+        // LR5: OpenTelemetry tracing/monitoring (опционально).
+        var tracingEnabled = Configuration.GetValue("Tracing:Enabled", false);
+        if (tracingEnabled)
+        {
+            var exportPath = Configuration.GetValue<string?>("Tracing:ExportPath")
+                              ?? Path.Combine(AppContext.BaseDirectory, "telemetry");
+
+            services.AddTracingTelemetry(new TelemetryOptions
+            {
+                TracingEnabled = true,
+                ExportPath = exportPath
+            });
+        }
 
         // Конфигурация для загрузки файлов
         services.Configure<IISServerOptions>(options =>
