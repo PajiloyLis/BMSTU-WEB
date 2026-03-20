@@ -23,7 +23,7 @@ BENCH_DB_CPUS="${BENCH_DB_CPUS:-1.0}"
 BENCH_DB_MEM_LIMIT="${BENCH_DB_MEM_LIMIT:-1024m}"
 BENCH_LOADGEN_CPUS="${BENCH_LOADGEN_CPUS:-1.0}"
 BENCH_LOADGEN_MEM_LIMIT="${BENCH_LOADGEN_MEM_LIMIT:-1024m}"
-BENCH_RUNS_MODE="${BENCH_RUNS_MODE:-per-profile-total}" # per-profile-total|per-workload
+BENCH_RUNS_MODE="${BENCH_RUNS_MODE:-per-workload}" # per-profile-total|per-workload
 
 SCENARIO="${1:-all}" # all|with-index|without-index
 
