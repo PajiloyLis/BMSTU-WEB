@@ -53,49 +53,41 @@ public class CompanyRepository : ICompanyRepository
 
     public async Task<BaseCompany> UpdateCompanyAsync(UpdateCompany company)
     {
-        try
-        {
-            var existingCompanyCount = await _context.CompanyDb.Where(e =>
-                e.Id != company.CompanyId && (e.Title == company.Title || e.PhoneNumber == company.PhoneNumber ||
-                                              e.Email == company.Email || e.Inn == company.Inn ||
-                                              e.Kpp == company.Kpp || e.Ogrn == company.Ogrn)).CountAsync();
+        var existingCompanyCount = await _context.CompanyDb
+            .Where(e => e.Id != company.CompanyId)
+            .Where(e =>
+                (e.Title == company.Title) |
+                (e.PhoneNumber == company.PhoneNumber) |
+                (e.Email == company.Email) |
+                (e.Inn == company.Inn) |
+                (e.Kpp == company.Kpp) |
+                (e.Ogrn == company.Ogrn))
+            .CountAsync();
 
-            if (existingCompanyCount > 0)
-                throw new CompanyAlreadyExistsException(
-                    $"Company with another id, but same title - {company.Title} or phone - {company.PhoneNumber} or email - {company.Email} or inn - {company.Inn} or kpp - {company.Kpp} or ogrn - {company.Ogrn} already exists");
+        if (existingCompanyCount > 0)
+            throw new CompanyAlreadyExistsException(
+                $"Company with another id, but same title - {company.Title} or phone - {company.PhoneNumber} or email - {company.Email} or inn - {company.Inn} or kpp - {company.Kpp} or ogrn - {company.Ogrn} already exists");
 
-            var companyToUpdate = await _context.CompanyDb.FirstOrDefaultAsync(e => e.Id == company.CompanyId);
-            if (companyToUpdate is null)
-                throw new CompanyNotFoundException($"Company with id {company.CompanyId} not found");
+        var companyToUpdate = await _context.CompanyDb.FirstOrDefaultAsync(e => e.Id == company.CompanyId);
+        if (companyToUpdate is null)
+            throw new CompanyNotFoundException($"Company with id {company.CompanyId} not found");
 
-            companyToUpdate.Title = company.Title ?? companyToUpdate.Title;
-            companyToUpdate.RegistrationDate = company.RegistrationDate ?? companyToUpdate.RegistrationDate;
-            companyToUpdate.PhoneNumber = company.PhoneNumber ?? companyToUpdate.PhoneNumber;
-            companyToUpdate.Email = company.Email ?? companyToUpdate.Email;
-            companyToUpdate.Inn = company.Inn ?? companyToUpdate.Inn;
-            companyToUpdate.Kpp = company.Kpp ?? companyToUpdate.Kpp;
-            companyToUpdate.Ogrn = company.Ogrn ?? companyToUpdate.Ogrn;
-            companyToUpdate.Address = company.Address ?? companyToUpdate.Address;
+        ApplyCompanyUpdates(companyToUpdate, company);
 
-            await SaveChangesWithTransactionAsync();
+        await SaveChangesWithTransactionAsync();
+        return CompanyConverter.Convert(companyToUpdate);
+    }
 
-            return CompanyConverter.Convert(companyToUpdate);
-        }
-        catch (CompanyNotFoundException e)
-        {
-            _logger.LogWarning(e, $"Company with id {company.CompanyId} not found");
-            throw;
-        }
-        catch (CompanyAlreadyExistsException e)
-        {
-            _logger.LogWarning(e, "Company with another id, but same unique fields already exists");
-            throw;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Error updating company with id - {company.CompanyId}");
-            throw;
-        }
+    private static void ApplyCompanyUpdates(CompanyDb companyToUpdate, UpdateCompany company)
+    {
+        companyToUpdate.Title = company.Title ?? companyToUpdate.Title;
+        companyToUpdate.RegistrationDate = company.RegistrationDate ?? companyToUpdate.RegistrationDate;
+        companyToUpdate.PhoneNumber = company.PhoneNumber ?? companyToUpdate.PhoneNumber;
+        companyToUpdate.Email = company.Email ?? companyToUpdate.Email;
+        companyToUpdate.Inn = company.Inn ?? companyToUpdate.Inn;
+        companyToUpdate.Kpp = company.Kpp ?? companyToUpdate.Kpp;
+        companyToUpdate.Ogrn = company.Ogrn ?? companyToUpdate.Ogrn;
+        companyToUpdate.Address = company.Address ?? companyToUpdate.Address;
     }
 
     public async Task<BaseCompany> GetCompanyByIdAsync(Guid companyId)

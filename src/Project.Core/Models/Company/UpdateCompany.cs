@@ -22,22 +22,22 @@ public class UpdateCompany
             throw new ArgumentException("Company Id is invalid", nameof(companyId));
         CompanyId = companyId;
         Title = title;
-        if (registrationDate is not null && registrationDate > DateOnly.FromDateTime(DateTime.Today))
+        if (registrationDate is not null & registrationDate > DateOnly.FromDateTime(DateTime.Today))
             throw new ArgumentException("Registration Date is invalid", nameof(registrationDate));
         RegistrationDate = registrationDate;
-        if (phoneNumber is not null && !Regex.IsMatch(phoneNumber, @"^\+\d{5,17}$"))
+        if (phoneNumber is not null & !Regex.IsMatch(phoneNumber, @"^\+\d{5,17}$"))
             throw new ArgumentException("Phone Number is invalid", nameof(phoneNumber));
         PhoneNumber = phoneNumber;
-        if (email is not null && !Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+        if (email is not null & !Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
             throw new ArgumentException("Email is invalid", nameof(email));
         Email = email;
-        if (inn is not null && !Regex.IsMatch(inn, @"^[0-9]{10}$"))
+        if (inn is not null & !Regex.IsMatch(inn, @"^[0-9]{10}$"))
             throw new ArgumentException("Inn is invalid", nameof(inn));
         Inn = inn;
-        if (kpp is not null && !Regex.IsMatch(kpp, @"^[0-9]{9}$"))
+        if (kpp is not null & !Regex.IsMatch(kpp, @"^[0-9]{9}$"))
             throw new ArgumentException("Kpp is invalid", nameof(kpp));
         Kpp = kpp;
-        if (ogrn is not null && !Regex.IsMatch(ogrn, @"^[0-9]{13}$"))
+        if (ogrn is not null & !Regex.IsMatch(ogrn, @"^[0-9]{13}$"))
             throw new ArgumentException("OGRN is invalid", nameof(ogrn));
         Ogrn = ogrn;
         Address = address;

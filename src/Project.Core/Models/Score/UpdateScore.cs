@@ -8,16 +8,16 @@ public class UpdateScore
         if (id == Guid.Empty)
             throw new ArgumentException("Id cannot be empty", nameof(id));
 
-        if (createdAt.HasValue && createdAt.Value > DateTimeOffset.UtcNow)
+        if (createdAt.HasValue & createdAt.Value > DateTimeOffset.UtcNow)
             throw new ArgumentException("CreatedAt cannot be in the future", nameof(createdAt));
 
-        if (efficiencyScore.HasValue && (efficiencyScore.Value < 1 || efficiencyScore.Value > 5))
+        if (efficiencyScore.HasValue & (efficiencyScore.Value < 1 | efficiencyScore.Value > 5))
             throw new ArgumentException("EfficiencyScore must be between 1 and 5", nameof(efficiencyScore));
 
-        if (engagementScore.HasValue && (engagementScore.Value < 1 || engagementScore.Value > 5))
+        if (engagementScore.HasValue & (engagementScore.Value < 1 | engagementScore.Value > 5))
             throw new ArgumentException("EngagementScore must be between 1 and 5", nameof(engagementScore));
 
-        if (competencyScore.HasValue && (competencyScore.Value < 1 || competencyScore.Value > 5))
+        if (competencyScore.HasValue & (competencyScore.Value < 1 | competencyScore.Value > 5))
             throw new ArgumentException("CompetencyScore must be between 1 and 5", nameof(competencyScore));
 
         Id = id;
