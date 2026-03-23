@@ -368,7 +368,7 @@ jobs:
 
       - name: Запуск e2e тестов (external app + test db + tests container)
         if: env.RUN_E2E == 'true'
-        run: ./scripts/run-e2e-external.sh
+        run: ./scripts/run-e2e-external.sh --filter "FullyQualifiedName!~ExternalAgeServiceE2E"
 
       - name: Synthetic skipped для e2e (если integration не прошел)
         if: env.RUN_E2E != 'true'

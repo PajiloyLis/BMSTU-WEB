@@ -35,6 +35,14 @@ public class Startup
         {
             options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
         });
+
+        services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+        {
+            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+        });
+
+        // LR5 tracing/monitoring временно отключен, чтобы не ломать сборку при отсутствии
+        // соответствующих пакетов/классов в текущем проекте.
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
