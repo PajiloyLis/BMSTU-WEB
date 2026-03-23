@@ -201,59 +201,59 @@ public class PostHistoryRepository : IPostHistoryRepository
         DateOnly? startDate,
         DateOnly? endDate, int pageNumber, int pageSize)
     {
-        try
+        _logger.LogInformation(
+            "Getting subordinates post history for manager {ManagerId} from {StartDate} to {EndDate}",
+            managerId, startDate, endDate);
+
+        var head = await _context.PositionHistoryDb
+            .Where(ph => ph.EmployeeId == managerId & ph.EndDate == null)
+            .FirstOrDefaultAsync();
+
+        if (head is null)
+            throw new PositionHistoryNotFoundException($"Current position not found for employee {managerId}");
+
+        List<PositionHistoryDb> subordinatesPositionHistories = new List<PositionHistoryDb>();
+        subordinatesPositionHistories.Add(head);
+
+        int i = 0;
+        while (i != subordinatesPositionHistories.Count)
         {
-            _logger.LogInformation(
-                "Getting subordinates post history for manager {ManagerId} from {StartDate} to {EndDate}",
-                managerId, startDate, endDate);
+            var subordinatesPositions = await _context.PositionDb
+                .Where(e => e.ParentId == subordinatesPositionHistories[i].PositionId)
+                .ToListAsync();
 
-            // var employees = await _context.GetCurrentSubordinatesIdByEmployeeId(managerId).Select(ph => ph.EmployeeId).ToListAsync();
+            var children = await _context.PositionHistoryDb
+                .Where(e =>
+                    subordinatesPositions.Select(x => x.Id).ToList().Contains(e.PositionId) &
+                    e.EndDate == null)
+                .ToListAsync();
 
-            var head = await _context.PositionHistoryDb.Where(ph => ph.EmployeeId == managerId && ph.EndDate == null)
-                .FirstOrDefaultAsync();
-
-            if (head is null)
-                throw new PositionHistoryNotFoundException($"Current position not found for employee {managerId}");
-            
-            List<PositionHistoryDb> subordinatesPositionHistories = new  List<PositionHistoryDb>();
-            
-            subordinatesPositionHistories.Add(head);
-            
-            int i = 0;
-            while (i != subordinatesPositionHistories.Count)
-            {
-                var subordinatesPositions =
-                    await _context.PositionDb.Where(e => e.ParentId == subordinatesPositionHistories[i].PositionId).ToListAsync();
-                var children = await _context.PositionHistoryDb.Where(e => subordinatesPositions.Select(e => e.Id).ToList().Contains(e.PositionId) && e.EndDate == null)
-                    .ToListAsync();
-                subordinatesPositionHistories.AddRange(children);
-                ++i;
-            }
-
-            var subordinatesId = subordinatesPositionHistories.Select(e => e.EmployeeId).ToList();
-
-            var query = _context.PostHistoryDb.Where(ph => subordinatesId.Contains(ph.EmployeeId));
-            
-            if (startDate.HasValue)
-                query = _context.PostHistoryDb.Where(ph => ph.EndDate == null || ph.EndDate >= startDate);
-            if (endDate.HasValue)
-                query = _context.PostHistoryDb.Where(ph =>
-                    (ph.EndDate == null && endDate == DateOnly.FromDateTime(DateTime.Today)) || ph.EndDate <= endDate);
-
-           
-            var items = await query.Skip((pageNumber-1)*pageSize).Take(pageSize).Select(ph => PostHistoryConverter.Convert(ph)!).ToListAsync();
-            
-            _logger.LogInformation(
-                "Successfully retrieved {Count} subordinates post history records for manager {ManagerId}",
-                items.Count, managerId);
-
-            return items;
+            subordinatesPositionHistories.AddRange(children);
+            ++i;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting subordinates post history for manager {ManagerId}", managerId);
-            throw;
-        }
+
+        var subordinatesId = subordinatesPositionHistories.Select(e => e.EmployeeId).ToList();
+
+        var query = _context.PostHistoryDb.Where(ph => subordinatesId.Contains(ph.EmployeeId));
+
+        if (startDate.HasValue)
+            query = _context.PostHistoryDb.Where(ph => ph.EndDate == null | ph.EndDate >= startDate);
+        if (endDate.HasValue)
+            query = _context.PostHistoryDb.Where(ph =>
+                (ph.EndDate == null & endDate == DateOnly.FromDateTime(DateTime.Today)) |
+                ph.EndDate <= endDate);
+
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(ph => PostHistoryConverter.Convert(ph)!)
+            .ToListAsync();
+
+        _logger.LogInformation(
+            "Successfully retrieved {Count} subordinates post history records for manager {ManagerId}",
+            items.Count, managerId);
+
+        return items;
     }
 
     private async Task SaveChangesWithTransactionAsync(CancellationToken cancellationToken = default)

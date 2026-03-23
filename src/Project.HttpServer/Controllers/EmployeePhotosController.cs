@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Core.Exceptions;
 using Project.Core.Services;
@@ -60,43 +61,23 @@ public class EmployeePhotosController : ControllerBase
             var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
 
             // Валидация файла
-            if (model?.Photo == null || model.Photo.Length == 0)
+            if (!TryValidatePhoto(model, out var photo, out var validationError))
             {
-                return BadRequest(new ErrorDto("ValidationError", "Файл фотографии не предоставлен"));
-            }
-
-            // Проверяем тип файла
-            var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif" };
-            if (!allowedTypes.Contains(model.Photo.ContentType.ToLower()))
-            {
-                return BadRequest(new ErrorDto("ValidationError", "Неподдерживаемый тип файла. Разрешены: JPEG, PNG, GIF"));
-            }
-
-            // Проверяем размер файла (максимум 5MB)
-            if (model.Photo.Length > 5 * 1024 * 1024)
-            {
-                return BadRequest(new ErrorDto("ValidationError", "Размер файла не должен превышать 5MB"));
+                return BadRequest(validationError);
             }
 
             // Генерируем уникальное имя файла
-            var fileExtension = Path.GetExtension(model.Photo.FileName);
+            var fileExtension = Path.GetExtension(photo.FileName);
             var fileName = $"{employeeId}_{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(_photoDirectory, fileName);
 
             // Удаляем старую фотографию если есть
-            if (!string.IsNullOrEmpty(employee.Photo))
-            {
-                var oldPhotoPath = Path.Combine(_photoDirectory, Path.GetFileName(employee.Photo));
-                if (System.IO.File.Exists(oldPhotoPath))
-                {
-                    System.IO.File.Delete(oldPhotoPath);
-                }
-            }
+            DeleteOldPhotoIfExists(employee.Photo);
 
             // Сохраняем новый файл
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await model.Photo.CopyToAsync(stream);
+                await photo.CopyToAsync(stream);
             }
 
             // Обновляем путь к фотографии в базе данных
@@ -107,16 +88,57 @@ public class EmployeePhotosController : ControllerBase
 
             return StatusCode(StatusCodes.Status201Created);
         }
-        catch (EmployeeNotFoundException e)
-        {
-            _logger.LogWarning(e, e.Message);
-            return StatusCode(StatusCodes.Status404NotFound, new ErrorDto(e.GetType().Name, e.Message));
-        }
         catch (Exception e)
         {
+            if (e is EmployeeNotFoundException enfe)
+            {
+                _logger.LogWarning(enfe, enfe.Message);
+                return StatusCode(StatusCodes.Status404NotFound, new ErrorDto(enfe.GetType().Name, enfe.Message));
+            }
+
             _logger.LogError(e, "Ошибка при загрузке фотографии для сотрудника {EmployeeId}", employeeId);
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorDto(e.GetType().Name, e.Message));
         }
+    }
+
+    private bool TryValidatePhoto(PhotoUploadModel? model, out IFormFile photo, out ErrorDto error)
+    {
+        photo = model?.Photo;
+        var photoLength = photo?.Length ?? 0;
+
+        if (photoLength == 0)
+        {
+            error = new ErrorDto("ValidationError", "Файл фотографии не предоставлен");
+            return false;
+        }
+
+        var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif" };
+        if (!allowedTypes.Contains(photo!.ContentType.ToLower()))
+        {
+            error = new ErrorDto("ValidationError", "Неподдерживаемый тип файла. Разрешены: JPEG, PNG, GIF");
+            return false;
+        }
+
+        if (photo!.Length > 5 * 1024 * 1024)
+        {
+            error = new ErrorDto("ValidationError", "Размер файла не должен превышать 5MB");
+            return false;
+        }
+
+        error = default!;
+        return true;
+    }
+
+    private void DeleteOldPhotoIfExists(string? oldPhotoValue)
+    {
+        if (string.IsNullOrEmpty(oldPhotoValue))
+            return;
+
+        var oldPhotoPath = Path.Combine(_photoDirectory, Path.GetFileName(oldPhotoValue));
+        if (!System.IO.File.Exists(oldPhotoPath))
+            return;
+
+        System.IO.File.Delete(oldPhotoPath);
     }
 
     /// <summary>

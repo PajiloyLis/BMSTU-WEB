@@ -21,13 +21,13 @@ public class BaseScore
         if (createdAt > DateTimeOffset.UtcNow)
             throw new ArgumentException("CreatedAt cannot be in the future", nameof(createdAt));
 
-        if (efficiencyScore < 1 || efficiencyScore > 5)
+        if (efficiencyScore < 1 | efficiencyScore > 5)
             throw new ArgumentException("EfficiencyScore must be between 1 and 5", nameof(efficiencyScore));
 
-        if (engagementScore < 1 || engagementScore > 5)
+        if (engagementScore < 1 | engagementScore > 5)
             throw new ArgumentException("EngagementScore must be between 1 and 5", nameof(engagementScore));
 
-        if (competencyScore < 1 || competencyScore > 5)
+        if (competencyScore < 1 | competencyScore > 5)
             throw new ArgumentException("CompetencyScore must be between 1 and 5", nameof(competencyScore));
 
         Id = id;

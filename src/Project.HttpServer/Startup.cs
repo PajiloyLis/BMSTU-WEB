@@ -25,24 +25,15 @@ public class Startup
             // .AddProjectMongoDbContext(Configuration)
             .AddProjectServices(Configuration);
 
-        // LR5: OpenTelemetry tracing/monitoring (опционально).
-        var tracingEnabled = Configuration.GetValue("Tracing:Enabled", false);
-        if (tracingEnabled)
+        // Ограничения на размер загрузки (актуально для Kestrel/Docker).
+        services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
         {
-            var exportPath = Configuration.GetValue<string?>("Tracing:ExportPath")
-                              ?? Path.Combine(AppContext.BaseDirectory, "telemetry");
+            options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+        });
 
-            services.AddTracingTelemetry(new TelemetryOptions
-            {
-                TracingEnabled = true,
-                ExportPath = exportPath
-            });
-        }
-
-        // Конфигурация для загрузки файлов
-        services.Configure<IISServerOptions>(options =>
+        services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
         {
-            options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
         });
     }
 
