@@ -25,6 +25,7 @@ using Project.Services.PostHistoryService.Extensions;
 using Project.Services.PostService.Extensions;
 using Project.Services.ScoreService.Extensions;
 using Project.Services.AuthorizationService.Extensions;
+using Project.HttpServer.ExternalServices.AgePrediction;
 
 namespace Project.HttpServer.Extensions;
 
@@ -97,6 +98,11 @@ public static class ServiceProviderExtension
         serviceCollection.AddPositionHistoryService();
         serviceCollection.AddScoreService();
         serviceCollection.AddAuthorizationService();
+
+        // External services (LR7)
+        serviceCollection.Configure<AgePredictionOptions>(configuration.GetSection("ExternalServices:AgePrediction"));
+        serviceCollection.AddHttpClient();
+        serviceCollection.AddSingleton<IAgePredictionClient, AgePredictionClient>();
         return serviceCollection;
     }
 

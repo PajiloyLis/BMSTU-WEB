@@ -38,6 +38,9 @@ export E2E_DB_NAME
 export E2E_DB_USER
 export E2E_DB_PASSWORD
 export E2E_TEST_AUTH_ENABLED
+export E2E_EXTERNAL_MODE="${E2E_EXTERNAL_MODE:-}"
+export E2E_EXTERNAL_REAL_BASE_URL="${E2E_EXTERNAL_REAL_BASE_URL:-}"
+export E2E_EXTERNAL_TEST_NAME="${E2E_EXTERNAL_TEST_NAME:-}"
 
 echo "[INFO] Starting test-db and app-under-test containers"
 docker compose -p "$COMPOSE_PROJECT_NAME" "${COMPOSE_ARGS[@]}" up -d --build --force-recreate test-db app-under-test
