@@ -1,4 +1,5 @@
 using Project.HttpServer.Extensions;
+using Project.HttpServer.Monitoring.Tracing;
 
 namespace Project.HttpServer;
 
