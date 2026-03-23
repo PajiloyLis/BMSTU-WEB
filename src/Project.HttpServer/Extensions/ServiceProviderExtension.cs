@@ -88,6 +88,7 @@ public static class ServiceProviderExtension
     {
         serviceCollection.Configure<JwtConfiguration>(configuration.GetSection("JwtConfiguration"));
         serviceCollection.Configure<PasswordHashingConfiguration>(configuration.GetSection("PasswordHashingConfiguration"));
+        serviceCollection.Configure<AuthorizationSecurityConfiguration>(configuration.GetSection("AuthorizationSecurity"));
         
         serviceCollection.AddCompanyService();
         serviceCollection.AddEducationService();

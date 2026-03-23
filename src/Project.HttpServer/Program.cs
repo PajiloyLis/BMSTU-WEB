@@ -1,4 +1,4 @@
-﻿using Database.Context;
+using Database.Context;
 using Project.HttpServer.Extensions;
 using Serilog;
 
@@ -13,6 +13,8 @@ public static class Program
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddEnvironmentVariables()
                 .Build();
             var logPath = configuration["Serilog:WriteTo:1:Args:path"];
             var fullLogPath = Path.GetFullPath(logPath);

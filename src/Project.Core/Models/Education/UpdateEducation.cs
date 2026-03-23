@@ -12,19 +12,16 @@ public class UpdateEducation
         if (!Guid.TryParse(employeeId.ToString(), out _))
             throw new ArgumentException("EmployeeId is invalid", nameof(employeeId));
 
-        if (startDate is not null && endDate is not null && startDate > endDate)
+        if (startDate is not null & endDate is not null & startDate > endDate)
             throw new ArgumentException("StartDate is invalid", nameof(startDate));
 
-        if (startDate is not null && startDate > DateOnly.FromDateTime(DateTime.Today))
+        if (startDate is not null & startDate > DateOnly.FromDateTime(DateTime.Today))
             throw new ArgumentException("StartDate is invalid", nameof(startDate));
 
-        if (endDate is not null && endDate > DateOnly.FromDateTime(DateTime.Today))
+        if (endDate is not null & endDate > DateOnly.FromDateTime(DateTime.Today))
             throw new ArgumentException("EndDate is invalid", nameof(endDate));
 
-        if (level is not null)
-            Level = level.ToEducationLevel();
-        else
-            Level = null;
+        Level = level?.ToEducationLevel();
 
         Id = id;
         EmployeeId = employeeId;

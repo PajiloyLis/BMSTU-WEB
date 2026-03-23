@@ -1,4 +1,5 @@
 using Project.HttpServer.Extensions;
+using Project.HttpServer.Monitoring.Tracing;
 
 namespace Project.HttpServer;
 
@@ -28,6 +29,11 @@ public class Startup
         services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+        });
+
+        services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+        {
+            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
         });
 
         services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
